@@ -1,0 +1,52 @@
+buildscript {
+	repositories {
+		jcenter()
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'jacoco'
+// for compliance with higher Java versions
+jacoco {
+		toolVersion = "0.8.5"
+	}
+
+mainClassName = 'org.opt4j.core.start.Opt4J'
+
+group 'Apollo-Core-EE-Control'
+version '1.0-SNAPSHOT'
+
+
+repositories {
+	mavenCentral()
+	maven {
+		name "jitpack"
+		url 'https://jitpack.io' }
+}
+
+dependencies {
+	
+	// dependencies to other parts of the Apollo Core EE
+	implementation 'com.github.Apollo-Core:EE-Core:master-SNAPSHOT'
+	implementation 'com.github.Apollo-Core:EE-Guice:main-SNAPSHOT'
+	implementation 'com.github.Apollo-Core:EE-Model:main-SNAPSHOT'
+	
+	// dependency to Opt4J
+	implementation 'com.github.FedorSmirnov89:opt4j:-SNAPSHOT'
+	// dependency to opendse
+	implementation 'com.github.FedorSmirnov89:opendse:-SNAPSHOT'
+	// test dependencies	
+	testCompile group: 'junit', 		name: 'junit', 					version: '4.+'
+	testCompile group: 'org.mockito',     name: 'mockito-core',     version: '3.4.4'
+	// dependency to local files
+	// compile files('libs/lib.jar')
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+	}
+}
