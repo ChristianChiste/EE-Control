@@ -14,7 +14,6 @@ jacoco {
 		toolVersion = "0.8.5"
 	}
 
-mainClassName = 'org.opt4j.core.start.Opt4J'
 
 group 'Apollo-Core-EE-Control'
 version '1.0-SNAPSHOT'
@@ -33,11 +32,16 @@ dependencies {
 	implementation 'com.github.Apollo-Core:EE-Core:master-SNAPSHOT'
 	implementation 'com.github.Apollo-Core:EE-Guice:main-SNAPSHOT'
 	implementation 'com.github.Apollo-Core:EE-Model:main-SNAPSHOT'
+	implementation 'com.github.FedorSmirnov89:EE-Enactables:master-SNAPSHOT'
 	
 	// dependency to Opt4J
 	implementation 'com.github.FedorSmirnov89:opt4j:-SNAPSHOT'
 	// dependency to opendse
 	implementation 'com.github.FedorSmirnov89:opendse:-SNAPSHOT'
+	
+	// gson to define the format of the exchanged messages
+	implementation 'com.google.code.gson:gson:2.8.6'
+	
 	// test dependencies	
 	testCompile group: 'junit', 		name: 'junit', 					version: '4.+'
 	testCompile group: 'org.mockito',     name: 'mockito-core',     version: '3.4.4'
