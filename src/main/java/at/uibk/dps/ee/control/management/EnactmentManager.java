@@ -3,7 +3,6 @@ package at.uibk.dps.ee.control.management;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -22,6 +21,7 @@ import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 import net.sf.opendse.model.properties.TaskPropertyService;
@@ -38,7 +38,6 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 
 	protected final EnactmentGraph graph;
 	protected final Map<Task, EnactableAtomic> task2EnactableMap;
-	protected final Map<Enactable, Task> enactable2TaskMap;
 	protected final Set<Task> leafNodes;
 
 	protected final EnactableFactory factory;
@@ -52,7 +51,6 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 		this.factory = new EnactableFactory(stateListeners);
 		this.factory.addEnactableStateListener(this);
 		this.task2EnactableMap = generateTask2EnactableMap();
-		this.enactable2TaskMap = generateEnactable2TaskMap();
 		this.leafNodes = getLeafNodes();
 	}
 
@@ -66,21 +64,10 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 		for (Task task : graph) {
 			if (TaskPropertyService.isProcess(task)) {
 				Map<String, JsonElement> inputMap = getInputMap(task);
-				result.put(task, factory.createEnactable(task, inputMap));
+				EnactableAtomic enactable = factory.createEnactable(task, inputMap);
+				PropertyServiceFunction.setEnactableState(task, enactable.getState());
+				result.put(task, enactable);
 			}
-		}
-		return result;
-	}
-
-	/**
-	 * Generates a map mapping the enactables to the tasks.
-	 * 
-	 * @return a map mapping the enactables to the tasks
-	 */
-	protected Map<Enactable, Task> generateEnactable2TaskMap() {
-		Map<Enactable, Task> result = new HashMap<>();
-		for (Entry<Task, EnactableAtomic> entry : task2EnactableMap.entrySet()) {
-			result.put(entry.getValue(), entry.getKey());
 		}
 		return result;
 	}
@@ -216,7 +203,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * @param enactable the enactable which is finished with its execution
 	 */
 	protected void annotateExecutionResults(EnactableAtomic enactable) {
-		Task task = enactable2TaskMap.get(enactable);
+		Task task = enactable.getFunctionNode();
 		JsonObject result = enactable.getJsonResult();
 		for (Dependency outEdge : graph.getOutEdges(task)) {
 			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {
@@ -257,7 +244,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 			if (previousState.equals(State.WAITING) && currentState.equals(State.READY)) {
 				synchronized (this) {
 					// Enactable is ready => add its task to the ready list
-					readyTasks.add(enactable2TaskMap.get(enactable));
+					readyTasks.add(((EnactableAtomic) enactable).getFunctionNode());
 					this.notifyAll();
 				}
 			} else if (enactable instanceof EnactableAtomic && previousState.equals(State.RUNNING)
