@@ -7,11 +7,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import at.uibk.dps.ee.control.elemental.AtomicEnactment;
-import at.uibk.dps.ee.control.elemental.EnactableFactory;
 import at.uibk.dps.ee.core.ControlStateListener;
 import at.uibk.dps.ee.core.EnactmentState;
 import at.uibk.dps.ee.core.enactable.Enactable;
@@ -19,7 +16,7 @@ import at.uibk.dps.ee.core.enactable.EnactableRoot;
 import at.uibk.dps.ee.core.enactable.EnactableStateListener;
 import at.uibk.dps.ee.core.exception.StopException;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
-import at.uibk.dps.ee.enactables.EnactableBuilder;
+import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
@@ -31,12 +28,11 @@ import net.sf.opendse.model.properties.TaskPropertyService;
 /**
  * The {@link EnactmentManager} maintains the {@link EnactmentGraph}, monitors
  * the state of the elemental enactables, and triggers their execution as soon
- * as the data is available.
+ * as their input data is available.
  * 
  * @author Fedor Smirnov
  *
  */
-@Singleton
 public class EnactmentManager extends EnactableRoot implements ControlStateListener, EnactableStateListener {
 
 	protected final EnactmentGraph graph;
@@ -49,13 +45,11 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	// Set of tasks which can be started
 	protected final Set<Task> readyTasks = new HashSet<>();
 
-	@Inject
-	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraph graph,
-			Set<EnactableBuilder> enactableBuilders) {
+	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraph graph) {
 		super(stateListeners);
 		stateListeners.add(this);
 		this.graph = graph;
-		this.factory = new EnactableFactory(stateListeners, enactableBuilders);
+		this.factory = new EnactableFactory(stateListeners);
 		this.task2EnactableMap = generateTask2EnactableMap();
 		this.enactable2TaskMap = generateEnactable2TaskMap();
 		this.leafNodes = getLeafNodes();
