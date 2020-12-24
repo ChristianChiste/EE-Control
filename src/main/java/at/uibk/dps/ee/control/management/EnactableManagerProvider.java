@@ -23,8 +23,8 @@ public class EnactableManagerProvider implements EnactableProvider {
 	protected final EnactmentManager manager;
 
 	@Inject
-	public EnactableManagerProvider(EnactmentGraphProvider graphProvider, Set<EnactableStateListener> stateListeners) {
-		this.manager = new EnactmentManager(stateListeners, graphProvider.getEnactmentGraph());
+	public EnactableManagerProvider(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider) {
+		this.manager = new EnactmentManager(stateListeners, graphProvider);
 	}
 
 	@Override

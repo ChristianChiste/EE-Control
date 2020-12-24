@@ -18,6 +18,7 @@ import at.uibk.dps.ee.core.exception.StopException;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
+import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
@@ -45,11 +46,11 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	// Set of tasks which can be started
 	protected final Set<Task> readyTasks = new HashSet<>();
 
-	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraph graph) {
+	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider) {
 		super(stateListeners);
-		stateListeners.add(this);
-		this.graph = graph;
+		this.graph = graphProvider.getEnactmentGraph();
 		this.factory = new EnactableFactory(stateListeners);
+		this.factory.addEnactableStateListener(this);
 		this.task2EnactableMap = generateTask2EnactableMap();
 		this.enactable2TaskMap = generateEnactable2TaskMap();
 		this.leafNodes = getLeafNodes();
@@ -137,7 +138,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	}
 
 	@Override
-	protected void myPlay() throws StopException {
+	protected synchronized void myPlay() throws StopException {
 		while (!wfFinished()) {
 			if (!readyTasks.isEmpty()) {
 				// enact an enactable and annotate the results
@@ -188,7 +189,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 					throw new IllegalStateException("The input " + key + " was not provided in the WF input.");
 				}
 				JsonElement content = wfInput.get(key);
-				PropertyServiceData.setContent(node, content);
+				setDataNodeContent(node, content);
 			}
 		}
 	}
@@ -252,14 +253,23 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 
 	@Override
 	public void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
-		if (previousState.equals(State.WAITING) && currentState.equals(State.READY)) {
-			// Enactable is ready => add its task to the ready list
-			readyTasks.add(enactable2TaskMap.get(enactable));
-			this.notifyAll();
-		} else if (enactable instanceof EnactableAtomic && previousState.equals(State.RUNNING)
-				&& currentState.equals(State.FINISHED)) {
-			// Enactable finished execution => annotate the results
-			annotateExecutionResults((EnactableAtomic) enactable);
+		if (enactable instanceof EnactableAtomic) {
+			if (previousState.equals(State.WAITING) && currentState.equals(State.READY)) {
+				synchronized (this) {
+					// Enactable is ready => add its task to the ready list
+					readyTasks.add(enactable2TaskMap.get(enactable));
+					this.notifyAll();
+				}
+			} else if (enactable instanceof EnactableAtomic && previousState.equals(State.RUNNING)
+					&& currentState.equals(State.FINISHED)) {
+				// Enactable finished execution => annotate the results
+				annotateExecutionResults((EnactableAtomic) enactable);
+				if (wfFinished()) {
+					synchronized (this) {
+						this.notifyAll();
+					}
+				}
+			}
 		}
 	}
 
