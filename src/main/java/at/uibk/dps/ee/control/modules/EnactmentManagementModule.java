@@ -1,5 +1,6 @@
 package at.uibk.dps.ee.control.modules;
 
+import at.uibk.dps.ee.control.command.Control;
 import at.uibk.dps.ee.control.management.EnactableManagerProvider;
 import at.uibk.dps.ee.core.EnactableProvider;
 import at.uibk.dps.ee.guice.modules.EeModule;
@@ -16,5 +17,6 @@ public class EnactmentManagementModule extends EeModule {
 	@Override
 	protected void config() {
 		bind(EnactableProvider.class).to(EnactableManagerProvider.class);
+		addEnactmentStateListener(Control.class);
 	}
 }

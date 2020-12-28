@@ -32,7 +32,7 @@ dependencies {
 	implementation 'com.github.Apollo-Core:EE-Core:master-SNAPSHOT'
 	implementation 'com.github.Apollo-Core:EE-Guice:main-SNAPSHOT'
 	implementation 'com.github.Apollo-Core:EE-Model:main-SNAPSHOT'
-	implementation 'com.github.FedorSmirnov89:EE-Enactables:master-SNAPSHOT'
+	implementation 'com.github.Apollo-Core:EE-Enactables:master-SNAPSHOT'
 	
 	// dependency to Opt4J
 	implementation 'com.github.FedorSmirnov89:opt4j:-SNAPSHOT'

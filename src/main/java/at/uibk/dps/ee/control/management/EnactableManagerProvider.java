@@ -5,6 +5,7 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import at.uibk.dps.ee.control.command.Control;
 import at.uibk.dps.ee.core.EnactableProvider;
 import at.uibk.dps.ee.core.enactable.EnactableRoot;
 import at.uibk.dps.ee.core.enactable.EnactableStateListener;
@@ -23,8 +24,9 @@ public class EnactableManagerProvider implements EnactableProvider {
 	protected final EnactmentManager manager;
 
 	@Inject
-	public EnactableManagerProvider(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider) {
-		this.manager = new EnactmentManager(stateListeners, graphProvider);
+	public EnactableManagerProvider(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider,
+			Control control) {
+		this.manager = new EnactmentManager(stateListeners, graphProvider, control);
 	}
 
 	@Override

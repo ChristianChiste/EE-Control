@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import at.uibk.dps.ee.control.command.Control;
 import at.uibk.dps.ee.control.elemental.AtomicEnactment;
 import at.uibk.dps.ee.core.ControlStateListener;
 import at.uibk.dps.ee.core.EnactmentState;
@@ -45,13 +46,14 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	// Set of tasks which can be started
 	protected final Set<Task> readyTasks = new HashSet<>();
 
-	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider) {
+	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider, Control control) {
 		super(stateListeners);
 		this.graph = graphProvider.getEnactmentGraph();
 		this.factory = new EnactableFactory(stateListeners);
 		this.factory.addEnactableStateListener(this);
 		this.task2EnactableMap = generateTask2EnactableMap();
 		this.leafNodes = getLeafNodes();
+		control.addListener(this);
 	}
 
 	/**
@@ -119,15 +121,24 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	}
 
 	@Override
-	public void reactToStateChange(EnactmentState previousState, EnactmentState currentState) throws StopException {
-		// TODO Auto-generated method stub
-
+	public synchronized void reactToStateChange(EnactmentState previousState, EnactmentState currentState) throws StopException {
+		if (previousState.equals(EnactmentState.RUNNING) && currentState.equals(EnactmentState.PAUSED)) {
+			// run => pause
+			pause();
+		} else if (previousState.equals(EnactmentState.PAUSED) && currentState.equals(EnactmentState.RUNNING)) {
+			// pause => run
+			notifyAll();
+			setState(State.RUNNING);
+		} else {
+			throw new IllegalStateException("Transition from enactment state " + previousState.name() + " to "
+					+ currentState.name() + " not yet implemented.");
+		}
 	}
 
 	@Override
 	protected synchronized void myPlay() throws StopException {
 		while (!wfFinished()) {
-			if (!readyTasks.isEmpty()) {
+			if (!readyTasks.isEmpty() && !state.equals(State.PAUSED)) {
 				// enact an enactable and annotate the results
 				enactReadyTasks();
 			} else {
