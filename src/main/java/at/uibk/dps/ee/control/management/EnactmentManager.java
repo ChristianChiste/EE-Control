@@ -20,6 +20,7 @@ import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
+import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
@@ -46,7 +47,8 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	// Set of tasks which can be started
 	protected final Set<Task> readyTasks = new HashSet<>();
 
-	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider, Control control) {
+	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider,
+			Control control) {
 		super(stateListeners);
 		this.graph = graphProvider.getEnactmentGraph();
 		this.factory = new EnactableFactory(stateListeners);
@@ -121,7 +123,8 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	}
 
 	@Override
-	public synchronized void reactToStateChange(EnactmentState previousState, EnactmentState currentState) throws StopException {
+	public synchronized void reactToStateChange(EnactmentState previousState, EnactmentState currentState)
+			throws StopException {
 		if (previousState.equals(EnactmentState.RUNNING) && currentState.equals(EnactmentState.PAUSED)) {
 			// run => pause
 			pause();
@@ -178,16 +181,59 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 
 	@Override
 	protected void myInit() {
-		// annotates the root nodes of the graph with the data from the provided json
-		// object
+		// annotates the data present at the start of the enactment
 		for (Task node : graph) {
-			if (TaskPropertyService.isCommunication(node) && PropertyServiceData.isRoot(node)) {
-				String key = PropertyServiceData.getJsonKey(node);
-				if (!wfInput.has(key)) {
-					throw new IllegalStateException("The input " + key + " was not provided in the WF input.");
+			if (TaskPropertyService.isCommunication(node)) {
+				if (PropertyServiceData.isRoot(node)) {
+					// root nodes
+					initRootNodeContent(node);
+				} else if (PropertyServiceData.getNodeType(node).equals(NodeType.Constant)) {
+					// constant nodes
+					initConstantDataNode(node);
 				}
-				JsonElement content = wfInput.get(key);
-				setDataNodeContent(node, content);
+			}
+		}
+	}
+
+	/**
+	 * Initializes the given constant node by notiying all of its function
+	 * successors.
+	 * 
+	 * @param constantNode the given contant node.
+	 */
+	protected void initConstantDataNode(Task constantNode) {
+		annotateDataConsumers(constantNode);
+	}
+
+	/**
+	 * Initializes the content of the given root node and sets the input of its
+	 * function successors.
+	 * 
+	 * @param rootNode the given root node
+	 */
+	protected void initRootNodeContent(Task rootNode) {
+		String key = PropertyServiceData.getJsonKey(rootNode);
+		if (!wfInput.has(key)) {
+			throw new IllegalStateException("The input " + key + " was not provided in the WF input.");
+		}
+		JsonElement content = wfInput.get(key);
+		PropertyServiceData.setContent(rootNode, content);
+		annotateDataConsumers(rootNode);
+	}
+
+	/**
+	 * Sets annotates the content of the given node in all enactables of its
+	 * function successors.
+	 * 
+	 * @param dataNode the given node
+	 */
+	protected void annotateDataConsumers(Task dataNode) {
+		for (Dependency outEdge : graph.getOutEdges(dataNode)) {
+			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {
+				Task functionNode = graph.getDest(outEdge);
+				EnactableAtomic enactable = task2EnactableMap.get(functionNode);
+				String jsonKey = PropertyServiceDependency.getJsonKey(outEdge);
+				enactable.setInput(jsonKey, PropertyServiceData.getContent(dataNode));
 			}
 		}
 	}
@@ -225,26 +271,8 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 							+ " did not provide a result for the key " + jsonKey);
 				}
 				JsonElement content = result.get(jsonKey);
-				setDataNodeContent(dataNode, content);
-			}
-		}
-	}
-
-	/**
-	 * Sets the content of the data node and sets the corresponding value in all of
-	 * its successor enactables.
-	 * 
-	 * @param dataNode the given node
-	 * @param content  the content to set
-	 */
-	protected void setDataNodeContent(Task dataNode, JsonElement content) {
-		PropertyServiceData.setContent(dataNode, content);
-		for (Dependency outEdge : graph.getOutEdges(dataNode)) {
-			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {
-				Task functionNode = graph.getDest(outEdge);
-				EnactableAtomic enactable = task2EnactableMap.get(functionNode);
-				String jsonKey = PropertyServiceDependency.getJsonKey(outEdge);
-				enactable.setInput(jsonKey, content);
+				PropertyServiceData.setContent(dataNode, content);
+				annotateDataConsumers(dataNode);
 			}
 		}
 	}
