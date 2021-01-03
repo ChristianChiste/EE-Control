@@ -21,14 +21,14 @@ public class Control implements EnactmentStateListener {
 
 	protected EnactmentState enactmentState = EnactmentState.PAUSED;
 	protected final Set<ControlStateListener> listeners = new HashSet<>();
-	protected boolean init = false;
+	protected boolean init;
 
 	/**
 	 * Adds a {@link ControlStateListener}.
 	 * 
 	 * @param listener the listener to add
 	 */
-	public void addListener(ControlStateListener listener) {
+	public void addListener(final ControlStateListener listener) {
 		listeners.add(listener);
 	}
 
