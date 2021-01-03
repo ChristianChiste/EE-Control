@@ -19,7 +19,7 @@ import at.uibk.dps.ee.core.exception.StopException;
 @Singleton
 public class Control implements EnactmentStateListener {
 
-	protected EnactmentState enactmentState;
+	protected EnactmentState enactmentState = EnactmentState.PAUSED;
 	protected final Set<ControlStateListener> listeners = new HashSet<>();
 	protected boolean init = false;
 
@@ -36,6 +36,9 @@ public class Control implements EnactmentStateListener {
 	 * Run if paused. Otherwise this does nothing.
 	 */
 	public void play() {
+		if (!init) {
+			throw new IllegalStateException("Control play triggerred before control initialization.");
+		}
 		if (enactmentState.equals(EnactmentState.PAUSED)) {
 			setState(EnactmentState.RUNNING);
 		}
@@ -59,15 +62,15 @@ public class Control implements EnactmentStateListener {
 	 * 
 	 * @param stateToSet the state to set
 	 */
-	protected void setState(EnactmentState stateToSet) {
-		EnactmentState previous = enactmentState;
-		EnactmentState current = stateToSet;
+	protected void setState(final EnactmentState stateToSet) {
+		final EnactmentState previous = enactmentState;
+		final EnactmentState current = stateToSet;
 		this.enactmentState = stateToSet;
-		for (ControlStateListener listener : listeners) {
+		for (final ControlStateListener listener : listeners) {
 			try {
 				listener.reactToStateChange(previous, current);
 			} catch (StopException stopExc) {
-				throw new IllegalStateException("Stop exception when changing the control state.");
+				throw new IllegalStateException("Stop exception when changing the control state.", stopExc);
 			}
 		}
 	}
