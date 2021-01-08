@@ -76,8 +76,8 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 		Map<Task, EnactableAtomic> result = new HashMap<>();
 		for (Task task : graph) {
 			if (TaskPropertyService.isProcess(task)) {
-				Map<String, JsonElement> inputMap = getInputMap(task);
-				EnactableAtomic enactable = factory.createEnactable(task, inputMap);
+				Set<String> inputKeys = UtilsManagement.getInputKeys(task, graph);
+				EnactableAtomic enactable = factory.createEnactable(task, inputKeys);
 				PropertyServiceFunction.setEnactableState(task, enactable.getState());
 				result.put(task, enactable);
 			}
@@ -112,26 +112,6 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * Returns an input map (with null values) for the given task node.
-	 * 
-	 * @param task the given task node
-	 * @return an input map (with null values) for the given task node
-	 */
-	protected Map<String, JsonElement> getInputMap(Task task) {
-		Map<String, JsonElement> result = new HashMap<>();
-		for (Dependency inEdge : graph.getInEdges(task)) {
-			if (PropertyServiceDependency.getType(inEdge).equals(TypeDependency.Data)
-					|| PropertyServiceDependency.getType(inEdge).equals(TypeDependency.ControlIf)) {
-				String key = PropertyServiceDependency.getJsonKey(inEdge);
-				result.put(key, null);
-			} else {
-				throw new IllegalStateException("The dependency " + inEdge.getId() + " has an unknown type.");
-			}
-		}
-		return result;
 	}
 
 	@Override

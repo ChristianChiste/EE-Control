@@ -25,7 +25,7 @@ public class EnactableManagerProvider implements EnactableProvider {
 	protected final EnactmentManager manager;
 
 	/**
-	 * Construstor used for the dynamic dependency injection.
+	 * Constructor used for the dynamic dependency injection.
 	 * 
 	 * @param stateListeners the enactable state listeners added via guice
 	 * @param graphProvider  the object providing the {@link EnactmentGraph}
