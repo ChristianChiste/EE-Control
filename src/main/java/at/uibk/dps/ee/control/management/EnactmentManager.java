@@ -48,8 +48,16 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	// Set of tasks which can be started
 	protected final Set<Task> readyTasks = new HashSet<>();
 
-	public EnactmentManager(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider,
-			Control control) {
+	/**
+	 * Default constructor.
+	 * 
+	 * @param stateListeners the enactable state listeners added via guice
+	 * @param graphProvider  the object providing the {@link EnactmentGraph}
+	 * @param control        the control object for the implementation of user
+	 *                       commands
+	 */
+	public EnactmentManager(final Set<EnactableStateListener> stateListeners,
+			final EnactmentGraphProvider graphProvider, final Control control) {
 		super(stateListeners);
 		this.graph = graphProvider.getEnactmentGraph();
 		this.factory = new EnactableFactory(stateListeners);

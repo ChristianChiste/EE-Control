@@ -9,6 +9,7 @@ import at.uibk.dps.ee.control.command.Control;
 import at.uibk.dps.ee.core.EnactableProvider;
 import at.uibk.dps.ee.core.enactable.EnactableRoot;
 import at.uibk.dps.ee.core.enactable.EnactableStateListener;
+import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 
 /**
@@ -23,9 +24,17 @@ public class EnactableManagerProvider implements EnactableProvider {
 
 	protected final EnactmentManager manager;
 
+	/**
+	 * Construstor used for the dynamic dependency injection.
+	 * 
+	 * @param stateListeners the enactable state listeners added via guice
+	 * @param graphProvider  the object providing the {@link EnactmentGraph}
+	 * @param control        the control object for the implementation of user
+	 *                       commands
+	 */
 	@Inject
-	public EnactableManagerProvider(Set<EnactableStateListener> stateListeners, EnactmentGraphProvider graphProvider,
-			Control control) {
+	public EnactableManagerProvider(final Set<EnactableStateListener> stateListeners,
+			final EnactmentGraphProvider graphProvider, final Control control) {
 		this.manager = new EnactmentManager(stateListeners, graphProvider, control);
 	}
 
