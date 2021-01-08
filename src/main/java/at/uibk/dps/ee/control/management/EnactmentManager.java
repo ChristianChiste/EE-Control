@@ -23,6 +23,7 @@ import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
+import at.uibk.dps.ee.model.properties.PropertyServiceDependencyControlIf;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
@@ -114,9 +115,12 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	protected Map<String, JsonElement> getInputMap(Task task) {
 		Map<String, JsonElement> result = new HashMap<>();
 		for (Dependency inEdge : graph.getInEdges(task)) {
-			if (PropertyServiceDependency.getType(inEdge).equals(TypeDependency.Data)) {
+			if (PropertyServiceDependency.getType(inEdge).equals(TypeDependency.Data)
+					|| PropertyServiceDependency.getType(inEdge).equals(TypeDependency.ControlIf)) {
 				String key = PropertyServiceDependency.getJsonKey(inEdge);
 				result.put(key, null);
+			} else {
+				throw new IllegalStateException("The dependency " + inEdge.getId() + " has an unknown type.");
 			}
 		}
 		return result;
@@ -170,7 +174,9 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 			thread.start();
 			handled.add(task);
 		}
-		readyTasks.removeAll(handled);
+		synchronized (readyTasks) {
+			readyTasks.removeAll(handled);
+		}
 	}
 
 	@Override
@@ -222,20 +228,37 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	}
 
 	/**
-	 * Sets annotates the content of the given node in all enactables of its
-	 * function successors.
+	 * Annotates the content of the given node in all enactables of its function
+	 * successors.
 	 * 
 	 * @param dataNode the given node
 	 */
 	protected void annotateDataConsumers(Task dataNode) {
 		for (Dependency outEdge : graph.getOutEdges(dataNode)) {
 			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {
-				Task functionNode = graph.getDest(outEdge);
-				EnactableAtomic enactable = task2EnactableMap.get(functionNode);
-				String jsonKey = PropertyServiceDependency.getJsonKey(outEdge);
-				enactable.setInput(jsonKey, PropertyServiceData.getContent(dataNode));
+				annotateDataConsumer(dataNode, outEdge);
+			} else if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.ControlIf)) {
+				boolean decisionVariable = PropertyServiceData.getContent(dataNode).getAsBoolean();
+				if (PropertyServiceDependencyControlIf.getActivation(outEdge) == decisionVariable) {
+					annotateDataConsumer(dataNode, outEdge);
+				}
+			} else {
+				throw new IllegalStateException("The edge " + outEdge.getId() + " has an unknown type.");
 			}
 		}
+	}
+
+	/**
+	 * Annotates the consumer connected to the given data node by the provided edge.
+	 * 
+	 * @param dataNode       the given data node
+	 * @param edgeToConsumer the provided edge
+	 */
+	protected void annotateDataConsumer(Task dataNode, Dependency edgeToConsumer) {
+		Task functionNode = graph.getDest(edgeToConsumer);
+		EnactableAtomic enactable = task2EnactableMap.get(functionNode);
+		String jsonKey = PropertyServiceDependency.getJsonKey(edgeToConsumer);
+		enactable.setInput(jsonKey, PropertyServiceData.getContent(dataNode));
 	}
 
 	@Override
