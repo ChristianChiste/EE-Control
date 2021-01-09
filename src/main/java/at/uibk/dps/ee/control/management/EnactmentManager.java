@@ -1,6 +1,5 @@
 package at.uibk.dps.ee.control.management;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +23,6 @@ import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependencyControlIf;
-import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 import net.sf.opendse.model.properties.TaskPropertyService;
@@ -43,8 +41,6 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	protected final Map<Task, EnactableAtomic> task2EnactableMap;
 	protected final Set<Task> leafNodes;
 
-	protected final EnactableFactory factory;
-
 	// Set of tasks which can be started
 	protected final Set<Task> readyTasks = new HashSet<>();
 
@@ -60,44 +56,11 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 			final EnactmentGraphProvider graphProvider, final Control control) {
 		super(stateListeners);
 		this.graph = graphProvider.getEnactmentGraph();
-		this.factory = new EnactableFactory(stateListeners);
-		this.factory.addEnactableStateListener(this);
-		this.task2EnactableMap = generateTask2EnactableMap();
-		this.leafNodes = getLeafNodes();
+		EnactableFactory factory = new EnactableFactory(stateListeners);
+		factory.addEnactableStateListener(this);
+		this.task2EnactableMap = UtilsManagement.generateTask2EnactableMap(graph, factory);
+		this.leafNodes = UtilsManagement.getLeafNodes(graph);
 		control.addListener(this);
-	}
-
-	/**
-	 * Generates a map mapping function tasks on their corresponding enactables.
-	 * 
-	 * @return a map mapping function tasks on their corresponding enactables
-	 */
-	protected Map<Task, EnactableAtomic> generateTask2EnactableMap() {
-		Map<Task, EnactableAtomic> result = new HashMap<>();
-		for (Task task : graph) {
-			if (TaskPropertyService.isProcess(task)) {
-				Set<String> inputKeys = UtilsManagement.getInputKeys(task, graph);
-				EnactableAtomic enactable = factory.createEnactable(task, inputKeys);
-				PropertyServiceFunction.setEnactableState(task, enactable.getState());
-				result.put(task, enactable);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gathers the leaf nodes from the graph
-	 * 
-	 * @return the leaf nodes from the graph
-	 */
-	protected Set<Task> getLeafNodes() {
-		Set<Task> result = new HashSet<>();
-		for (Task task : graph) {
-			if (TaskPropertyService.isCommunication(task) && PropertyServiceData.isLeaf(task)) {
-				result.add(task);
-			}
-		}
-		return result;
 	}
 
 	/**
