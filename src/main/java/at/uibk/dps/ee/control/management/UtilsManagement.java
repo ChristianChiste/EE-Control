@@ -1,9 +1,9 @@
 package at.uibk.dps.ee.control.management;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
@@ -41,7 +41,7 @@ public final class UtilsManagement {
 	 */
 	public static Map<Task, EnactableAtomic> generateTask2EnactableMap(final EnactmentGraph graph,
 			final EnactableFactory factory) {
-		final Map<Task, EnactableAtomic> result = new HashMap<>();
+		final Map<Task, EnactableAtomic> result = new ConcurrentHashMap<>();
 		for (final Task task : graph) {
 			if (TaskPropertyService.isProcess(task)) {
 				final Set<String> inputKeys = UtilsManagement.getInputKeys(task, graph);
@@ -85,7 +85,7 @@ public final class UtilsManagement {
 	 */
 	public static Set<Task> getLeafNodes(final EnactmentGraph graph) {
 		final Set<Task> result = new HashSet<>();
-		for (Task task : graph) {
+		for (final Task task : graph) {
 			if (TaskPropertyService.isCommunication(task) && PropertyServiceData.isLeaf(task)) {
 				if (!graph.getOutEdges(task).isEmpty()) {
 					throw new IllegalArgumentException("The leaf node " + task.getId() + " has out edges.");

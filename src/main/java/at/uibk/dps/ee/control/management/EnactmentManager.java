@@ -1,5 +1,6 @@
 package at.uibk.dps.ee.control.management;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -7,7 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import at.uibk.dps.ee.control.command.Control;
-import at.uibk.dps.ee.control.elemental.AtomicEnactment;
+import at.uibk.dps.ee.control.runnable.AtomicEnactment;
 import at.uibk.dps.ee.core.ControlStateListener;
 import at.uibk.dps.ee.core.EnactmentState;
 import at.uibk.dps.ee.core.enactable.Enactable;
@@ -42,7 +43,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	protected final Set<Task> leafNodes;
 
 	// Set of tasks which can be started
-	protected final Set<Task> readyTasks = new HashSet<>();
+	protected final Set<Task> readyTasks = Collections.synchronizedSet(new HashSet<>());
 
 	/**
 	 * Default constructor.
@@ -56,7 +57,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 			final EnactmentGraphProvider graphProvider, final Control control) {
 		super(stateListeners);
 		this.graph = graphProvider.getEnactmentGraph();
-		EnactableFactory factory = new EnactableFactory(stateListeners);
+		final EnactableFactory factory = new EnactableFactory(stateListeners);
 		factory.addEnactableStateListener(this);
 		this.task2EnactableMap = UtilsManagement.generateTask2EnactableMap(graph, factory);
 		this.leafNodes = UtilsManagement.getLeafNodes(graph);
@@ -69,7 +70,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * @return true if all leaf nodes have been annotated with content
 	 */
 	protected boolean wfFinished() {
-		for (Task task : leafNodes) {
+		for (final Task task : leafNodes) {
 			if (!PropertyServiceData.isDataAvailable(task)) {
 				return false;
 			}
@@ -94,7 +95,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	}
 
 	@Override
-	protected synchronized void myPlay() throws StopException {
+	protected void myPlay() throws StopException {
 		while (!wfFinished()) {
 			if (!readyTasks.isEmpty() && !state.equals(State.PAUSED)) {
 				// enact an enactable and annotate the results
@@ -104,7 +105,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 				try {
 					wait();
 				} catch (InterruptedException e) {
-					throw new IllegalStateException("Enactment manager interrupted while waiting.");
+					throw new IllegalStateException("Enactment manager interrupted while waiting.", e);
 				}
 			}
 		}
@@ -117,23 +118,23 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * @param readyTasks the tasks which are ready
 	 */
 	protected void enactReadyTasks() {
-		Set<Task> handled = new HashSet<>();
-		for (Task task : readyTasks) {
-			EnactableAtomic enactable = task2EnactableMap.get(task);
-			AtomicEnactment atomicEnactment = new AtomicEnactment(enactable, task);
-			Thread thread = new Thread(atomicEnactment);
-			thread.start();
-			handled.add(task);
-		}
 		synchronized (readyTasks) {
+			Set<Task> handled = new HashSet<>();
+			for (Task task : readyTasks) {
+				EnactableAtomic enactable = task2EnactableMap.get(task);
+				AtomicEnactment atomicEnactment = new AtomicEnactment(enactable, task);
+				Thread thread = new Thread(atomicEnactment);
+				thread.start();
+				handled.add(task);
+			}
 			readyTasks.removeAll(handled);
 		}
 	}
 
 	@Override
 	protected void myPause() {
-		// TODO Has to be implemented
-
+		// the pause behavior depends on the state being set to paused => no extra
+		// behavior in this method
 	}
 
 	@Override
@@ -275,6 +276,6 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 
 	@Override
 	protected void myReset() {
-		// TODO Auto-generated method stub
+		// No reset behavior for now
 	}
 }
