@@ -2,9 +2,7 @@ package at.uibk.dps.ee.control.management;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import at.uibk.dps.ee.control.command.Control;
@@ -18,15 +16,8 @@ import at.uibk.dps.ee.core.exception.StopException;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
-import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
-import at.uibk.dps.ee.model.properties.PropertyServiceData;
-import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
-import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
-import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
-import at.uibk.dps.ee.model.properties.PropertyServiceDependencyControlIf;
-import net.sf.opendse.model.Dependency;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Task;
-import net.sf.opendse.model.properties.TaskPropertyService;
 
 /**
  * The {@link EnactmentManager} maintains the {@link EnactmentGraph}, monitors
@@ -38,9 +29,7 @@ import net.sf.opendse.model.properties.TaskPropertyService;
  */
 public class EnactmentManager extends EnactableRoot implements ControlStateListener, EnactableStateListener {
 
-	protected final EnactmentGraph graph;
-	protected final Map<Task, EnactableAtomic> task2EnactableMap;
-	protected final Set<Task> leafNodes;
+	protected final DataLogistics dataLogistics;
 
 	// Set of tasks which can be started
 	protected final Set<Task> readyTasks = Collections.synchronizedSet(new HashSet<>());
@@ -53,29 +42,12 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * @param control        the control object for the implementation of user
 	 *                       commands
 	 */
-	public EnactmentManager(final Set<EnactableStateListener> stateListeners,
-			final EnactmentGraphProvider graphProvider, final Control control) {
+	public EnactmentManager(final Set<EnactableStateListener> stateListeners, DataLogistics dataLogistics, EnactableFactory factory,
+			final Control control) {
 		super(stateListeners);
-		this.graph = graphProvider.getEnactmentGraph();
-		final EnactableFactory factory = new EnactableFactory(stateListeners);
-		factory.addEnactableStateListener(this);
-		this.task2EnactableMap = UtilsManagement.generateTask2EnactableMap(graph, factory);
-		this.leafNodes = UtilsManagement.getLeafNodes(graph);
+		this.dataLogistics = dataLogistics;
 		control.addListener(this);
-	}
-
-	/**
-	 * Returns true if all leaf nodes have been annotated with content.
-	 * 
-	 * @return true if all leaf nodes have been annotated with content
-	 */
-	protected boolean wfFinished() {
-		for (final Task task : leafNodes) {
-			if (!PropertyServiceData.isDataAvailable(task)) {
-				return false;
-			}
-		}
-		return true;
+		factory.addEnactableStateListener(this);
 	}
 
 	@Override
@@ -96,14 +68,16 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 
 	@Override
 	protected void myPlay() throws StopException {
-		while (!wfFinished()) {
+		while (!dataLogistics.isWfFinished()) {
 			if (!readyTasks.isEmpty() && !state.equals(State.PAUSED)) {
 				// enact an enactable and annotate the results
 				enactReadyTasks();
 			} else {
 				// wait to be woken up by a worker thread
 				try {
-					wait();
+					synchronized (readyTasks) {
+						readyTasks.wait();
+					}
 				} catch (InterruptedException e) {
 					throw new IllegalStateException("Enactment manager interrupted while waiting.", e);
 				}
@@ -117,18 +91,16 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * 
 	 * @param readyTasks the tasks which are ready
 	 */
-	protected void enactReadyTasks() {
-		synchronized (readyTasks) {
-			Set<Task> handled = new HashSet<>();
-			for (Task task : readyTasks) {
-				EnactableAtomic enactable = task2EnactableMap.get(task);
-				AtomicEnactment atomicEnactment = new AtomicEnactment(enactable, task);
-				Thread thread = new Thread(atomicEnactment);
-				thread.start();
-				handled.add(task);
-			}
-			readyTasks.removeAll(handled);
+	protected synchronized void enactReadyTasks() {
+		Set<Task> handled = new HashSet<>();
+		for (Task task : readyTasks) {
+			EnactableAtomic enactable = (EnactableAtomic) PropertyServiceFunction.getEnactable(task);
+			AtomicEnactment atomicEnactment = new AtomicEnactment(enactable, task);
+			Thread thread = new Thread(atomicEnactment);
+			thread.start();
+			handled.add(task);
 		}
+		readyTasks.removeAll(handled);
 	}
 
 	@Override
@@ -140,135 +112,31 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	@Override
 	protected void myInit() {
 		// annotates the data present at the start of the enactment
-		for (Task node : graph) {
-			if (TaskPropertyService.isCommunication(node)) {
-				if (PropertyServiceData.isRoot(node)) {
-					// root nodes
-					initRootNodeContent(node);
-				} else if (PropertyServiceData.getNodeType(node).equals(NodeType.Constant)) {
-					// constant nodes
-					initConstantDataNode(node);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Initializes the given constant node by notiying all of its function
-	 * successors.
-	 * 
-	 * @param constantNode the given contant node.
-	 */
-	protected void initConstantDataNode(Task constantNode) {
-		annotateDataConsumers(constantNode);
-	}
-
-	/**
-	 * Initializes the content of the given root node and sets the input of its
-	 * function successors.
-	 * 
-	 * @param rootNode the given root node
-	 */
-	protected void initRootNodeContent(Task rootNode) {
-		String key = PropertyServiceData.getJsonKey(rootNode);
-		if (!wfInput.has(key)) {
-			throw new IllegalStateException("The input " + key + " was not provided in the WF input.");
-		}
-		JsonElement content = wfInput.get(key);
-		PropertyServiceData.setContent(rootNode, content);
-		annotateDataConsumers(rootNode);
-	}
-
-	/**
-	 * Annotates the content of the given node in all enactables of its function
-	 * successors.
-	 * 
-	 * @param dataNode the given node
-	 */
-	protected void annotateDataConsumers(Task dataNode) {
-		for (Dependency outEdge : graph.getOutEdges(dataNode)) {
-			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {
-				annotateDataConsumer(dataNode, outEdge);
-			} else if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.ControlIf)) {
-				boolean decisionVariable = PropertyServiceData.getContent(dataNode).getAsBoolean();
-				if (PropertyServiceDependencyControlIf.getActivation(outEdge) == decisionVariable) {
-					annotateDataConsumer(dataNode, outEdge);
-				}
-			} else {
-				throw new IllegalStateException("The edge " + outEdge.getId() + " has an unknown type.");
-			}
-		}
-	}
-
-	/**
-	 * Annotates the consumer connected to the given data node by the provided edge.
-	 * 
-	 * @param dataNode       the given data node
-	 * @param edgeToConsumer the provided edge
-	 */
-	protected void annotateDataConsumer(Task dataNode, Dependency edgeToConsumer) {
-		Task functionNode = graph.getDest(edgeToConsumer);
-		EnactableAtomic enactable = task2EnactableMap.get(functionNode);
-		String jsonKey = PropertyServiceDependency.getJsonKey(edgeToConsumer);
-		enactable.setInput(jsonKey, PropertyServiceData.getContent(dataNode));
-	}
-
-	@Override
-	public JsonObject getOutput() {
-		JsonObject result = new JsonObject();
-		// iterate the leaves
-		for (Task task : graph) {
-			if (TaskPropertyService.isCommunication(task) && PropertyServiceData.isLeaf(task)) {
-				if (!PropertyServiceData.isDataAvailable(task)) {
-					throw new IllegalStateException("No data in the leaf node " + task.getId());
-				}
-				String jsonKey = PropertyServiceData.getJsonKey(task);
-				result.add(jsonKey, PropertyServiceData.getContent(task));
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Annotates the results of the task execution on the successor data nodes.
-	 * 
-	 * @param enactable the enactable which is finished with its execution
-	 */
-	protected void annotateExecutionResults(EnactableAtomic enactable) {
-		Task task = enactable.getFunctionNode();
-		JsonObject result = enactable.getJsonResult();
-		for (Dependency outEdge : graph.getOutEdges(task)) {
-			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {
-				Task dataNode = graph.getDest(outEdge);
-				String jsonKey = PropertyServiceDependency.getJsonKey(outEdge);
-				if (!result.has(jsonKey)) {
-					throw new IllegalStateException("The enactment of task " + task.getId()
-							+ " did not provide a result for the key " + jsonKey);
-				}
-				JsonElement content = result.get(jsonKey);
-				PropertyServiceData.setContent(dataNode, content);
-				annotateDataConsumers(dataNode);
-			}
-		}
+		dataLogistics.initData(wfInput);
 	}
 
 	@Override
 	public void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
 		if (enactable instanceof EnactableAtomic) {
 			if (previousState.equals(State.WAITING) && currentState.equals(State.READY)) {
-				synchronized (this) {
+				synchronized (readyTasks) {
 					// Enactable is ready => add its task to the ready list
 					readyTasks.add(((EnactableAtomic) enactable).getFunctionNode());
-					this.notifyAll();
+					readyTasks.notifyAll();
 				}
 			} else if (enactable instanceof EnactableAtomic && previousState.equals(State.RUNNING)
 					&& currentState.equals(State.FINISHED)) {
 				// Enactable finished execution => annotate the results
-				annotateExecutionResults((EnactableAtomic) enactable);
-				if (wfFinished()) {
-					synchronized (this) {
-						this.notifyAll();
+				if (enactable instanceof EnactableAtomic) {
+					EnactableAtomic atomic = (EnactableAtomic) enactable;
+					dataLogistics.annotateExecutionResults(atomic);
+					if (dataLogistics.isWfFinished()) {
+						synchronized (readyTasks) {
+							readyTasks.notifyAll();
+						}
 					}
+				} else {
+					throw new IllegalStateException("Behavior for non atomic enactables not yet implemented.");
 				}
 			}
 		}
@@ -277,5 +145,10 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	@Override
 	protected void myReset() {
 		// No reset behavior for now
+	}
+
+	@Override
+	public JsonObject getOutput() {
+		return dataLogistics.readWfOutput();
 	}
 }

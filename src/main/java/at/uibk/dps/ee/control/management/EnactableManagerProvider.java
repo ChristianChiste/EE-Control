@@ -9,8 +9,8 @@ import at.uibk.dps.ee.control.command.Control;
 import at.uibk.dps.ee.core.EnactableProvider;
 import at.uibk.dps.ee.core.enactable.EnactableRoot;
 import at.uibk.dps.ee.core.enactable.EnactableStateListener;
+import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
-import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 
 /**
  * The {@link EnactableManagerProvider} provides the manager which is used as
@@ -34,8 +34,9 @@ public class EnactableManagerProvider implements EnactableProvider {
 	 */
 	@Inject
 	public EnactableManagerProvider(final Set<EnactableStateListener> stateListeners,
-			final EnactmentGraphProvider graphProvider, final Control control) {
-		this.manager = new EnactmentManager(stateListeners, graphProvider, control);
+			final DataLogistics dataLogistics,
+			final EnactableFactory factory, final Control control) {
+		this.manager = new EnactmentManager(stateListeners, dataLogistics, factory, control);
 	}
 
 	@Override
