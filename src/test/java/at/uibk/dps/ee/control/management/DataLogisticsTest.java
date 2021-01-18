@@ -74,23 +74,18 @@ public class DataLogisticsTest {
 		String key6 = "key6";
 
 		Task task = new Task("task");
-		Dependency inEdge1 = PropertyServiceDependency.createDataDependency(input1, task, key1);
-		Dependency inEdge2 = PropertyServiceDependency.createDataDependency(input2, task, key2);
 		Dependency inEdge3 = PropertyServiceDependencyControlIf.createControlIfDependency(input3, task, key3, false);
-		Dependency outEdge = PropertyServiceDependency.createDataDependency(task, output, key4);
-		Dependency outEdge2 = PropertyServiceDependency.createDataDependency(task, output2, key5);
-		Dependency outEdge3 = PropertyServiceDependency.createDataDependency(task, output3, key6);
 
 		PropertyServiceData.makeLeaf(output2);
 		PropertyServiceData.makeLeaf(output);
 
 		EnactmentGraph graph = new EnactmentGraph();
-		graph.addEdge(inEdge1, input1, task, EdgeType.DIRECTED);
-		graph.addEdge(inEdge2, input2, task, EdgeType.DIRECTED);
+		PropertyServiceDependency.addDataDependency(input1, task, key1, graph);
+		PropertyServiceDependency.addDataDependency(input2, task, key2, graph);
+		PropertyServiceDependency.addDataDependency(task, output, key4, graph);
+		PropertyServiceDependency.addDataDependency(task, output2, key5, graph);
+		PropertyServiceDependency.addDataDependency(task, output3, key6, graph);
 		graph.addEdge(inEdge3, input3, task, EdgeType.DIRECTED);
-		graph.addEdge(outEdge, task, output, EdgeType.DIRECTED);
-		graph.addEdge(outEdge2, task, output2, EdgeType.DIRECTED);
-		graph.addEdge(outEdge3, task, output3, EdgeType.DIRECTED);
 
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);
@@ -111,14 +106,12 @@ public class DataLogisticsTest {
 
 		Task task = new Task("task");
 		Task task2 = new Task("task2");
-		Dependency outEdge = PropertyServiceDependency.createDataDependency(task, output, key4);
-		Dependency outEdge2 = PropertyServiceDependency.createDataDependency(output, task2, key4);
 
 		PropertyServiceData.makeLeaf(output);
 
 		EnactmentGraph graph = new EnactmentGraph();
-		graph.addEdge(outEdge, task, output, EdgeType.DIRECTED);
-		graph.addEdge(outEdge2, output, task2, EdgeType.DIRECTED);
+		PropertyServiceDependency.addDataDependency(task, output, key4, graph);
+		PropertyServiceDependency.addDataDependency(output, task2, key4, graph);
 
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);

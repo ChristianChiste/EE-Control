@@ -26,7 +26,7 @@ public class UtilsManagementTest {
 
 	@Test
 	public void testAnnotateTaskEnactables() {
-		
+
 		Communication input1 = new Communication("input1");
 		Communication input2 = new Communication("input2");
 		Communication input3 = new Communication("input3");
@@ -38,31 +38,28 @@ public class UtilsManagementTest {
 		String key4 = "key4";
 
 		Task task = new Task("task");
-		Dependency inEdge1 = PropertyServiceDependency.createDataDependency(input1, task, key1);
-		Dependency inEdge2 = PropertyServiceDependency.createDataDependency(input2, task, key2);
 		Dependency inEdge3 = PropertyServiceDependencyControlIf.createControlIfDependency(input3, task, key3, false);
-		Dependency outEdge = PropertyServiceDependency.createDataDependency(task, output, key4);
 
 		EnactmentGraph graph = new EnactmentGraph();
-		graph.addEdge(inEdge1, input1, task, EdgeType.DIRECTED);
-		graph.addEdge(inEdge2, input2, task, EdgeType.DIRECTED);
+		PropertyServiceDependency.addDataDependency(input1, task, key1, graph);
+		PropertyServiceDependency.addDataDependency(input2, task, key2, graph);
+		PropertyServiceDependency.addDataDependency(task, output, key4, graph);
 		graph.addEdge(inEdge3, input3, task, EdgeType.DIRECTED);
-		graph.addEdge(outEdge, task, output, EdgeType.DIRECTED);
-		
+
 		Set<String> inputKeys = new HashSet<>();
 		inputKeys.add(key1);
 		inputKeys.add(key2);
 		inputKeys.add(key3);
-		
+
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
 		EnactableAtomic enactableMock = mock(EnactableAtomic.class);
 		when(enactableMock.getState()).thenReturn(State.STOPPED);
 		when(factoryMock.createEnactable(task, inputKeys)).thenReturn(enactableMock);
-		
+
 		UtilsManagement.annotateTaskEnactables(graph, factoryMock);
 		assertEquals(enactableMock, PropertyServiceFunction.getEnactable(task));
 	}
-	
+
 	@Test
 	public void testGetInputKeys() {
 
@@ -77,16 +74,13 @@ public class UtilsManagementTest {
 		String key4 = "key4";
 
 		Task task = new Task("task");
-		Dependency inEdge1 = PropertyServiceDependency.createDataDependency(input1, task, key1);
-		Dependency inEdge2 = PropertyServiceDependency.createDataDependency(input2, task, key2);
 		Dependency inEdge3 = PropertyServiceDependencyControlIf.createControlIfDependency(input3, task, key3, false);
-		Dependency outEdge = PropertyServiceDependency.createDataDependency(task, output, key4);
 
 		EnactmentGraph graph = new EnactmentGraph();
-		graph.addEdge(inEdge1, input1, task, EdgeType.DIRECTED);
-		graph.addEdge(inEdge2, input2, task, EdgeType.DIRECTED);
+		PropertyServiceDependency.addDataDependency(input1, task, key1, graph);
+		PropertyServiceDependency.addDataDependency(input2, task, key2, graph);
+		PropertyServiceDependency.addDataDependency(task, output, key4, graph);
 		graph.addEdge(inEdge3, input3, task, EdgeType.DIRECTED);
-		graph.addEdge(outEdge, task, output, EdgeType.DIRECTED);
 
 		Set<String> result = UtilsManagement.getInputKeys(task, graph);
 		assertEquals(3, result.size());
