@@ -50,7 +50,8 @@ public class DataLogisticsTest {
 		EnactmentGraphProvider graphProvider = mock(EnactmentGraphProvider.class);
 		when(graphProvider.getEnactmentGraph()).thenReturn(graph);
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
-		DataLogistics tested = new DataLogistics(graphProvider, factoryMock);
+		GraphModifier modifierMock = mock(GraphModifier.class);
+		DataLogistics tested = new DataLogistics(graphProvider, factoryMock, modifierMock);
 
 		assertFalse(tested.isWfFinished());
 		PropertyServiceData.setContent(data2, JsonParser.parseString("5.0"));
@@ -90,7 +91,8 @@ public class DataLogisticsTest {
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
-		DataLogistics tested = new DataLogistics(providerMock, factoryMock);
+		GraphModifier modifierMock = mock(GraphModifier.class);
+		DataLogistics tested = new DataLogistics(providerMock, factoryMock, modifierMock);
 
 		Set<Task> leaves = tested.getLeafNodes(graph);
 		assertEquals(2, leaves.size());
@@ -116,7 +118,8 @@ public class DataLogisticsTest {
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
-		DataLogistics tested = new DataLogistics(providerMock, factoryMock);
+		GraphModifier modifierMock = mock(GraphModifier.class);
+		DataLogistics tested = new DataLogistics(providerMock, factoryMock, modifierMock);
 
 		tested.getLeafNodes(graph);
 	}

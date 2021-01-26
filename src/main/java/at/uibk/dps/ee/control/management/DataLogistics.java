@@ -17,6 +17,7 @@ import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependencyControlIf;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
@@ -34,10 +35,13 @@ public class DataLogistics {
 	protected final EnactmentGraph graph;
 	protected final Set<Task> leafNodes;
 
+	protected final GraphModifier graphModifier;
+
 	@Inject
-	public DataLogistics(EnactmentGraphProvider graphProvider, EnactableFactory factory) {
+	public DataLogistics(EnactmentGraphProvider graphProvider, EnactableFactory factory, GraphModifier graphModifier) {
 		this.graph = graphProvider.getEnactmentGraph();
 		this.leafNodes = getLeafNodes(graph);
+		this.graphModifier = graphModifier;
 		UtilsManagement.annotateTaskEnactables(graph, factory);
 	}
 
@@ -189,6 +193,13 @@ public class DataLogistics {
 	 */
 	public void annotateExecutionResults(EnactableAtomic enactable) {
 		Task task = enactable.getFunctionNode();
+		if (PropertyServiceFunctionDataFlowCollections.isDistributionNode(task)) {
+			graphModifier.applyDistributionReproduction(task);
+		}
+		if (PropertyServiceFunctionDataFlowCollections.isAggregationNode(task)) {
+			String scope = PropertyServiceFunctionDataFlowCollections.getScope(task);
+			graphModifier.revertDistributionReproduction(scope);
+		}
 		JsonObject result = enactable.getJsonResult();
 		for (Dependency outEdge : graph.getOutEdges(task)) {
 			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {

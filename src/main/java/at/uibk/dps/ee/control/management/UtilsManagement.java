@@ -27,7 +27,7 @@ public final class UtilsManagement {
 	}
 
 	/**
-	 * For each function task in the graph, this method generates the corrsponsing
+	 * For each function task in the graph, this method generates the corresponding
 	 * enactable and annotates it to the task.
 	 * 
 	 * @param graph   the enactment graph
@@ -35,11 +35,22 @@ public final class UtilsManagement {
 	 */
 	public static void annotateTaskEnactables(final EnactmentGraph graph, final EnactableFactory factory) {
 		for (final Task task : graph) {
-			if (TaskPropertyService.isProcess(task)) {
-				final Set<String> inputKeys = UtilsManagement.getInputKeys(task, graph);
-				final EnactableAtomic enactable = factory.createEnactable(task, inputKeys);
-				PropertyServiceFunction.setEnactable(task, enactable);
-			}
+			annotateTaskEnactable(task, graph, factory);
+		}
+	}
+
+	/**
+	 * Generates the enactable for the given task and annotates it to the graph.
+	 * 
+	 * @param task    the given task
+	 * @param graph   the enactment graph
+	 * @param factory the enactable factory
+	 */
+	public static void annotateTaskEnactable(final Task task, EnactmentGraph graph, final EnactableFactory factory) {
+		if (TaskPropertyService.isProcess(task)) {
+			final Set<String> inputKeys = UtilsManagement.getInputKeys(task, graph);
+			final EnactableAtomic enactable = factory.createEnactable(task, inputKeys);
+			PropertyServiceFunction.setEnactable(task, enactable);
 		}
 	}
 
