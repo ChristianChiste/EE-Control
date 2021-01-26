@@ -17,7 +17,6 @@ import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections.OperationType;
-import at.uibk.dps.ee.visualization.model.EnactmentGraphViewer;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
@@ -126,11 +125,9 @@ public class GraphModifierTest {
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
 		GraphModifier tested = new GraphModifier(providerMock, factoryMock);
 
-		EnactmentGraphViewer.view(testInput);
 		
 		
 		tested.applyDistributionReproduction(distributionNode);
-
 		// do the tests
 
 		// element numbers
@@ -146,18 +143,15 @@ public class GraphModifierTest {
 
 		Dependency distributionEdge = testInput.getInEdges(funcIn2).iterator().next();
 		Dependency aggregationEdge = testInput.getOutEdges(funcOut2).iterator().next();
-		Dependency funcInEdge = testInput.getInEdges(func2).iterator().next();
 		Dependency funcOutEdge = testInput.getOutEdges(func2).iterator().next();
 
 		// check the JSON keys
 		String expectedDistJson = ConstantsEEModel.getCollectionElementKey(collNameIn, 2);
 		String expectedAggrJson = ConstantsEEModel.getCollectionElementKey(ConstantsEEModel.JsonKeyAggregation, 2);
-		String expectedFuncInJson = funcInName;
 		String expectedFuncOutJson = funcOutName;
 
 		assertEquals(expectedDistJson, PropertyServiceDependency.getJsonKey(distributionEdge));
 		assertEquals(expectedAggrJson, PropertyServiceDependency.getJsonKey(aggregationEdge));
-		assertEquals(expectedFuncInJson, PropertyServiceDependency.getJsonKey(funcInEdge));
 		assertEquals(expectedFuncOutJson, PropertyServiceDependency.getJsonKey(funcOutEdge));
 
 		assertEquals(function, func2.getParent());
@@ -176,6 +170,7 @@ public class GraphModifierTest {
 		when(enactableMock.getState()).thenReturn(State.FINISHED);
 
 		// test the reverse operation when enactable ready
+		
 		tested.revertDistributionReproduction(scopeName);
 		assertEquals(8, testInput.getVertexCount());
 		assertEquals(7, testInput.getEdgeCount());

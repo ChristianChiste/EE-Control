@@ -3,20 +3,22 @@ package at.uibk.dps.ee.control.management;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
+import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
+import at.uibk.dps.ee.enactables.local.dataflow.Aggregation;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
+import at.uibk.dps.ee.model.properties.PropertyServiceReproduction;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
@@ -62,10 +64,11 @@ public class GraphModifier {
 		// sweep the graph to find the reproduced and the original elements
 		Set<Task> offspringTasks = new HashSet<>();
 		Set<Dependency> offspringDependencies = new HashSet<>();
-		Task startNode = dNodes.iterator().next();
+		Task distributionNode = dNodes.iterator().next();
+		Task startNode = distributionNode;
 		recSweepReproducedGraphSection(startNode, offspringTasks, offspringDependencies, scope);
 		// add the original edges (vertices added automatically)
-		offspringDependencies.forEach(dependency -> addOriginalEdge(dependency, scope));
+		offspringDependencies.forEach(dependency -> addOriginalEdge(dependency, scope, distributionNode));
 		// remove the offsprings
 		offspringDependencies.forEach(dependency -> graph.removeEdge(dependency));
 		offspringTasks.forEach(task -> graph.removeVertex(task));
@@ -79,17 +82,19 @@ public class GraphModifier {
 	 * @param graph         the enactment graph
 	 * @param scope         the reproduction scope
 	 */
-	protected void addOriginalEdge(Dependency offspringEdge, String scope) {
+	protected void addOriginalEdge(Dependency offspringEdge, String scope, Task distributionNode) {
 		if (graph.containsEdge((Dependency) offspringEdge.getParent())) {
 			return;
 		}
 		Task offspringSrc = graph.getSource(offspringEdge);
 		Task offspringDst = graph.getDest(offspringEdge);
-		Task originalSrc = isEndNodeInScope(offspringSrc, scope) ? offspringSrc : (Task) offspringSrc.getParent();
+		Task originalSrc = !wasReproduced(offspringSrc, scope, distributionNode) ? offspringSrc
+				: (Task) offspringSrc.getParent();
 		if (originalSrc == null) {
 			throw new IllegalStateException("The offspring " + offspringSrc + " has no parent.");
 		}
-		Task originalDst = isEndNodeInScope(offspringDst, scope) ? offspringDst : (Task) offspringDst.getParent();
+		Task originalDst = !wasReproduced(offspringDst, scope, distributionNode) ? offspringDst
+				: (Task) offspringDst.getParent();
 		if (originalDst == null) {
 			throw new IllegalStateException("The offspring " + offspringDst + " has no parent.");
 		}
@@ -116,6 +121,8 @@ public class GraphModifier {
 			if (!isEndNodeInScope(currentNode, scope, true)) {
 				// anything which is not a distribution node is an offspring
 				offspringTasks.add(currentNode);
+				// in that case, we also add the in edges
+				offspringDependencies.addAll(graph.getInEdges(currentNode));
 			}
 			// all out edges are offsprings
 			for (Dependency outEdge : graph.getOutEdges(currentNode)) {
@@ -124,6 +131,21 @@ public class GraphModifier {
 				recSweepReproducedGraphSection(nextNode, offspringTasks, offspringDependencies, scope);
 			}
 		}
+	}
+
+	/**
+	 * Returns true if the given task was reproduced by the given distribution node
+	 * within the given scope.
+	 * 
+	 * @param task             the given task
+	 * @param scope            the reproduction scope
+	 * @param distributionNode the distribution node
+	 * @return true if the given task was reproduced by the given distribution node
+	 *         within the given scope
+	 */
+	protected boolean wasReproduced(Task task, String scope, Task distributionNode) {
+		return PropertyServiceReproduction.belongsToDistributionNode(task, distributionNode)
+				&& !isEndNodeInScope(task, scope);
 	}
 
 	/**
@@ -195,32 +217,44 @@ public class GraphModifier {
 
 		// reproduce each of the edges, while keeping track of the new nodes in the
 		// graph
-		Set<Task> tasksBeforeReproduction = graph.getVertices().stream()
-				.filter(task -> TaskPropertyService.isProcess(task)).collect(Collectors.toSet());
 		for (Dependency originalEdge : edgesToReproduce) {
-			reproduceEdge(originalEdge, iterationNum, scope);
+			reproduceEdge(originalEdge, iterationNum, scope, distributionTask);
 		}
-		Set<Task> newTasks = graph.getVertices().stream()
-				.filter(task -> TaskPropertyService.isProcess(task) && !tasksBeforeReproduction.contains(task))
-				.collect(Collectors.toSet());
-		// annotate the enactables for each new task
-		newTasks.forEach(task -> UtilsManagement.annotateTaskEnactable(task, graph, enactableFactory));
+
 
 		// remove the original elements
-		removeOriginalElements(edgesToReproduce, scope);
+		removeOriginalElements(edgesToReproduce, scope, distributionTask);
+		
+		Set<Task> newTasks = graph.getVertices().stream()
+				.filter(task ->TaskPropertyService.isProcess(task)&& PropertyServiceReproduction.belongsToDistributionNode(task, distributionTask))
+				.collect(Collectors.toSet());
+		Set<Task> aggregationNodes = newTasks.stream().filter(task -> PropertyServiceFunctionDataFlowCollections.isAggregationNode(task)
+				&& scope.equals(PropertyServiceFunctionDataFlowCollections.getScope(task))).collect(Collectors.toSet());
+		newTasks.removeAll(aggregationNodes);
+		// adjust the enactable of the new function tasks
+		newTasks.forEach(task -> {
+			Task parent = (Task) task.getParent();
+			enactableFactory.reproduceEnactable(task, (EnactableAtomic) PropertyServiceFunction.getEnactable(parent));
+		});
+		
+		// adjust the input sets of the aggregation nodes
+		aggregationNodes.forEach(this::updateAggregationInputSet);
 	}
 	
-//	/**
-//	 * Reproduces and annotates the enactable of the given offspring task.
-//	 * 
-//	 * @param offspring the offspring task.
-//	 */
-//	protected void reproduceTaskEnactable(Task offspring) {
-//		UtilsManagement.annotateTaskEnactable(offspring, graph, enactableFactory);
-//		Enactable offspringEnactable = PropertyServiceFunction.getEnactable(offspring);
-//		Enactable parentEnactable = PropertyServiceFunction.getEnactable((Task) offspring.getParent());
-//		parentEnactable.
-//	}
+	/**
+	 * Updates the input set of the given aggregation Node.
+	 * 
+	 * @param aggregationNode the given aggregationNode
+	 */
+	protected void updateAggregationInputSet(Task aggregationNode) {
+		int elementNumber = graph.getInEdges(aggregationNode).size();
+		Enactable enactable = PropertyServiceFunction.getEnactable(aggregationNode);
+		if (!(enactable instanceof Aggregation)) {
+			throw new IllegalStateException("Aggregation node not annotated with aggregation enactable.");
+		}
+		Aggregation aggregation = (Aggregation) enactable;
+		aggregation.adjustInputSet(elementNumber);
+	}
 
 	/**
 	 * Removes the original elements from the graph.
@@ -230,20 +264,15 @@ public class GraphModifier {
 	 *                        node and its aggregators
 	 * @param scope           the reproduction scope
 	 */
-	protected void removeOriginalElements(Set<Dependency> reproducedEdges, String scope) {
+	protected void removeOriginalElements(Set<Dependency> reproducedEdges, String scope, Task distributionTask) {
 		// gather the vertices to remove
 		Set<Task> verticesToRemove = reproducedEdges.stream().map(edge -> graph.getSource(edge))
 				.collect(Collectors.toSet());
 		verticesToRemove.addAll(reproducedEdges.stream().map(edge -> graph.getDest(edge)).collect(Collectors.toSet()));
-		Predicate<Task> distOrAggrPredicate = task -> {
-			if (PropertyServiceFunctionDataFlowCollections.isAggregationNode(task)
-					|| PropertyServiceFunctionDataFlowCollections.isDistributionNode(task)) {
-				return scope.equals(PropertyServiceFunctionDataFlowCollections.getScope(task));
-			} else {
-				return false;
-			}
-		};
-		verticesToRemove.removeIf(distOrAggrPredicate);
+		verticesToRemove
+				.removeIf(task -> !PropertyServiceReproduction.belongsToDistributionNode(task, distributionTask));
+		verticesToRemove.removeIf(task -> PropertyServiceFunctionDataFlowCollections.isAggregationNode(task)
+				&& scope.equals(PropertyServiceFunctionDataFlowCollections.getScope(task)));
 		// remove the edges
 		reproducedEdges.stream().forEach(dependency -> graph.removeEdge(dependency));
 		// remove the vertices
@@ -258,7 +287,7 @@ public class GraphModifier {
 	 * @param graph        the enactment graph
 	 * @param iterationNum the iteration number
 	 */
-	protected void reproduceEdge(Dependency originalEdge, int iterationNum, String scope) {
+	protected void reproduceEdge(Dependency originalEdge, int iterationNum, String scope, Task distributionNode) {
 		Task originalSrc = graph.getSource(originalEdge);
 		Task originalDst = graph.getDest(originalEdge);
 
@@ -269,8 +298,7 @@ public class GraphModifier {
 			Optional<Task> offspringDst = null;
 
 			// assign src
-			if (PropertyServiceFunctionDataFlowCollections.isDistributionNode(originalSrc)
-					&& PropertyServiceFunctionDataFlowCollections.getScope(originalSrc).equals(scope)) {
+			if (!PropertyServiceReproduction.belongsToDistributionNode(originalSrc, distributionNode)) {
 				// edge from distribution node
 				offspringSrc = Optional.of(originalSrc);
 				String collectionName = PropertyServiceDependency.getJsonKey(originalEdge);
@@ -290,8 +318,8 @@ public class GraphModifier {
 				// dst needs to be reproduced
 				offspringDst = reproduceNode(originalDst, reproductionIdx);
 			}
-			PropertyServiceDependency.addDataDependencyOffspring(offspringSrc.get(), offspringDst.get(), jsonKey, graph,
-					originalEdge);
+			PropertyServiceReproduction.addDataDependencyOffspring(offspringSrc.get(), offspringDst.get(), jsonKey,
+					graph, originalEdge, scope);
 		}
 	}
 
@@ -329,7 +357,7 @@ public class GraphModifier {
 		Task curNode = distributionNode;
 		String scope = PropertyServiceFunctionDataFlowCollections.getScope(distributionNode);
 		Set<Task> visited = new HashSet<>();
-		recProcessOutEdgesNode(curNode, scope, visited, result);
+		recProcessOutEdgesNode(curNode, scope, visited, result, distributionNode);
 		return result;
 	}
 
@@ -337,24 +365,35 @@ public class GraphModifier {
 	 * Recursive operation to check a node and gather all of its out edges which are
 	 * relevant for reproduction.
 	 * 
-	 * @param curNode the node to check
-	 * @param graph   the enactment graph
-	 * @param scope   the reproduction scope
-	 * @param visited the set of visited nodes
-	 * @param result  the edges gathered so far
+	 * @param curNode          the node to check
+	 * @param graph            the enactment graph
+	 * @param scope            the reproduction scope
+	 * @param visited          the set of visited nodes
+	 * @param distributionNode the distribution node doing the reproduction
+	 * @param result           the edges gathered so far
 	 */
-	protected void recProcessOutEdgesNode(Task curNode, String scope, Set<Task> visited, Set<Dependency> result) {
+	protected void recProcessOutEdgesNode(Task curNode, String scope, Set<Task> visited, Set<Dependency> result,
+			Task distributionNode) {
 		visited.add(curNode);
+		if (!curNode.equals(distributionNode)) {
+			PropertyServiceReproduction.annotateDistributionNode(curNode, distributionNode.getId());
+		}
 		if (PropertyServiceFunctionDataFlowCollections.isAggregationNode(curNode)
 				&& PropertyServiceFunctionDataFlowCollections.getScope(curNode).equals(scope)) {
 			// recursion base case: arrival at an aggregation node.
 			return;
 		} else {
+			// if the node is not a distribution node with the proper scope, all in edges
+			// are also added
+			if (!(PropertyServiceFunctionDataFlowCollections.isDistributionNode(curNode)
+					&& scope.equals(PropertyServiceFunctionDataFlowCollections.getScope(curNode)))) {
+				result.addAll(graph.getInEdges(curNode));
+			}
 			for (Dependency outEdge : graph.getOutEdges(curNode)) {
 				result.add(outEdge);
 				Task dest = graph.getDest(outEdge);
 				if (!visited.contains(dest)) {
-					recProcessOutEdgesNode(dest, scope, visited, result);
+					recProcessOutEdgesNode(dest, scope, visited, result, distributionNode);
 				}
 			}
 		}
