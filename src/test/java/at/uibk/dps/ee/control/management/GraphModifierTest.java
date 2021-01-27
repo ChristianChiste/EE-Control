@@ -2,13 +2,17 @@ package at.uibk.dps.ee.control.management;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
 
+import at.uibk.dps.ee.core.ModelModificationListener;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
+import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
+import at.uibk.dps.ee.enactables.local.dataflow.Aggregation;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
@@ -54,7 +58,7 @@ public class GraphModifierTest {
 
 		Communication distributedData = new Communication("distributedData");
 		Communication functionResult = new Communication("funcResult");
-		
+
 		Communication outsideInput = new Communication("outsideIn");
 		String jsonKeyOutside = "outside";
 
@@ -70,7 +74,8 @@ public class GraphModifierTest {
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(testInput);
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
-		GraphModifier tested = new GraphModifier(providerMock, factoryMock);
+		Set<ModelModificationListener> listeners = new HashSet<>();
+		GraphModifier tested = new GraphModifier(providerMock, factoryMock, listeners);
 		Set<Dependency> result = tested.findEdgesToReproduce(distributionNode);
 		assertEquals(5, result.size());
 	}
@@ -118,15 +123,18 @@ public class GraphModifierTest {
 		Communication outsideInput = new Communication("outsideIn");
 		String jsonKeyOutside = "outside";
 		PropertyServiceDependency.addDataDependency(outsideInput, function, jsonKeyOutside, testInput);
-		
+
 		// run the reproduction
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(testInput);
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
-		GraphModifier tested = new GraphModifier(providerMock, factoryMock);
+		Set<ModelModificationListener> listeners = new HashSet<>();
+		Enactable mockEnactable = mock(EnactableAtomic.class);
+		Aggregation mockAggregation = mock(Aggregation.class);
+		PropertyServiceFunction.setEnactable(function, mockEnactable);
+		PropertyServiceFunction.setEnactable(aggregation, mockAggregation);
+		GraphModifier tested = new GraphModifier(providerMock, factoryMock, listeners);
 
-		
-		
 		tested.applyDistributionReproduction(distributionNode);
 		// do the tests
 
@@ -170,7 +178,7 @@ public class GraphModifierTest {
 		when(enactableMock.getState()).thenReturn(State.FINISHED);
 
 		// test the reverse operation when enactable ready
-		
+
 		tested.revertDistributionReproduction(scopeName);
 		assertEquals(8, testInput.getVertexCount());
 		assertEquals(7, testInput.getEdgeCount());

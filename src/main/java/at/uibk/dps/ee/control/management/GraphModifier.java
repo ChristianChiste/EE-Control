@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
+import at.uibk.dps.ee.core.ModelModificationListener;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
@@ -34,11 +35,21 @@ public class GraphModifier {
 
 	protected final EnactmentGraph graph;
 	protected final EnactableFactory enactableFactory;
+	protected final Set<ModelModificationListener> modelModificationListeners;
 
 	@Inject
-	public GraphModifier(EnactmentGraphProvider graphProvider, EnactableFactory enactableFactory) {
+	public GraphModifier(EnactmentGraphProvider graphProvider, EnactableFactory enactableFactory,
+			Set<ModelModificationListener> modelModificationListeners) {
 		this.graph = graphProvider.getEnactmentGraph();
 		this.enactableFactory = enactableFactory;
+		this.modelModificationListeners = modelModificationListeners;
+	}
+
+	/**
+	 * Updates all listeners.
+	 */
+	protected void updateListeners() {
+		modelModificationListeners.forEach(ModelModificationListener::reactToModelModification);
 	}
 
 	/**
@@ -51,7 +62,6 @@ public class GraphModifier {
 		if (!readyForRevert(scope)) {
 			return;
 		}
-
 		// find the distribution node
 		Set<Task> dNodes = graph.getVertices().stream()
 				.filter(task -> PropertyServiceFunctionDataFlowCollections.isDistributionNode(task)
@@ -72,6 +82,7 @@ public class GraphModifier {
 		// remove the offsprings
 		offspringDependencies.forEach(dependency -> graph.removeEdge(dependency));
 		offspringTasks.forEach(task -> graph.removeVertex(task));
+		updateListeners();
 	}
 
 	/**
@@ -221,26 +232,29 @@ public class GraphModifier {
 			reproduceEdge(originalEdge, iterationNum, scope, distributionTask);
 		}
 
-
 		// remove the original elements
 		removeOriginalElements(edgesToReproduce, scope, distributionTask);
-		
+
 		Set<Task> newTasks = graph.getVertices().stream()
-				.filter(task ->TaskPropertyService.isProcess(task)&& PropertyServiceReproduction.belongsToDistributionNode(task, distributionTask))
+				.filter(task -> TaskPropertyService.isProcess(task)
+						&& PropertyServiceReproduction.belongsToDistributionNode(task, distributionTask))
 				.collect(Collectors.toSet());
-		Set<Task> aggregationNodes = newTasks.stream().filter(task -> PropertyServiceFunctionDataFlowCollections.isAggregationNode(task)
-				&& scope.equals(PropertyServiceFunctionDataFlowCollections.getScope(task))).collect(Collectors.toSet());
+		Set<Task> aggregationNodes = newTasks.stream()
+				.filter(task -> PropertyServiceFunctionDataFlowCollections.isAggregationNode(task)
+						&& scope.equals(PropertyServiceFunctionDataFlowCollections.getScope(task)))
+				.collect(Collectors.toSet());
 		newTasks.removeAll(aggregationNodes);
 		// adjust the enactable of the new function tasks
 		newTasks.forEach(task -> {
 			Task parent = (Task) task.getParent();
 			enactableFactory.reproduceEnactable(task, (EnactableAtomic) PropertyServiceFunction.getEnactable(parent));
 		});
-		
+
 		// adjust the input sets of the aggregation nodes
 		aggregationNodes.forEach(this::updateAggregationInputSet);
+		updateListeners();
 	}
-	
+
 	/**
 	 * Updates the input set of the given aggregation Node.
 	 * 
@@ -302,7 +316,9 @@ public class GraphModifier {
 				// edge from distribution node
 				offspringSrc = Optional.of(originalSrc);
 				String collectionName = PropertyServiceDependency.getJsonKey(originalEdge);
-				jsonKey = ConstantsEEModel.getCollectionElementKey(collectionName, reproductionIdx);
+				if (originalSrc.equals(distributionNode)) {
+					jsonKey = ConstantsEEModel.getCollectionElementKey(collectionName, reproductionIdx);
+				}
 			} else {
 				// src needs to be reproduced
 				offspringSrc = reproduceNode(originalSrc, reproductionIdx);

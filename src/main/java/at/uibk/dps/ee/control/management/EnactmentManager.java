@@ -42,8 +42,8 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * @param control        the control object for the implementation of user
 	 *                       commands
 	 */
-	public EnactmentManager(final Set<EnactableStateListener> stateListeners, DataLogistics dataLogistics, EnactableFactory factory,
-			final Control control) {
+	public EnactmentManager(final Set<EnactableStateListener> stateListeners, DataLogistics dataLogistics,
+			EnactableFactory factory, final Control control) {
 		super(stateListeners);
 		this.dataLogistics = dataLogistics;
 		control.addListener(this);
@@ -75,8 +75,8 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 			} else {
 				// wait to be woken up by a worker thread
 				try {
-					synchronized (readyTasks) {
-						readyTasks.wait();
+					synchronized (this) {
+						this.wait();
 					}
 				} catch (InterruptedException e) {
 					throw new IllegalStateException("Enactment manager interrupted while waiting.", e);
@@ -116,14 +116,12 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	}
 
 	@Override
-	public void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
+	public synchronized void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
 		if (enactable instanceof EnactableAtomic) {
 			if (previousState.equals(State.WAITING) && currentState.equals(State.READY)) {
-				synchronized (readyTasks) {
-					// Enactable is ready => add its task to the ready list
-					readyTasks.add(((EnactableAtomic) enactable).getFunctionNode());
-					readyTasks.notifyAll();
-				}
+				// Enactable is ready => add its task to the ready list
+				readyTasks.add(((EnactableAtomic) enactable).getFunctionNode());
+				this.notifyAll();
 			} else if (enactable instanceof EnactableAtomic && previousState.equals(State.RUNNING)
 					&& currentState.equals(State.FINISHED)) {
 				// Enactable finished execution => annotate the results
@@ -131,8 +129,8 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 					EnactableAtomic atomic = (EnactableAtomic) enactable;
 					dataLogistics.annotateExecutionResults(atomic);
 					if (dataLogistics.isWfFinished()) {
-						synchronized (readyTasks) {
-							readyTasks.notifyAll();
+						synchronized (this) {
+							this.notifyAll();
 						}
 					}
 				} else {
