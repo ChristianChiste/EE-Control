@@ -20,6 +20,7 @@ import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction.FunctionType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections.OperationType;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
@@ -52,6 +53,7 @@ public class GraphModifierTest {
 		PropertyServiceFunctionDataFlowCollections.setIterationNumber(distributionNode, 3);
 
 		Task function = new Task(funcName);
+		PropertyServiceFunction.setType(FunctionType.Local, function);
 
 		Task aggregation = PropertyServiceFunctionDataFlowCollections.createCollectionDataFlowTask("aggregation",
 				OperationType.Aggregation, scopeName);
@@ -103,6 +105,7 @@ public class GraphModifierTest {
 		PropertyServiceFunctionDataFlowCollections.setIterationNumber(distributionNode, 3);
 
 		Task function = new Task(funcName);
+		PropertyServiceFunction.setType(FunctionType.Local, function);
 
 		Task aggregation = PropertyServiceFunctionDataFlowCollections.createCollectionDataFlowTask("aggregation",
 				OperationType.Aggregation, scopeName);
