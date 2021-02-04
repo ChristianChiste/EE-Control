@@ -1,8 +1,11 @@
 package at.uibk.dps.ee.control.agents;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
+import at.uibk.dps.ee.control.management.EnactableAgents;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import net.sf.opendse.model.Task;
 
@@ -19,22 +22,33 @@ public class AgentActivationTransmission extends AgentContinuous {
 	protected final GraphAccess graphAccess;
 	protected final ExecutorService executor;
 
+	protected final Set<Task> leafNodes;
+	protected final Set<Task> availableWfResults = new HashSet<>();
+	protected final EnactableAgents rootEnactable;
+
 	public AgentActivationTransmission(EnactmentState enactmentState, AgentFactoryTransmission agentFactory,
-			GraphAccess graphAccess, ExecutorService executor) {
+			GraphAccess graphAccess, ExecutorService executor, EnactableAgents rootEnactable) {
 		this.enactmentState = enactmentState;
 		this.agentFactory = agentFactory;
 		this.graphAccess = graphAccess;
 		this.executor = executor;
+		this.leafNodes = graphAccess.getLeafDataNodes();
+		this.rootEnactable = rootEnactable;
 	}
 
 	@Override
 	protected void repeatedTask() {
-		Task availableData;
 		try {
-			availableData = enactmentState.takeAvailableData();
-			graphAccess.getOutEdges(availableData)
-					.forEach(edgeTuple -> executor.submit(agentFactory.createTransmissionAgent(edgeTuple)));
-
+			Task availableData = enactmentState.takeAvailableData();
+			if (leafNodes.contains(availableData)) {
+				availableWfResults.add(availableData);
+				if (availableWfResults.containsAll(leafNodes)) {
+					rootEnactable.finishWfExecution();
+				}
+			} else {
+				graphAccess.getOutEdges(availableData)
+						.forEach(edgeTuple -> executor.submit(agentFactory.createTransmissionAgent(edgeTuple)));
+			}
 		} catch (InterruptedException e) {
 			throw new IllegalStateException("Transmission Activation agent interrupted.", e);
 		}

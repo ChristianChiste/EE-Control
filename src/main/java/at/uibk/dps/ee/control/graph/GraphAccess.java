@@ -58,4 +58,18 @@ public interface GraphAccess {
 	 */
 	void writeOperationNodeInEdges(BiConsumer<Set<Dependency>, Task> writeOperation, Task node);
 
+	/**
+	 * Returns the root nodes of the graph (annotated with the WF input).
+	 * 
+	 * @return the root nodes of the graph (annotated with the WF input)
+	 */
+	Set<Task> getRootDataNodes();
+
+	/**
+	 * Returns the leaf nodes of the graph (to be annotated with the WF result).
+	 * 
+	 * @return the leaf nodes of the graph (to be annotated with the WF result)
+	 */
+	Set<Task> getLeafDataNodes();
+
 }

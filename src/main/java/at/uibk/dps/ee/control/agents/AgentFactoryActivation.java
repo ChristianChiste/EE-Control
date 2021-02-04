@@ -3,6 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
+import at.uibk.dps.ee.control.management.EnactableAgents;
 import at.uibk.dps.ee.control.management.EnactmentState;
 
 /**
@@ -44,10 +45,11 @@ public class AgentFactoryActivation {
 	/**
 	 * Creates the agent monitoring the available data queue.
 	 * 
+	 * @param rootEnactable the class starting and stopping the continuous agents
 	 * @return the agent monitoring the available data queue.
 	 */
-	public AgentActivationTransmission createAvalDataQueueMonitor() {
-		return new AgentActivationTransmission(enactmentState, transmissionFactory, graphAccess, executor);
+	public AgentActivationTransmission createAvalDataQueueMonitor(EnactableAgents rootEnactable) {
+		return new AgentActivationTransmission(enactmentState, transmissionFactory, graphAccess, executor, rootEnactable);
 	}
 
 	/**
