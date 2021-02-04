@@ -41,7 +41,7 @@ public class EnactmentStateTest {
 			} catch (InterruptedException e) {
 				fail();
 			}
-			state.putReadyTask(task);
+			state.putScheduledTask(task);
 			return true;
 		}
 	}
@@ -54,7 +54,7 @@ public class EnactmentStateTest {
 
 		@Override
 		public Task call() throws Exception {
-			return state.takeReadyTask();
+			return state.takeScheduledTask();
 		}
 	}
 
@@ -64,7 +64,7 @@ public class EnactmentStateTest {
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);
 		EnactmentState tested = new EnactmentState(providerMock);
-		assertTrue(tested.readyTasks.isEmpty());
+		assertTrue(tested.scheduledTasks.isEmpty());
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Task task1 = new Task("task1");
 		Task task2 = new Task("task2");
@@ -90,7 +90,7 @@ public class EnactmentStateTest {
 			
 			long duration1 = Duration.between(start, finish1).toMillis();
 			long duration2 = Duration.between(start, finish2).toMillis();
-			assertTrue(duration1 < 30);
+			assertTrue(duration1 < 50);
 			assertTrue(duration2 > 500);
 			
 		} catch (InterruptedException | ExecutionException e) {
@@ -104,7 +104,7 @@ public class EnactmentStateTest {
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);
 		EnactmentState tested = new EnactmentState(providerMock);
-		assertTrue(tested.readyTasks.isEmpty());
+		assertTrue(tested.scheduledTasks.isEmpty());
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Task task1 = new Task("task1");
 		Task task2 = new Task("task2");
@@ -125,9 +125,9 @@ public class EnactmentStateTest {
 		Instant end = Instant.now();
 		long time = Duration.between(start, end).toMillis();
 		assertTrue(time < 50);
-		assertTrue(tested.readyTasks.size() == 2);
-		assertTrue(tested.readyTasks.contains(task1));
-		assertTrue(tested.readyTasks.contains(task2));
+		assertTrue(tested.scheduledTasks.size() == 2);
+		assertTrue(tested.scheduledTasks.contains(task1));
+		assertTrue(tested.scheduledTasks.contains(task2));
 	}
 
 }

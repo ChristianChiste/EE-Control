@@ -3,8 +3,6 @@ package at.uibk.dps.ee.control.agents;
 import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.management.EnactmentState;
-import at.uibk.dps.ee.core.enactable.Enactable;
-import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Task;
 
 /**
@@ -18,10 +16,10 @@ public class AgentActivationEnactment extends AgentContinuous {
 
 	protected final EnactmentState enactmentState;
 	protected final ExecutorService executor;
-	protected final AgentEnactmentFactory agentFactory;
+	protected final AgentFactoryEnactment agentFactory;
 
 	public AgentActivationEnactment(EnactmentState enactmentState, ExecutorService executor,
-			AgentEnactmentFactory agentFactory) {
+			AgentFactoryEnactment agentFactory) {
 		this.enactmentState = enactmentState;
 		this.executor = executor;
 		this.agentFactory = agentFactory;
@@ -31,12 +29,11 @@ public class AgentActivationEnactment extends AgentContinuous {
 	protected void repeatedTask() {
 		Task readyTask;
 		try {
-			readyTask = enactmentState.takeReadyTask();
-			Enactable enactable = PropertyServiceFunction.getEnactable(readyTask);
-			AgentEnactment enacterAgent = agentFactory.createAgentEnactment(enactable);
+			readyTask = enactmentState.takeScheduledTask();
+			AgentEnactment enacterAgent = agentFactory.createAgentEnactment(readyTask);
 			executor.submit(enacterAgent);
 		} catch (InterruptedException e) {
-			throw new IllegalStateException("Starter agent interrupted.", e);
+			throw new IllegalStateException("Enactment Activation agent interrupted.", e);
 		}
 	}
 }

@@ -200,7 +200,7 @@ public class DataLogistics {
 			String scope = PropertyServiceFunctionDataFlowCollections.getScope(task);
 			graphModifier.revertDistributionReproduction(scope);
 		}
-		JsonObject result = enactable.getJsonResult();
+		JsonObject result = enactable.getResult();
 		for (Dependency outEdge : graph.getOutEdges(task)) {
 			if (PropertyServiceDependency.getType(outEdge).equals(TypeDependency.Data)) {
 				Task dataNode = graph.getDest(outEdge);

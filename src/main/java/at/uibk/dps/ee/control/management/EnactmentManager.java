@@ -89,7 +89,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * Creates a callable for each task which is ready. The callable triggers the
 	 * execution of the enactable and then annotates the output data.
 	 * 
-	 * @param readyTasks the tasks which are ready
+	 * @param scheduledTasks the tasks which are ready
 	 */
 	protected synchronized void enactReadyTasks() {
 		Set<Task> handled = new HashSet<>();
@@ -146,7 +146,7 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	}
 
 	@Override
-	public JsonObject getOutput() {
+	public JsonObject getResult() {
 		return dataLogistics.readWfOutput();
 	}
 }
