@@ -10,7 +10,6 @@ import net.sf.opendse.model.Task;
  * {@link AgentEnactment}s to process the tasks in the ready queue.
  * 
  * @author Fedor Smirnov
- *
  */
 public class AgentActivationEnactment extends AgentContinuous {
 
@@ -27,9 +26,8 @@ public class AgentActivationEnactment extends AgentContinuous {
 
 	@Override
 	protected void repeatedTask() {
-		Task readyTask;
 		try {
-			readyTask = enactmentState.takeScheduledTask();
+			Task readyTask = enactmentState.takeScheduledTask();
 			AgentEnactment enacterAgent = agentFactory.createAgentEnactment(readyTask);
 			executor.submit(enacterAgent);
 		} catch (InterruptedException e) {
