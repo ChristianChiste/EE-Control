@@ -8,6 +8,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
@@ -21,6 +24,7 @@ import net.sf.opendse.model.properties.TaskPropertyService;
  * 
  * @author Fedor Smirnov
  */
+@Singleton
 public class GraphAccessConcurrent implements GraphAccess {
 
 	protected final EnactmentGraph graph;
@@ -28,6 +32,7 @@ public class GraphAccessConcurrent implements GraphAccess {
 	protected final Lock readLock;
 	protected final Lock writeLock;
 
+	@Inject
 	public GraphAccessConcurrent(GraphProviderEnactables graphProvider) {
 		this.graph = graphProvider.getEnactmentGraph();
 		this.readWriteLock = new ReentrantReadWriteLock();

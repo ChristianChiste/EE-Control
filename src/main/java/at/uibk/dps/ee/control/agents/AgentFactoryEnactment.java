@@ -1,5 +1,8 @@
 package at.uibk.dps.ee.control.agents;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import at.uibk.dps.ee.control.management.EnactmentState;
 import net.sf.opendse.model.Task;
 
@@ -8,10 +11,12 @@ import net.sf.opendse.model.Task;
  * 
  * @author Fedor Smirnov
  */
+@Singleton
 public class AgentFactoryEnactment {
 	
 	protected final EnactmentState enactmentState;
 	
+	@Inject
 	public AgentFactoryEnactment(EnactmentState enactmentState) {
 		this.enactmentState = enactmentState;
 	}

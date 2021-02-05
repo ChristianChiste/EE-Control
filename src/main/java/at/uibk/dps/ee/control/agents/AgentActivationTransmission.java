@@ -5,8 +5,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
-import at.uibk.dps.ee.control.management.EnactableAgents;
+import at.uibk.dps.ee.control.management.EnactmentAgents;
 import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
 /**
@@ -24,14 +25,14 @@ public class AgentActivationTransmission extends AgentContinuous {
 
 	protected final Set<Task> leafNodes;
 	protected final Set<Task> availableWfResults = new HashSet<>();
-	protected final EnactableAgents rootEnactable;
+	protected final EnactmentAgents rootEnactable;
 
 	public AgentActivationTransmission(EnactmentState enactmentState, AgentFactoryTransmission agentFactory,
-			GraphAccess graphAccess, ExecutorService executor, EnactableAgents rootEnactable) {
+			GraphAccess graphAccess, ExecutorProvider executorProvider, EnactmentAgents rootEnactable) {
 		this.enactmentState = enactmentState;
 		this.agentFactory = agentFactory;
 		this.graphAccess = graphAccess;
-		this.executor = executor;
+		this.executor = executorProvider.getExecutorService();
 		this.leafNodes = graphAccess.getLeafDataNodes();
 		this.rootEnactable = rootEnactable;
 	}

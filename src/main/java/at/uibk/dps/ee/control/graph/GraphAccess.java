@@ -3,6 +3,8 @@ package at.uibk.dps.ee.control.graph;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import com.google.inject.ImplementedBy;
+
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 
@@ -13,6 +15,7 @@ import net.sf.opendse.model.Task;
  * @author Fedor Smirnov
  *
  */
+@ImplementedBy(GraphAccessConcurrent.class)
 public interface GraphAccess {
 
 	public class EdgeTupleAppl {

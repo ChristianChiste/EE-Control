@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.inject.Inject;
 
 import at.uibk.dps.ee.control.agents.AgentActivationEnactment;
 import at.uibk.dps.ee.control.agents.AgentActivationExtraction;
@@ -20,11 +21,11 @@ import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link EnactableAgents}
+ * The {@link EnactmentAgents}
  * 
  * @author Fedor Smirnov
  */
-public class EnactableAgents extends EnactableRoot {
+public class EnactmentAgents extends EnactableRoot {
 
 	protected final AgentActivationEnactment scheduledQueueMonitor;
 	protected final AgentActivationExtraction finishedQueueMonitor;
@@ -35,8 +36,9 @@ public class EnactableAgents extends EnactableRoot {
 	protected final EnactmentState enactmentState;
 	protected final ExecutorService executor;
 
-	protected EnactableAgents(Set<EnactableStateListener> stateListeners, AgentFactoryActivation agentFactory,
-			GraphAccess graphAccess, EnactmentState enactmentState, ExecutorService executor) {
+	@Inject
+	protected EnactmentAgents(Set<EnactableStateListener> stateListeners, AgentFactoryActivation agentFactory,
+			GraphAccess graphAccess, EnactmentState enactmentState, ExecutorProvider executorProvider) {
 		super(stateListeners);
 		this.scheduledQueueMonitor = agentFactory.createScheduledQueueMonitor();
 		this.finishedQueueMonitor = agentFactory.createFinishedQueueMonitor();
@@ -44,7 +46,7 @@ public class EnactableAgents extends EnactableRoot {
 		this.launchableQueueMonitor = agentFactory.createLaunchableQueueMonitor();
 		this.graphAccess = graphAccess;
 		this.enactmentState = enactmentState;
-		this.executor = executor;
+		this.executor = executorProvider.getExecutorService();
 	}
 
 	@Override

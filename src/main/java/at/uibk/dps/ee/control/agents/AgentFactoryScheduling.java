@@ -1,5 +1,8 @@
 package at.uibk.dps.ee.control.agents;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.control.scheduling.SchedulerProxy;
 import at.uibk.dps.ee.enactables.EESchedule;
@@ -11,12 +14,14 @@ import net.sf.opendse.model.Task;
  * 
  * @author Fedor Smirnov
  */
+@Singleton
 public class AgentFactoryScheduling {
 
 	protected final EESchedule schedule;
 	protected final SchedulerProxy scheduler;
 	protected final EnactmentState enactmentState;
 
+	@Inject
 	public AgentFactoryScheduling(EESchedule schedule, SchedulerProxy scheduler, EnactmentState enactmentState) {
 		this.schedule = schedule;
 		this.scheduler = scheduler;

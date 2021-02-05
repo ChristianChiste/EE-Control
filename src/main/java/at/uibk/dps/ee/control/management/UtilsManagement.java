@@ -48,8 +48,7 @@ public final class UtilsManagement {
 	 */
 	public static void annotateTaskEnactable(final Task task, EnactmentGraph graph, final EnactableFactory factory) {
 		if (TaskPropertyService.isProcess(task)) {
-			final Set<String> inputKeys = UtilsManagement.getInputKeys(task, graph);
-			final EnactableAtomic enactable = factory.createEnactable(task, inputKeys);
+			final EnactableAtomic enactable = factory.createEnactable(task);
 			PropertyServiceFunction.setEnactable(task, enactable);
 		}
 	}

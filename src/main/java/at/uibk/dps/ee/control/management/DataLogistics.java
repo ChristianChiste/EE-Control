@@ -180,9 +180,6 @@ public class DataLogistics {
 			throw new IllegalStateException(
 					"The enactable annotated on the task " + functionNode.getId() + " is not atomic");
 		}
-		EnactableAtomic atomic = (EnactableAtomic) enactable;
-		String jsonKey = PropertyServiceDependency.getJsonKey(edgeToConsumer);
-		atomic.setInput(jsonKey, PropertyServiceData.getContent(dataNode));
 	}
 
 	/**

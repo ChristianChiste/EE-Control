@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
 /**
@@ -21,10 +22,10 @@ public class AgentActivationExtraction extends AgentContinuous {
 	protected final GraphAccess graphAccess;
 	protected final AgentFactoryExtraction agentFactory;
 
-	public AgentActivationExtraction(EnactmentState enactmentState, ExecutorService executor, GraphAccess graphAccess,
+	public AgentActivationExtraction(EnactmentState enactmentState, ExecutorProvider executorProvider, GraphAccess graphAccess,
 			AgentFactoryExtraction agentFactory) {
 		this.enactmentState = enactmentState;
-		this.executor = executor;
+		this.executor = executorProvider.getExecutorService();
 		this.graphAccess = graphAccess;
 		this.agentFactory = agentFactory;
 	}

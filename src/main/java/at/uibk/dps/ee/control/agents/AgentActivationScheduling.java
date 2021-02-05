@@ -3,6 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
 /**
@@ -18,10 +19,10 @@ public class AgentActivationScheduling extends AgentContinuous {
 	protected final ExecutorService executor;
 
 	public AgentActivationScheduling(EnactmentState enactmentState, AgentFactoryScheduling agentFactory,
-			ExecutorService executor) {
+			ExecutorProvider executorProvider) {
 		this.enactmentState = enactmentState;
 		this.agentFactory = agentFactory;
-		this.executor = executor;
+		this.executor = executorProvider.getExecutorService();
 	}
 
 	@Override

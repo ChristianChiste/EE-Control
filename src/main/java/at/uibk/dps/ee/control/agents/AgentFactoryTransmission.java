@@ -1,5 +1,8 @@
 package at.uibk.dps.ee.control.agents;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
 import at.uibk.dps.ee.control.management.EnactmentState;
@@ -9,11 +12,13 @@ import at.uibk.dps.ee.control.management.EnactmentState;
  * 
  * @author Fedor Smirnov
  */
+@Singleton
 public class AgentFactoryTransmission {
 
 	protected final EnactmentState enactmentState;
 	protected final GraphAccess graphAccess;
 
+	@Inject
 	public AgentFactoryTransmission(EnactmentState enactmentState, GraphAccess graphAccess) {
 		this.enactmentState = enactmentState;
 		this.graphAccess = graphAccess;

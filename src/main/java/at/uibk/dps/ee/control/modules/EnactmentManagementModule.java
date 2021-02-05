@@ -18,5 +18,7 @@ public class EnactmentManagementModule extends EeModule {
 	protected void config() {
 		bind(EnactableProvider.class).to(EnactableManagerProvider.class);
 		addEnactmentStateListener(Control.class);
+		
+		
 	}
 }

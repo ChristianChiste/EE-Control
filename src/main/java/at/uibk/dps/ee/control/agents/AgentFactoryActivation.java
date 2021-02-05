@@ -1,10 +1,11 @@
 package at.uibk.dps.ee.control.agents;
 
-import java.util.concurrent.ExecutorService;
+import com.google.inject.Inject;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
-import at.uibk.dps.ee.control.management.EnactableAgents;
+import at.uibk.dps.ee.control.management.EnactmentAgents;
 import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.ExecutorProvider;
 
 /**
  * The {@link AgentFactoryActivation} creates the activation agents.
@@ -14,18 +15,19 @@ import at.uibk.dps.ee.control.management.EnactmentState;
 public class AgentFactoryActivation {
 
 	protected final EnactmentState enactmentState;
-	protected final ExecutorService executor;
+	protected final ExecutorProvider executorProvider;
 	protected final AgentFactoryScheduling schedulingFactory;
 	protected final AgentFactoryTransmission transmissionFactory;
 	protected final AgentFactoryEnactment enactmentFactory;
 	protected final AgentFactoryExtraction extractionFactory;
 	protected final GraphAccess graphAccess;
 
-	public AgentFactoryActivation(EnactmentState enactmentState, ExecutorService executor,
+	@Inject
+	public AgentFactoryActivation(EnactmentState enactmentState, ExecutorProvider executorProvider,
 			AgentFactoryScheduling schedulingFactory, AgentFactoryTransmission transmissionFactory,
 			AgentFactoryEnactment enactmentFactory, AgentFactoryExtraction extractionFactory, GraphAccess graphAccess) {
 		this.enactmentState = enactmentState;
-		this.executor = executor;
+		this.executorProvider = executorProvider;
 		this.schedulingFactory = schedulingFactory;
 		this.transmissionFactory = transmissionFactory;
 		this.enactmentFactory = enactmentFactory;
@@ -39,7 +41,7 @@ public class AgentFactoryActivation {
 	 * @return the agent monitoring the launchable queue.
 	 */
 	public AgentActivationScheduling createLaunchableQueueMonitor() {
-		return new AgentActivationScheduling(enactmentState, schedulingFactory, executor);
+		return new AgentActivationScheduling(enactmentState, schedulingFactory, executorProvider);
 	}
 
 	/**
@@ -48,8 +50,9 @@ public class AgentFactoryActivation {
 	 * @param rootEnactable the class starting and stopping the continuous agents
 	 * @return the agent monitoring the available data queue.
 	 */
-	public AgentActivationTransmission createAvalDataQueueMonitor(EnactableAgents rootEnactable) {
-		return new AgentActivationTransmission(enactmentState, transmissionFactory, graphAccess, executor, rootEnactable);
+	public AgentActivationTransmission createAvalDataQueueMonitor(EnactmentAgents rootEnactable) {
+		return new AgentActivationTransmission(enactmentState, transmissionFactory, graphAccess, executorProvider,
+				rootEnactable);
 	}
 
 	/**
@@ -58,7 +61,7 @@ public class AgentFactoryActivation {
 	 * @return the agent monitoring the scheduled queue.
 	 */
 	public AgentActivationEnactment createScheduledQueueMonitor() {
-		return new AgentActivationEnactment(enactmentState, executor, enactmentFactory);
+		return new AgentActivationEnactment(enactmentState, executorProvider, enactmentFactory);
 	}
 
 	/**
@@ -67,6 +70,6 @@ public class AgentFactoryActivation {
 	 * @return the agent monitoring the finished queue.
 	 */
 	public AgentActivationExtraction createFinishedQueueMonitor() {
-		return new AgentActivationExtraction(enactmentState, executor, graphAccess, extractionFactory);
+		return new AgentActivationExtraction(enactmentState, executorProvider, graphAccess, extractionFactory);
 	}
 }

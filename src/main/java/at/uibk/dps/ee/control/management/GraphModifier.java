@@ -8,11 +8,9 @@ import java.util.stream.Collectors;
 import com.google.inject.Inject;
 
 import at.uibk.dps.ee.core.ModelModificationListener;
-import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
-import at.uibk.dps.ee.enactables.local.dataflow.Aggregation;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
@@ -252,23 +250,7 @@ public class GraphModifier {
 		});
 
 		// adjust the input sets of the aggregation nodes
-		aggregationNodes.forEach(this::updateAggregationInputSet);
 		updateListeners();
-	}
-
-	/**
-	 * Updates the input set of the given aggregation Node.
-	 * 
-	 * @param aggregationNode the given aggregationNode
-	 */
-	protected void updateAggregationInputSet(final Task aggregationNode) {
-		final int elementNumber = graph.getInEdges(aggregationNode).size();
-		final Enactable enactable = PropertyServiceFunction.getEnactable(aggregationNode);
-		if (!(enactable instanceof Aggregation)) {
-			throw new IllegalStateException("Aggregation node not annotated with aggregation enactable.");
-		}
-		final Aggregation aggregation = (Aggregation) enactable;
-		aggregation.adjustInputSet(elementNumber);
 	}
 
 	/**

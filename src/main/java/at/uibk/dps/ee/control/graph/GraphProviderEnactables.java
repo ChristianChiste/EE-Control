@@ -1,5 +1,8 @@
 package at.uibk.dps.ee.control.graph;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
@@ -15,10 +18,12 @@ import net.sf.opendse.model.properties.TaskPropertyService;
  * @author Fedor Smirnov
  *
  */
+@Singleton
 public class GraphProviderEnactables implements EnactmentGraphProvider {
 
 	protected final EnactmentGraph graph;
 
+	@Inject
 	public GraphProviderEnactables(EnactmentGraphProvider graphProvider, EnactableFactory factory) {
 		EnactmentGraph graph = graphProvider.getEnactmentGraph();
 		createEnactables(graph, factory);
