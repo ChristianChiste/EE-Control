@@ -59,7 +59,6 @@ public class AgentTransmission implements Agent {
 		// check the annotation of all in edges
 		if (functionNodeInEdges.stream().allMatch(edge -> PropertyServiceDependency.isTransmissionDone(edge))) {
 			enactmentState.putLaunchableTask(functionNode);
-			functionNodeInEdges.forEach(edge -> PropertyServiceDependency.resetTransmissionAnnotation(edge));
 		}
 	}
 }

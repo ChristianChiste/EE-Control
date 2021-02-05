@@ -80,6 +80,8 @@ public class EnactableAgents extends EnactableRoot {
 		// get the input, annotate the root nodes, and add them to the
 		// availableDataQueue
 		graphAccess.getRootDataNodes().forEach(rootNode -> processRootNode(rootNode));
+		// the constant data is available from the start
+		graphAccess.getConstantDataNodes().forEach(constantData -> enactmentState.putAvailableData(constantData));
 	}
 
 	/**

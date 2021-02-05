@@ -9,10 +9,11 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
-import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
+import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
+import net.sf.opendse.model.properties.TaskPropertyService;
 
 /**
  * Implements a threat-safe run-time access to the enactment graph based on a
@@ -27,7 +28,7 @@ public class GraphAccessConcurrent implements GraphAccess {
 	protected final Lock readLock;
 	protected final Lock writeLock;
 
-	public GraphAccessConcurrent(EnactmentGraphProvider graphProvider) {
+	public GraphAccessConcurrent(GraphProviderEnactables graphProvider) {
 		this.graph = graphProvider.getEnactmentGraph();
 		this.readWriteLock = new ReentrantReadWriteLock();
 		this.readLock = readWriteLock.readLock();
@@ -62,7 +63,7 @@ public class GraphAccessConcurrent implements GraphAccess {
 			writeLock.lock();
 			Set<Dependency> inEdges = new HashSet<>(graph.getInEdges(node));
 			writeOperation.accept(inEdges, node);
-		}finally {
+		} finally {
 			writeLock.unlock();
 		}
 
@@ -98,4 +99,15 @@ public class GraphAccessConcurrent implements GraphAccess {
 		}
 	}
 
+	@Override
+	public Set<Task> getConstantDataNodes() {
+		try {
+			readLock.lock();
+			return graph.getVertices().stream().filter(task -> TaskPropertyService.isCommunication(task))
+					.filter(dataNode -> PropertyServiceData.getNodeType(dataNode).equals(NodeType.Constant))
+					.collect(Collectors.toSet());
+		} finally {
+			readLock.unlock();
+		}
+	}
 }

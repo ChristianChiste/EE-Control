@@ -71,5 +71,12 @@ public interface GraphAccess {
 	 * @return the leaf nodes of the graph (to be annotated with the WF result)
 	 */
 	Set<Task> getLeafDataNodes();
+	
+	/**
+	 * Returns the constant data nodes of the graph.
+	 * 
+	 * @return the set of the constant data nodes.
+	 */
+	Set<Task> getConstantDataNodes();
 
 }
