@@ -41,7 +41,7 @@ public class EnactmentStateTest {
 			} catch (InterruptedException e) {
 				fail();
 			}
-			state.putScheduledTask(task);
+			state.putLaunchableTask(task);
 			return true;
 		}
 	}
@@ -54,7 +54,7 @@ public class EnactmentStateTest {
 
 		@Override
 		public Task call() throws Exception {
-			return state.takeScheduledTask();
+			return state.takeLaunchableTask();
 		}
 	}
 
@@ -64,7 +64,7 @@ public class EnactmentStateTest {
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);
 		EnactmentState tested = new EnactmentState(providerMock);
-		assertTrue(tested.scheduledTasks.isEmpty());
+		assertTrue(tested.launchableTasks.isEmpty());
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Task task1 = new Task("task1");
 		Task task2 = new Task("task2");
@@ -104,7 +104,7 @@ public class EnactmentStateTest {
 		EnactmentGraphProvider providerMock = mock(EnactmentGraphProvider.class);
 		when(providerMock.getEnactmentGraph()).thenReturn(graph);
 		EnactmentState tested = new EnactmentState(providerMock);
-		assertTrue(tested.scheduledTasks.isEmpty());
+		assertTrue(tested.launchableTasks.isEmpty());
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Task task1 = new Task("task1");
 		Task task2 = new Task("task2");
@@ -125,9 +125,9 @@ public class EnactmentStateTest {
 		Instant end = Instant.now();
 		long time = Duration.between(start, end).toMillis();
 		assertTrue(time < 50);
-		assertTrue(tested.scheduledTasks.size() == 2);
-		assertTrue(tested.scheduledTasks.contains(task1));
-		assertTrue(tested.scheduledTasks.contains(task2));
+		assertTrue(tested.launchableTasks.size() == 2);
+		assertTrue(tested.launchableTasks.contains(task1));
+		assertTrue(tested.launchableTasks.contains(task2));
 	}
 
 }

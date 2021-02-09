@@ -4,8 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import at.uibk.dps.ee.control.management.EnactmentState;
-import at.uibk.dps.ee.control.scheduling.SchedulerProxy;
-import at.uibk.dps.ee.enactables.EESchedule;
+import at.uibk.dps.ee.enactables.schedule.ScheduleModel;
+import at.uibk.dps.ee.enactables.schedule.Scheduler;
+import at.uibk.dps.ee.enactables.schedule.ScheduleInterpreter;
 import net.sf.opendse.model.Task;
 
 /**
@@ -17,15 +18,18 @@ import net.sf.opendse.model.Task;
 @Singleton
 public class AgentFactoryScheduling {
 
-	protected final EESchedule schedule;
-	protected final SchedulerProxy scheduler;
+	protected final ScheduleModel schedule;
+	protected final Scheduler scheduler;
 	protected final EnactmentState enactmentState;
+	protected final ScheduleInterpreter scheduleInterpreter;
 
 	@Inject
-	public AgentFactoryScheduling(EESchedule schedule, SchedulerProxy scheduler, EnactmentState enactmentState) {
+	public AgentFactoryScheduling(ScheduleModel schedule, ScheduleInterpreter scheduleInterpreter,
+			Scheduler scheduler, EnactmentState enactmentState) {
 		this.schedule = schedule;
 		this.scheduler = scheduler;
 		this.enactmentState = enactmentState;
+		this.scheduleInterpreter = scheduleInterpreter;
 	}
 
 	/**
@@ -35,6 +39,6 @@ public class AgentFactoryScheduling {
 	 * @return a scheduling agent for the provided function node
 	 */
 	public AgentScheduling createSchedulingAgent(Task functionNode) {
-		return new AgentScheduling(schedule, scheduler, functionNode, enactmentState);
+		return new AgentScheduling(schedule, scheduler, functionNode, enactmentState, scheduleInterpreter);
 	}
 }

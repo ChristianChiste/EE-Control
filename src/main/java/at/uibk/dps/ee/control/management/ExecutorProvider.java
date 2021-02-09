@@ -11,7 +11,7 @@ import com.google.inject.ImplementedBy;
  * @author Fedor Smirnov
  *
  */
-@ImplementedBy(ExecutorProviderSingleThread.class)
+@ImplementedBy(ExecutorProviderCachedThreads.class)
 public interface ExecutorProvider {
 
 	/**

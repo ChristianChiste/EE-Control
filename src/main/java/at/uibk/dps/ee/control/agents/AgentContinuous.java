@@ -1,43 +1,44 @@
 package at.uibk.dps.ee.control.agents;
 
+import at.uibk.dps.ee.core.exception.StopException;
+import net.sf.opendse.model.Task;
+
 /**
- * A continuous agent is an agent with a continuous task which it pursuits
- * indefinitely unless actively stopped.
+ * A continuous agent is an agent with a continuous task which it pursuits indefinitely unless
+ * actively stopped.
  * 
  * @author Fedor Smirnov
  *
  */
 public abstract class AgentContinuous implements Agent {
 
-	protected boolean stopped = false;
+  protected boolean stopped = false;
 
-	/**
-	 * Stops the agent so that it terminates at the next possible point.
-	 */
-	public synchronized void stop() {
-		this.notifyAll();
-		stopped = true;
-	}
+  @Override
+  public Boolean call() throws Exception {
+    while (!stopped) {
+      Task task = getTaskFromBlockingQueue();
+      if (task instanceof PoisonPill) {
+        // stopping
+        stopped = true;
+        continue;
+      }else {
+        operationOnTask(task);
+      }
+    }
+    return true;
+  }
 
-	public synchronized boolean isStopped() {
-		return stopped;
-	}
+  /**
+   * The task of the continuous agent which is performed on the task retrieved from the blocking
+   * queue.
+   */
+  protected abstract void operationOnTask(Task task) throws StopException;
 
-	@Override
-	public Boolean call() throws Exception {
-		while (!stopped) {
-			synchronized (this) {
-				if (!isStopped()) {
-					repeatedTask();
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * The task of the continuous agent which (can contain periods of waiting and)
-	 * is repeated indefinitely, until the agent is actively stopped.
-	 */
-	protected abstract void repeatedTask();
+  /**
+   * Retrieves a task from a blocking queue.
+   * 
+   * @return a task from a blocking queue
+   */
+  protected abstract Task getTaskFromBlockingQueue();
 }

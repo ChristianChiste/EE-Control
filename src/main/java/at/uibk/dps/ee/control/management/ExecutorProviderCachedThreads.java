@@ -13,13 +13,13 @@ import com.google.inject.Singleton;
  *
  */
 @Singleton
-public class ExecutorProviderSingleThread implements ExecutorProvider {
+public class ExecutorProviderCachedThreads implements ExecutorProvider {
 
 	protected final ExecutorService executor;
 
 	@Inject
-	public ExecutorProviderSingleThread() {
-		this.executor = Executors.newSingleThreadExecutor();
+	public ExecutorProviderCachedThreads() {
+		this.executor = Executors.newCachedThreadPool();
 	}
 
 	@Override

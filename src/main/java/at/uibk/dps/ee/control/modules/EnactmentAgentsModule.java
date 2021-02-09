@@ -1,6 +1,7 @@
-package at.uibk.dps.ee.control.management;
+package at.uibk.dps.ee.control.modules;
 
 import at.uibk.dps.ee.control.command.Control;
+import at.uibk.dps.ee.control.management.EnactmentAgentsProvider;
 import at.uibk.dps.ee.core.EnactableProvider;
 import at.uibk.dps.ee.guice.modules.EeModule;
 
@@ -12,9 +13,9 @@ import at.uibk.dps.ee.guice.modules.EeModule;
  */
 public class EnactmentAgentsModule extends EeModule {
 
-	@Override
-	protected void config() {
-		bind(EnactableProvider.class).to(EnactmentAgentsProvider.class);
-		addEnactmentStateListener(Control.class);
-	}
+  @Override
+  protected void config() {
+    bind(EnactableProvider.class).to(EnactmentAgentsProvider.class);
+    addEnactmentStateListener(Control.class);
+  }
 }

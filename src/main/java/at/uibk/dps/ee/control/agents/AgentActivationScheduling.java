@@ -25,13 +25,17 @@ public class AgentActivationScheduling extends AgentContinuous {
 		this.executor = executorProvider.getExecutorService();
 	}
 
-	@Override
-	protected void repeatedTask() {
-		try {
-			Task launchableTask = enactmentState.takeLaunchableTask();
-			executor.submit(agentFactory.createSchedulingAgent(launchableTask));
-		} catch (InterruptedException e) {
-			throw new IllegalStateException("Scheduling Activation agent interrupted.", e);
-		}
-	}
+  @Override
+  protected void operationOnTask(Task schedulableTask) {
+    executor.submit(agentFactory.createSchedulingAgent(schedulableTask));
+  }
+
+  @Override
+  protected Task getTaskFromBlockingQueue() {
+    try {
+      return enactmentState.takeSchedulableTask();
+    } catch (InterruptedException e) {
+      throw new IllegalStateException("Scheduling Activation agent interrupted.", e);
+    }
+  }
 }
