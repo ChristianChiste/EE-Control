@@ -5,7 +5,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import net.sf.opendse.model.Element;
 import net.sf.opendse.model.Task;
 
 /**
@@ -28,6 +27,35 @@ public class EnactmentState {
     this.finishedTasks = new LinkedBlockingQueue<>();
     this.availableData = new LinkedBlockingQueue<>();
     this.schedulableTasks = new LinkedBlockingQueue<>();
+  }
+
+  protected void printStatus(boolean taking, LinkedBlockingQueue<Task> queue) {
+    String operation = taking ? "Taking from " : "Putting to ";
+    String queueName = "";
+    if (queue.equals(launchableTasks)) {
+      queueName = "launchable ";
+    }
+
+    if (queue.equals(schedulableTasks)) {
+      queueName = "schedulable ";
+    }
+
+    if (queue.equals(finishedTasks)) {
+      queueName = "finished ";
+    }
+
+    if (queue.equals(availableData)) {
+      queueName = "available ";
+    }
+
+
+    System.out.println("---------------------------");
+    System.out.println(operation + " queue: " + queueName);
+    System.out.println("Launchable " + launchableTasks.size());
+    System.out.println("Schedulable " + schedulableTasks.size());
+    System.out.println("Finished " + finishedTasks.size());
+    System.out.println("AvailableData " + availableData.size());
+    System.out.println("---------------------------");
   }
 
   /**
@@ -118,8 +146,7 @@ public class EnactmentState {
    * @return an element from the blocking queue
    * @throws InterruptedException
    */
-  protected <E extends Element> E takeFromQueue(LinkedBlockingQueue<E> queue)
-      throws InterruptedException {
+  protected Task takeFromQueue(LinkedBlockingQueue<Task> queue) throws InterruptedException {
     return queue.take();
   }
 
@@ -131,7 +158,7 @@ public class EnactmentState {
    * @param queue the queue to put the element in
    * @param element the element to put into the queue
    */
-  protected <E extends Element> void putInQueue(LinkedBlockingQueue<E> queue, E element) {
+  protected void putInQueue(LinkedBlockingQueue<Task> queue, Task element) {
     try {
       queue.put(element);
     } catch (InterruptedException e) {

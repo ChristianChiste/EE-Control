@@ -22,7 +22,7 @@ public class AgentFactoryExtraction {
     this.enactmentState = enactmentState;
   }
 
-  public AgentExtraction createAgentTransmission(EdgeTupleAppl edgeTuple,
+  public AgentExtraction createAgentExtraction(EdgeTupleAppl edgeTuple,
       Set<AgentTaskListener> listeners) {
     return new AgentExtraction(edgeTuple.getSrc(), edgeTuple.getEdge(), edgeTuple.getDst(),
         enactmentState, listeners);

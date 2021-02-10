@@ -35,8 +35,12 @@ public class AgentActivationExtraction extends AgentContinuous implements AgentT
   @Override
   protected void operationOnTask(Task finishedTask) {
     // finds all of its out edges and start an extraction agent for each of them
-    graphAccess.getOutEdges(finishedTask).forEach(edgeTuple -> executor
-        .submit(agentFactory.createAgentTransmission(edgeTuple, getAgentTaskListeners())));
+    try {
+      graphAccess.getOutEdges(finishedTask).forEach(tuple -> executor
+          .submit(agentFactory.createAgentExtraction(tuple, getAgentTaskListeners())));
+    } catch (Exception exc) {
+      exc.printStackTrace();
+    }
   }
 
   @Override
@@ -50,7 +54,7 @@ public class AgentActivationExtraction extends AgentContinuous implements AgentT
 
   @Override
   public Set<AgentTaskListener> getAgentTaskListeners() {
-    return getAgentTaskListeners();
+    return listeners;
   }
 
   @Override

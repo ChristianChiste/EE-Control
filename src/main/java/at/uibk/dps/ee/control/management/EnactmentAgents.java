@@ -64,6 +64,7 @@ public class EnactmentAgents implements EnactmentFunction, AgentTaskListener {
     executor.submit(finishedQueueMonitor);
     executor.submit(availableDataQueueMonitor);
     executor.submit(launchableQueueMonitor);
+    
     synchronized (this) {
       try {
         wait();

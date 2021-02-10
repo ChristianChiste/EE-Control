@@ -40,22 +40,16 @@ public class AgentScheduling extends AgentTask {
 
   @Override
   public boolean actualCall() throws Exception {
-    System.out.println("start scheduling");
     if (!schedule.isScheduled(functionNode)) {
       Set<Mapping<Task, Resource>> taskSchedule = scheduler.scheduleTask(functionNode);
       schedule.setTaskSchedule(functionNode, taskSchedule);
-      System.out.println("schedule task set");
       Enactable taskEnactable = PropertyServiceFunction.getEnactable(functionNode);
-      System.out.println("enactable read");
       EnactmentFunction enactmentFunction =
           interpreter.interpretSchedule(functionNode, taskSchedule);
-      System.out.println("enactment function retrieved");
       taskEnactable.schedule(enactmentFunction);
-      System.out.println("schedule annotated");
     } else {
       throw new IllegalStateException("Somehow, the task is already scheduled.");
     }
-    System.out.println("scheduling done");
     enactmentState.putLaunchableTask(functionNode);
     return true;
   }

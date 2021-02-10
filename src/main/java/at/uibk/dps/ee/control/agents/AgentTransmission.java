@@ -45,7 +45,9 @@ public class AgentTransmission extends AgentTask {
     JsonElement content = PropertyServiceData.getContent(dataNode);
     String key = PropertyServiceDependency.getJsonKey(edge);
     Enactable enactable = PropertyServiceFunction.getEnactable(functionNode);
-    enactable.setInputValue(key, content);
+    synchronized (enactable) {
+      enactable.setInputValue(key, content);
+    }
     // annotate the edges
     graphAccess.writeOperationNodeInEdges(this::transmitData, functionNode);
     return true;
@@ -60,8 +62,8 @@ public class AgentTransmission extends AgentTask {
     // check the annotation of all in edges
     if (functionNodeInEdges.stream()
         .allMatch(edge -> PropertyServiceDependency.isTransmissionDone(edge))) {
-      enactmentState.putSchedulableTask(functionNode);
       PropertyServiceFunction.getEnactable(functionNode).setState(State.SCHEDULABLE);
+      enactmentState.putSchedulableTask(functionNode);
     }
   }
 

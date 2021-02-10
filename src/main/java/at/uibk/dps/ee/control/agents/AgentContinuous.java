@@ -22,7 +22,7 @@ public abstract class AgentContinuous implements Agent {
         // stopping
         stopped = true;
         continue;
-      }else {
+      } else {
         operationOnTask(task);
       }
     }

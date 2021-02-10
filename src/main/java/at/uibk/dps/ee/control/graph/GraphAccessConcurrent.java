@@ -45,6 +45,9 @@ public class GraphAccessConcurrent implements GraphAccess {
       readLock.lock();
       return graph.getOutEdges(node).stream().map(edge -> getEdgeTupleForEdge(edge))
           .collect(Collectors.toSet());
+    } catch (Exception exc) {
+      exc.printStackTrace();
+      return null;
     } finally {
       readLock.unlock();
     }
