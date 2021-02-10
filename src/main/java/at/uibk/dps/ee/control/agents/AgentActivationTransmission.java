@@ -16,12 +16,13 @@ import net.sf.opendse.model.Task;
  * 
  * @author Fedor Smirnov
  */
-public class AgentActivationTransmission extends AgentContinuous {
+public class AgentActivationTransmission extends AgentContinuous implements AgentTaskCreator {
 
   protected final EnactmentState enactmentState;
   protected final AgentFactoryTransmission agentFactory;
   protected final GraphAccess graphAccess;
   protected final ExecutorService executor;
+  protected final Set<AgentTaskListener> listeners = new HashSet<>();
 
   protected final Set<Task> leafNodes;
   protected final Set<Task> availableWfResults = new HashSet<>();
@@ -46,8 +47,8 @@ public class AgentActivationTransmission extends AgentContinuous {
         rootEnactable.finishWfExecution();
       }
     } else {
-      graphAccess.getOutEdges(availableData)
-          .forEach(edgeTuple -> executor.submit(agentFactory.createTransmissionAgent(edgeTuple)));
+      graphAccess.getOutEdges(availableData).forEach(edgeTuple -> executor
+          .submit(agentFactory.createTransmissionAgent(edgeTuple, getAgentTaskListeners())));
     }
   }
 
@@ -58,5 +59,15 @@ public class AgentActivationTransmission extends AgentContinuous {
     } catch (InterruptedException e) {
       throw new IllegalStateException("Transmission Activation agent interrupted.", e);
     }
+  }
+
+  @Override
+  public Set<AgentTaskListener> getAgentTaskListeners() {
+    return listeners;
+  }
+
+  @Override
+  public void addAgentTaskListener(AgentTaskListener listener) {
+    listeners.add(listener);
   }
 }

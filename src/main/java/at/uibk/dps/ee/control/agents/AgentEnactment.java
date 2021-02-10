@@ -1,37 +1,39 @@
 package at.uibk.dps.ee.control.agents;
 
+import java.util.Set;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.core.enactable.Enactable;
-import at.uibk.dps.ee.core.exception.StopException;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link AgentEnactment} is responsible for the execution of a single
- * enactable.
+ * The {@link AgentEnactment} is responsible for the execution of a single enactable.
  * 
  * @author Fedor Smirnov
  *
  */
-public class AgentEnactment implements Agent {
+public class AgentEnactment extends AgentTask {
 
-	protected final EnactmentState enactmentState;
-	protected final Task functionTask;
+  protected final EnactmentState enactmentState;
+  protected final Task taskNode;
 
-	public AgentEnactment(EnactmentState enactmentState, Task functionTask) {
-		this.enactmentState = enactmentState;
-		this.functionTask = functionTask;
-	}
+  public AgentEnactment(EnactmentState enactmentState, Task taskNode,
+      Set<AgentTaskListener> listeners) {
+    super(listeners);
+    this.enactmentState = enactmentState;
+    this.taskNode = taskNode;
+  }
 
-	@Override
-	public Boolean call() {
-		Enactable enactable = PropertyServiceFunction.getEnactable(functionTask);
-		try {
-			enactable.play();
-		} catch (StopException e) {
-			throw new IllegalStateException("Exception while executing the enactable.", e);
-		}
-		enactmentState.putFinishedTask(functionTask);
-		return true;
-	}
+  @Override
+  public boolean actualCall() throws Exception {
+    Enactable enactable = PropertyServiceFunction.getEnactable(taskNode);
+    enactable.play();
+    enactmentState.putFinishedTask(taskNode);
+    return true;
+  }
+
+  @Override
+  protected String formulateExceptionMessage() {
+    return "Problem while enacting the function task " + taskNode.getId();
+  }
 }

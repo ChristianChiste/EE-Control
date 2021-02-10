@@ -12,6 +12,7 @@ import at.uibk.dps.ee.control.agents.AgentActivationExtraction;
 import at.uibk.dps.ee.control.agents.AgentActivationScheduling;
 import at.uibk.dps.ee.control.agents.AgentActivationTransmission;
 import at.uibk.dps.ee.control.agents.AgentFactoryActivation;
+import at.uibk.dps.ee.control.agents.AgentTaskListener;
 import at.uibk.dps.ee.control.agents.PoisonPill;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.core.enactable.EnactmentFunction;
@@ -24,7 +25,7 @@ import net.sf.opendse.model.Task;
  * 
  * @author Fedor Smirnov
  */
-public class EnactmentAgents implements EnactmentFunction {
+public class EnactmentAgents implements EnactmentFunction, AgentTaskListener {
 
   protected final AgentActivationEnactment scheduledQueueMonitor;
   protected final AgentActivationExtraction finishedQueueMonitor;
@@ -35,13 +36,21 @@ public class EnactmentAgents implements EnactmentFunction {
   protected final EnactmentState enactmentState;
   protected final ExecutorService executor;
 
+  protected boolean isEmergency = false;
+  protected Optional<Exception> emergencyCause = Optional.empty();
+  protected String emergencyInformation = "";
+
   @Inject
   protected EnactmentAgents(AgentFactoryActivation agentFactory, GraphAccess graphAccess,
       EnactmentState enactmentState, ExecutorProvider executorProvider) {
     this.scheduledQueueMonitor = agentFactory.createScheduledQueueMonitor();
+    scheduledQueueMonitor.addAgentTaskListener(this);
     this.finishedQueueMonitor = agentFactory.createFinishedQueueMonitor();
+    finishedQueueMonitor.addAgentTaskListener(this);
     this.availableDataQueueMonitor = agentFactory.createAvalDataQueueMonitor(this);
+    availableDataQueueMonitor.addAgentTaskListener(this);
     this.launchableQueueMonitor = agentFactory.createLaunchableQueueMonitor();
+    launchableQueueMonitor.addAgentTaskListener(this);
     this.graphAccess = graphAccess;
     this.enactmentState = enactmentState;
     this.executor = executorProvider.getExecutorService();
@@ -62,8 +71,17 @@ public class EnactmentAgents implements EnactmentFunction {
         throw new IllegalArgumentException("Root enactable interrupted.", e);
       }
     }
+    if (isEmergency) {
+      reactToEmergency();
+    }
     stopMonitors();
     return extractWfResult();
+  }
+
+  protected void reactToEmergency() {
+    String message = emergencyInformation + "\n";
+    message += emergencyCause.get().getMessage();
+    throw new RuntimeException("Emergency Exit:\n" + message, emergencyCause.get());
   }
 
   /**
@@ -138,4 +156,13 @@ public class EnactmentAgents implements EnactmentFunction {
     result.add(jsonKey, PropertyServiceData.getContent(leafNode));
   }
 
+  @Override
+  public void reactToException(Exception exc, String info) {
+    synchronized (this) {
+      isEmergency = true;
+      emergencyCause = Optional.of(exc);
+      emergencyInformation = info;
+      notifyAll();
+    }
+  }
 }

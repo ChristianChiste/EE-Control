@@ -1,5 +1,7 @@
 package at.uibk.dps.ee.control.agents;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
@@ -14,12 +16,13 @@ import net.sf.opendse.model.Task;
  * @author Fedor Smirnov
  *
  */
-public class AgentActivationExtraction extends AgentContinuous {
+public class AgentActivationExtraction extends AgentContinuous implements AgentTaskCreator {
 
   protected final EnactmentState enactmentState;
   protected final ExecutorService executor;
   protected final GraphAccess graphAccess;
   protected final AgentFactoryExtraction agentFactory;
+  protected final Set<AgentTaskListener> listeners = new HashSet<>();
 
   public AgentActivationExtraction(EnactmentState enactmentState, ExecutorProvider executorProvider,
       GraphAccess graphAccess, AgentFactoryExtraction agentFactory) {
@@ -32,8 +35,8 @@ public class AgentActivationExtraction extends AgentContinuous {
   @Override
   protected void operationOnTask(Task finishedTask) {
     // finds all of its out edges and start an extraction agent for each of them
-    graphAccess.getOutEdges(finishedTask)
-        .forEach(edgeTuple -> executor.submit(agentFactory.createAgentTransmission(edgeTuple)));
+    graphAccess.getOutEdges(finishedTask).forEach(edgeTuple -> executor
+        .submit(agentFactory.createAgentTransmission(edgeTuple, getAgentTaskListeners())));
   }
 
   @Override
@@ -43,5 +46,15 @@ public class AgentActivationExtraction extends AgentContinuous {
     } catch (InterruptedException e) {
       throw new IllegalStateException("Extraction activation agent interrupted.", e);
     }
+  }
+
+  @Override
+  public Set<AgentTaskListener> getAgentTaskListeners() {
+    return getAgentTaskListeners();
+  }
+
+  @Override
+  public void addAgentTaskListener(AgentTaskListener listener) {
+    listeners.add(listener);
   }
 }

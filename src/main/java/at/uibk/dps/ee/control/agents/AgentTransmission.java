@@ -21,7 +21,7 @@ import net.sf.opendse.model.Task;
  * 
  * @author Fedor Smirnov
  */
-public class AgentTransmission implements Agent {
+public class AgentTransmission extends AgentTask {
 
   protected final EnactmentState enactmentState;
   protected final Task dataNode;
@@ -30,7 +30,8 @@ public class AgentTransmission implements Agent {
   protected final GraphAccess graphAccess;
 
   public AgentTransmission(EnactmentState enactmentState, Task dataNode, Dependency edge,
-      Task functionNode, GraphAccess graphAccess) {
+      Task functionNode, GraphAccess graphAccess, Set<AgentTaskListener> listeners) {
+    super(listeners);
     this.enactmentState = enactmentState;
     this.dataNode = dataNode;
     this.edge = edge;
@@ -39,7 +40,7 @@ public class AgentTransmission implements Agent {
   }
 
   @Override
-  public Boolean call() throws Exception {
+  public boolean actualCall() throws Exception {
     // set the enactable data
     JsonElement content = PropertyServiceData.getContent(dataNode);
     String key = PropertyServiceDependency.getJsonKey(edge);
@@ -62,5 +63,11 @@ public class AgentTransmission implements Agent {
       enactmentState.putSchedulableTask(functionNode);
       PropertyServiceFunction.getEnactable(functionNode).setState(State.SCHEDULABLE);
     }
+  }
+
+  @Override
+  protected String formulateExceptionMessage() {
+    return "Exception during the transmission of data from the node " + dataNode.getId()
+        + " to the function node " + functionNode.getId();
   }
 }

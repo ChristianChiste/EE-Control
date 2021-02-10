@@ -1,5 +1,6 @@
 package at.uibk.dps.ee.control.agents;
 
+import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -14,14 +15,16 @@ import at.uibk.dps.ee.control.management.EnactmentState;
 @Singleton
 public class AgentFactoryExtraction {
 
-	protected final EnactmentState enactmentState;
+  protected final EnactmentState enactmentState;
 
-	@Inject
-	public AgentFactoryExtraction(EnactmentState enactmentState) {
-		this.enactmentState = enactmentState;
-	}
+  @Inject
+  public AgentFactoryExtraction(EnactmentState enactmentState) {
+    this.enactmentState = enactmentState;
+  }
 
-	public AgentExtraction createAgentTransmission(EdgeTupleAppl edgeTuple) {
-		return new AgentExtraction(edgeTuple.getSrc(), edgeTuple.getEdge(), edgeTuple.getDst(), enactmentState);
-	}
+  public AgentExtraction createAgentTransmission(EdgeTupleAppl edgeTuple,
+      Set<AgentTaskListener> listeners) {
+    return new AgentExtraction(edgeTuple.getSrc(), edgeTuple.getEdge(), edgeTuple.getDst(),
+        enactmentState, listeners);
+  }
 }

@@ -1,5 +1,6 @@
 package at.uibk.dps.ee.control.agents;
 
+import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -10,35 +11,37 @@ import at.uibk.dps.ee.enactables.schedule.ScheduleInterpreter;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link AgentFactoryScheduling} creates the agents used for the scheduling
- * of launchable tasks.
+ * The {@link AgentFactoryScheduling} creates the agents used for the scheduling of launchable
+ * tasks.
  * 
  * @author Fedor Smirnov
  */
 @Singleton
 public class AgentFactoryScheduling {
 
-	protected final ScheduleModel schedule;
-	protected final Scheduler scheduler;
-	protected final EnactmentState enactmentState;
-	protected final ScheduleInterpreter scheduleInterpreter;
+  protected final ScheduleModel schedule;
+  protected final Scheduler scheduler;
+  protected final EnactmentState enactmentState;
+  protected final ScheduleInterpreter scheduleInterpreter;
 
-	@Inject
-	public AgentFactoryScheduling(ScheduleModel schedule, ScheduleInterpreter scheduleInterpreter,
-			Scheduler scheduler, EnactmentState enactmentState) {
-		this.schedule = schedule;
-		this.scheduler = scheduler;
-		this.enactmentState = enactmentState;
-		this.scheduleInterpreter = scheduleInterpreter;
-	}
+  @Inject
+  public AgentFactoryScheduling(ScheduleModel schedule, ScheduleInterpreter scheduleInterpreter,
+      Scheduler scheduler, EnactmentState enactmentState) {
+    this.schedule = schedule;
+    this.scheduler = scheduler;
+    this.enactmentState = enactmentState;
+    this.scheduleInterpreter = scheduleInterpreter;
+  }
 
-	/**
-	 * Returns a scheduling agent for the provided function node.
-	 * 
-	 * @param functionNode the provided function node
-	 * @return a scheduling agent for the provided function node
-	 */
-	public AgentScheduling createSchedulingAgent(Task functionNode) {
-		return new AgentScheduling(schedule, scheduler, functionNode, enactmentState, scheduleInterpreter);
-	}
+  /**
+   * Returns a scheduling agent for the provided function node.
+   * 
+   * @param functionNode the provided function node
+   * @return a scheduling agent for the provided function node
+   */
+  public AgentScheduling createSchedulingAgent(Task functionNode,
+      Set<AgentTaskListener> listeners) {
+    return new AgentScheduling(schedule, scheduler, functionNode, enactmentState,
+        scheduleInterpreter, listeners);
+  }
 }
