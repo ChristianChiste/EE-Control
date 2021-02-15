@@ -9,8 +9,8 @@ import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
 /**
- * The ActivationEnactment is responsible for the activation of the {@link AgentEnactment}s to
- * process the tasks in the ready queue.
+ * The ActivationEnactment is responsible for the activation of the
+ * {@link AgentEnactment}s to process the tasks in the ready queue.
  * 
  * @author Fedor Smirnov
  */
@@ -31,7 +31,7 @@ public class AgentActivationEnactment extends AgentContinuous implements AgentTa
   @Override
   protected void operationOnTask(Task launchableTask) {
     AgentEnactment enacterAgent =
-        agentFactory.createAgentEnactment(launchableTask, getAgentTaskListeners());
+        agentFactory.createEnactmentAgent(launchableTask, getAgentTaskListeners());
     executor.submit(enacterAgent);
   }
 

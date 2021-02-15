@@ -5,17 +5,17 @@ import java.util.Set;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.EnactmentFunction;
-import at.uibk.dps.ee.enactables.schedule.ScheduleModel;
-import at.uibk.dps.ee.enactables.schedule.Scheduler;
-import at.uibk.dps.ee.enactables.schedule.ScheduleInterpreter;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
+import at.uibk.dps.sc.core.ScheduleModel;
+import at.uibk.dps.sc.core.interpreter.ScheduleInterpreter;
+import at.uibk.dps.sc.core.scheduler.Scheduler;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link AgentScheduling} is used to check whether a launchable task has already been scheduled
- * and to schedule it, if it is not yet scheduled.
+ * The {@link AgentScheduling} is used to check whether a launchable task has
+ * already been scheduled and to schedule it, if it is not yet scheduled.
  * 
  * @author Fedor Smirnov
  */
@@ -56,6 +56,6 @@ public class AgentScheduling extends AgentTask {
 
   @Override
   protected String formulateExceptionMessage() {
-    return "Exception when scheduling the function node " + functionNode.getId();
+    return ConstantsAgents.ExcMessageScheduling + functionNode.getId();
   }
 }

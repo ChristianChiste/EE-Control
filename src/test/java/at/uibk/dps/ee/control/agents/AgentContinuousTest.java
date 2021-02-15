@@ -1,93 +1,75 @@
 package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
+import java.util.concurrent.LinkedBlockingQueue;
 import org.junit.Test;
+import at.uibk.dps.ee.core.exception.StopException;
+import net.sf.opendse.model.Task;
 
 public class AgentContinuousTest {
 
-	protected class TestAgentContinuous extends AgentContinuous{
-		protected int count = 0;
-		protected boolean waiting = false;
-		protected boolean isSleeping = false;
-		
-		@Override
-		protected void repeatedTask() {
-			if (++count == 1000 && waiting) {
-				try {
-					isSleeping = true;
-					this.wait();
-				} catch (InterruptedException e) {
-					fail();
-				}
-			}
-		}
-	}
+  protected static class ContinuousMock extends AgentContinuous {
 
-	@Test
-	public void testWaiting() {
-		TestAgentContinuous tested = new TestAgentContinuous();
-		tested.waiting = true;
-		ExecutorService execService = Executors.newCachedThreadPool();
-		Future<Boolean> future = execService.submit(tested);
-		
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			fail();
-		}
-		int curCount = tested.count;
-		assertEquals(1000, curCount);
-		assertFalse(tested.isStopped());
-		assertTrue(tested.isSleeping);
-		tested.stop();
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			fail();
-		}
-		int curCount2 = tested.count;
-		assertEquals(1000, curCount2);
-		assertTrue(tested.isStopped());
-		assertTrue(future.isDone());
-	}
-	
-	@Test
-	public void testNoWaiting() {
-		TestAgentContinuous tested = new TestAgentContinuous();
-		ExecutorService execService = Executors.newCachedThreadPool();
-		Future<Boolean> future = execService.submit(tested);
-		
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			fail();
-		}
-		int curCount = tested.count;
-		assertTrue(curCount > 0);
-		assertFalse(tested.isStopped());
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			fail();
-		}
-		assertFalse(future.isDone());
-		tested.stop();
-		int curCount2 = tested.count;
-		assertTrue(curCount2 > curCount);
-		assertTrue(tested.isStopped());		
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			fail();
-		}
-		int curCount3 = tested.count;
-		assertEquals(curCount2, curCount3);
-		assertTrue(future.isDone());
-	}
+    protected final LinkedBlockingQueue<Task> queue = new LinkedBlockingQueue<>();
+    protected int processedTasks = 0;
 
+    @Override
+    protected void operationOnTask(Task task) throws StopException {
+      try {
+        Thread.sleep(250);
+      } catch (InterruptedException e) {
+        fail();
+      }
+      processedTasks++;
+    }
+
+    protected void putTask(Task task) {
+      try {
+        queue.put(task);
+      } catch (InterruptedException e) {
+        fail();
+      }
+    }
+
+    @Override
+    protected Task getTaskFromBlockingQueue() {
+      try {
+        return queue.take();
+      } catch (InterruptedException e) {
+        fail();
+        return null;
+      }
+    }
+  }
+
+  @Test
+  public void test() {
+    ExecutorService executor = Executors.newCachedThreadPool();
+    ContinuousMock mock = new ContinuousMock();
+    Future<Boolean> future = executor.submit(mock);
+    assertFalse(future.isDone());
+    Task task = new Task("task");
+    Task task2 = new Task("task2");
+    mock.putTask(task);
+    mock.putTask(task2);
+    assertFalse(future.isDone());
+    assertTrue(mock.processedTasks < 2);
+    try {
+      Thread.sleep(600);
+    } catch (InterruptedException e) {
+      fail();
+    }
+    assertFalse(future.isDone());
+    assertEquals(2, mock.processedTasks);
+    mock.putTask(new PoisonPill());
+    try {
+      Thread.sleep(50);
+    } catch (InterruptedException e) {
+      fail();
+    }
+    assertTrue(future.isDone());
+  }
 }

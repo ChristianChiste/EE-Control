@@ -7,7 +7,8 @@ import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link AgentEnactment} is responsible for the execution of a single enactable.
+ * The {@link AgentEnactment} is responsible for the execution of a single
+ * enactable.
  * 
  * @author Fedor Smirnov
  *
@@ -25,7 +26,7 @@ public class AgentEnactment extends AgentTask {
   }
 
   @Override
-  public boolean actualCall() throws Exception {
+  protected boolean actualCall() throws Exception {
     Enactable enactable = PropertyServiceFunction.getEnactable(taskNode);
     enactable.play();
     enactmentState.putFinishedTask(taskNode);
@@ -34,6 +35,6 @@ public class AgentEnactment extends AgentTask {
 
   @Override
   protected String formulateExceptionMessage() {
-    return "Problem while enacting the function task " + taskNode.getId();
+    return ConstantsAgents.ExcMessageEnactment + taskNode.getId();
   }
 }

@@ -29,7 +29,7 @@ public class AgentFactoryEnactment {
    * @param listeners the agent task listeners
    * @return an agent for the enactment of the given function task
    */
-  public AgentEnactment createAgentEnactment(Task task, Set<AgentTaskListener> listeners) {
+  public AgentEnactment createEnactmentAgent(Task task, Set<AgentTaskListener> listeners) {
     return new AgentEnactment(enactmentState, task, listeners);
   }
 }

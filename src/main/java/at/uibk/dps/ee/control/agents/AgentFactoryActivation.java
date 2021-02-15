@@ -40,7 +40,7 @@ public class AgentFactoryActivation {
 	 * 
 	 * @return the agent monitoring the launchable queue.
 	 */
-	public AgentActivationScheduling createLaunchableQueueMonitor() {
+	public AgentActivationScheduling createSchedulingActivationAgent() {
 		return new AgentActivationScheduling(enactmentState, schedulingFactory, executorProvider);
 	}
 
@@ -50,7 +50,7 @@ public class AgentFactoryActivation {
 	 * @param rootEnactable the class starting and stopping the continuous agents
 	 * @return the agent monitoring the available data queue.
 	 */
-	public AgentActivationTransmission createAvalDataQueueMonitor(EnactmentAgents rootEnactable) {
+	public AgentActivationTransmission createTransmissionActivationAgent(EnactmentAgents rootEnactable) {
 		return new AgentActivationTransmission(enactmentState, transmissionFactory, graphAccess, executorProvider,
 				rootEnactable);
 	}
@@ -60,7 +60,7 @@ public class AgentFactoryActivation {
 	 * 
 	 * @return the agent monitoring the scheduled queue.
 	 */
-	public AgentActivationEnactment createScheduledQueueMonitor() {
+	public AgentActivationEnactment createEnactmentActivationAgent() {
 		return new AgentActivationEnactment(enactmentState, executorProvider, enactmentFactory);
 	}
 
@@ -69,7 +69,7 @@ public class AgentFactoryActivation {
 	 * 
 	 * @return the agent monitoring the finished queue.
 	 */
-	public AgentActivationExtraction createFinishedQueueMonitor() {
+	public AgentActivationExtraction createExtractionActivationAgent() {
 		return new AgentActivationExtraction(enactmentState, executorProvider, graphAccess, extractionFactory);
 	}
 }

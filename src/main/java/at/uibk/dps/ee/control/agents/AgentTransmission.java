@@ -69,7 +69,7 @@ public class AgentTransmission extends AgentTask {
 
   @Override
   protected String formulateExceptionMessage() {
-    return "Exception during the transmission of data from the node " + dataNode.getId()
-        + " to the function node " + functionNode.getId();
+    return ConstantsAgents.ExcMessageTransmissionPrefix + dataNode.getId()
+        + ConstantsAgents.ExcMessageTransmissionSuffix + functionNode.getId();
   }
 }

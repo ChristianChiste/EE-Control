@@ -43,13 +43,13 @@ public class EnactmentAgents implements EnactmentFunction, AgentTaskListener {
   @Inject
   protected EnactmentAgents(AgentFactoryActivation agentFactory, GraphAccess graphAccess,
       EnactmentState enactmentState, ExecutorProvider executorProvider) {
-    this.scheduledQueueMonitor = agentFactory.createScheduledQueueMonitor();
+    this.scheduledQueueMonitor = agentFactory.createEnactmentActivationAgent();
     scheduledQueueMonitor.addAgentTaskListener(this);
-    this.finishedQueueMonitor = agentFactory.createFinishedQueueMonitor();
+    this.finishedQueueMonitor = agentFactory.createExtractionActivationAgent();
     finishedQueueMonitor.addAgentTaskListener(this);
-    this.availableDataQueueMonitor = agentFactory.createAvalDataQueueMonitor(this);
+    this.availableDataQueueMonitor = agentFactory.createTransmissionActivationAgent(this);
     availableDataQueueMonitor.addAgentTaskListener(this);
-    this.launchableQueueMonitor = agentFactory.createLaunchableQueueMonitor();
+    this.launchableQueueMonitor = agentFactory.createSchedulingActivationAgent();
     launchableQueueMonitor.addAgentTaskListener(this);
     this.graphAccess = graphAccess;
     this.enactmentState = enactmentState;

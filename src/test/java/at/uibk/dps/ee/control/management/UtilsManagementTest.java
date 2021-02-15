@@ -2,7 +2,6 @@ package at.uibk.dps.ee.control.management;
 
 import static org.junit.Assert.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
@@ -46,15 +45,10 @@ public class UtilsManagementTest {
 		PropertyServiceDependency.addDataDependency(task, output, key4, graph);
 		graph.addEdge(inEdge3, input3, task, EdgeType.DIRECTED);
 
-		Set<String> inputKeys = new HashSet<>();
-		inputKeys.add(key1);
-		inputKeys.add(key2);
-		inputKeys.add(key3);
-
 		EnactableFactory factoryMock = mock(EnactableFactory.class);
 		EnactableAtomic enactableMock = mock(EnactableAtomic.class);
 		when(enactableMock.getState()).thenReturn(State.STOPPED);
-		when(factoryMock.createEnactable(task, inputKeys)).thenReturn(enactableMock);
+		when(factoryMock.createEnactable(task)).thenReturn(enactableMock);
 
 		UtilsManagement.annotateTaskEnactables(graph, factoryMock);
 		assertEquals(enactableMock, PropertyServiceFunction.getEnactable(task));

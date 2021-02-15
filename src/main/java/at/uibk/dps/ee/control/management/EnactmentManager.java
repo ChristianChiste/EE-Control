@@ -6,17 +6,14 @@ import java.util.Set;
 import com.google.gson.JsonObject;
 
 import at.uibk.dps.ee.control.command.Control;
-import at.uibk.dps.ee.control.runnable.AtomicEnactment;
 import at.uibk.dps.ee.core.ControlStateListener;
 import at.uibk.dps.ee.core.EnactmentState;
 import at.uibk.dps.ee.core.enactable.Enactable;
-import at.uibk.dps.ee.core.enactable.EnactableRoot;
 import at.uibk.dps.ee.core.enactable.EnactableStateListener;
 import at.uibk.dps.ee.core.exception.StopException;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
-import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Task;
 
 /**
@@ -27,7 +24,7 @@ import net.sf.opendse.model.Task;
  * @author Fedor Smirnov
  *
  */
-public class EnactmentManager extends EnactableRoot implements ControlStateListener, EnactableStateListener {
+public class EnactmentManager extends Enactable implements ControlStateListener, EnactableStateListener {
 
 	protected final DataLogistics dataLogistics;
 
@@ -66,7 +63,6 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 		}
 	}
 
-	@Override
 	protected void myPlay() throws StopException {
 		while (!dataLogistics.isWfFinished()) {
 			if (!readyTasks.isEmpty() && !state.equals(State.PAUSED)) {
@@ -92,15 +88,15 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	 * @param scheduledTasks the tasks which are ready
 	 */
 	protected synchronized void enactReadyTasks() {
-		Set<Task> handled = new HashSet<>();
-		for (Task task : readyTasks) {
-			EnactableAtomic enactable = (EnactableAtomic) PropertyServiceFunction.getEnactable(task);
-			AtomicEnactment atomicEnactment = new AtomicEnactment(enactable, task);
-			Thread thread = new Thread(atomicEnactment);
-			thread.start();
-			handled.add(task);
-		}
-		readyTasks.removeAll(handled);
+//		Set<Task> handled = new HashSet<>();
+//		for (Task task : readyTasks) {
+//			EnactableAtomic enactable = (EnactableAtomic) PropertyServiceFunction.getEnactable(task);
+//			AtomicEnactment atomicEnactment = new AtomicEnactment(enactable, task);
+//			Thread thread = new Thread(atomicEnactment);
+//			thread.start();
+//			handled.add(task);
+//		}
+//		readyTasks.removeAll(handled);
 	}
 
 	@Override
@@ -112,13 +108,13 @@ public class EnactmentManager extends EnactableRoot implements ControlStateListe
 	@Override
 	protected void myInit() {
 		// annotates the data present at the start of the enactment
-		dataLogistics.initData(wfInput);
+		//dataLogistics.initData(wfInput);
 	}
 
 	@Override
 	public synchronized void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
 		if (enactable instanceof EnactableAtomic) {
-			if (previousState.equals(State.WAITING) && currentState.equals(State.READY)) {
+			if (previousState.equals(State.WAITING) && currentState.equals(State.SCHEDULABLE)) {
 				// Enactable is ready => add its task to the ready list
 				readyTasks.add(((EnactableAtomic) enactable).getFunctionNode());
 				this.notifyAll();

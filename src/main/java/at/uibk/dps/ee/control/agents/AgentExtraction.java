@@ -13,8 +13,8 @@ import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link AgentExtraction} is responsible for the annotation of the data task nodes with content
- * of finished tasks.
+ * The {@link AgentExtraction} is responsible for the annotation of the data
+ * task nodes with content of finished tasks.
  * 
  * @author Fedor Smirnov
  *
@@ -49,7 +49,7 @@ public class AgentExtraction extends AgentTask {
 
   @Override
   protected String formulateExceptionMessage() {
-    return "Exception when extracting the data from finished task " + finishedFunction.getId()
-        + " to store it in the data node " + dataNode.getId();
+    return ConstantsAgents.ExcMessageExtractionPrefix + finishedFunction.getId()
+        + ConstantsAgents.ExcMessageExtractionSuffix + dataNode.getId();
   }
 }
