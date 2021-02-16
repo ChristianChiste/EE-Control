@@ -8,11 +8,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import at.uibk.dps.ee.core.ModelModificationListener;
-import at.uibk.dps.ee.core.enactable.Enactable;
-import at.uibk.dps.ee.core.enactable.Enactable.State;
-import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
-import at.uibk.dps.ee.enactables.local.dataflow.Aggregation;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;

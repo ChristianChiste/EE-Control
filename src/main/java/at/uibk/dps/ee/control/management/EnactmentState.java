@@ -29,35 +29,6 @@ public class EnactmentState {
     this.schedulableTasks = new LinkedBlockingQueue<>();
   }
 
-  protected void printStatus(boolean taking, LinkedBlockingQueue<Task> queue) {
-    String operation = taking ? "Taking from " : "Putting to ";
-    String queueName = "";
-    if (queue.equals(launchableTasks)) {
-      queueName = "launchable ";
-    }
-
-    if (queue.equals(schedulableTasks)) {
-      queueName = "schedulable ";
-    }
-
-    if (queue.equals(finishedTasks)) {
-      queueName = "finished ";
-    }
-
-    if (queue.equals(availableData)) {
-      queueName = "available ";
-    }
-
-
-    System.out.println("---------------------------");
-    System.out.println(operation + " queue: " + queueName);
-    System.out.println("Launchable " + launchableTasks.size());
-    System.out.println("Schedulable " + schedulableTasks.size());
-    System.out.println("Finished " + finishedTasks.size());
-    System.out.println("AvailableData " + availableData.size());
-    System.out.println("---------------------------");
-  }
-
   /**
    * Returns a function task which is ready to be launched. Blocks if the queue of launchable tasks
    * is empty.

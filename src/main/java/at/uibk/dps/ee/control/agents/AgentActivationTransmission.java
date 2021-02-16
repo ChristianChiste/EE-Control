@@ -44,7 +44,7 @@ public class AgentActivationTransmission extends AgentContinuous implements Agen
     if (leafNodes.contains(availableData)) {
       availableWfResults.add(availableData);
       if (availableWfResults.containsAll(leafNodes)) {
-        rootEnactable.finishWfExecution();
+        rootEnactable.wakeUp();
       }
     } else {
       graphAccess.getOutEdges(availableData).forEach(edgeTuple -> executor

@@ -87,7 +87,7 @@ public class AgentActivationTransmissionTest {
     verify(mockExecutor).submit(mockAgent1);
     verify(mockExecutor).submit(mockAgent2);
     verify(mockExecutor).submit(mockAgent3);
-    verify(mockRoot).finishWfExecution();
+    verify(mockRoot).wakeUp();
   }
 
 }

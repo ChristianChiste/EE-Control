@@ -19,7 +19,8 @@ import net.sf.opendse.model.Task;
 import net.sf.opendse.model.properties.TaskPropertyService;
 
 /**
- * Implements a threat-safe run-time access to the enactment graph based on a ReadWriteLock.
+ * Implements a threat-safe run-time access to the enactment graph based on a
+ * ReadWriteLock.
  * 
  * @author Fedor Smirnov
  */
@@ -45,9 +46,6 @@ public class GraphAccessConcurrent implements GraphAccess {
       readLock.lock();
       return graph.getOutEdges(node).stream().map(edge -> getEdgeTupleForEdge(edge))
           .collect(Collectors.toSet());
-    } catch (Exception exc) {
-      exc.printStackTrace();
-      return null;
     } finally {
       readLock.unlock();
     }
@@ -102,7 +100,7 @@ public class GraphAccessConcurrent implements GraphAccess {
       Set<Task> result = graph.getVertices().stream()
           .filter(task -> graph.getOutEdges(task).size() == 0).collect(Collectors.toSet());
       if (result.stream().anyMatch(task -> !PropertyServiceData.isLeaf(task))) {
-        throw new IllegalStateException("Non-root nodes without in edges present.");
+        throw new IllegalStateException("Non-root nodes without out edges present.");
       }
       return result;
     } finally {
