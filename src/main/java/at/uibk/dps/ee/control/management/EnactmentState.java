@@ -8,8 +8,8 @@ import com.google.inject.Singleton;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link EnactmentState} captures the current state of the enactment and manages the access to
- * the enactment graph.
+ * The {@link EnactmentState} captures the current state of the enactment and
+ * manages the access to the enactment graph.
  * 
  * @author Fedor Smirnov
  */
@@ -20,6 +20,7 @@ public class EnactmentState {
   protected final LinkedBlockingQueue<Task> schedulableTasks;
   protected final LinkedBlockingQueue<Task> finishedTasks;
   protected final LinkedBlockingQueue<Task> availableData;
+  protected final LinkedBlockingQueue<Task> awaitingTransform;
 
   @Inject
   public EnactmentState() {
@@ -27,11 +28,33 @@ public class EnactmentState {
     this.finishedTasks = new LinkedBlockingQueue<>();
     this.availableData = new LinkedBlockingQueue<>();
     this.schedulableTasks = new LinkedBlockingQueue<>();
+    this.awaitingTransform = new LinkedBlockingQueue<>();
   }
 
   /**
-   * Returns a function task which is ready to be launched. Blocks if the queue of launchable tasks
-   * is empty.
+   * Returns a function task which requires a graph transformation. Blocks if the
+   * queue of transform tasks is empty.
+   * 
+   * @return a function task which is ready to be launched
+   * @throws InterruptedException
+   */
+  public Task takeTransformTask() throws InterruptedException {
+    return takeFromQueue(awaitingTransform);
+  }
+
+  /**
+   * Puts a function node into the queue of tasks which require a graph
+   * transformation.
+   * 
+   * @param functionTask the task which requires graph transformation
+   */
+  public void putTransformTask(Task functionTask) {
+    putInQueue(awaitingTransform, functionTask);
+  }
+
+  /**
+   * Returns a function task which is ready to be launched. Blocks if the queue of
+   * launchable tasks is empty.
    * 
    * @return a function task which is ready to be launched
    * @throws InterruptedException
@@ -50,7 +73,8 @@ public class EnactmentState {
   }
 
   /**
-   * Returns a data node with available data. This method blocks until data is available.
+   * Returns a data node with available data. This method blocks until data is
+   * available.
    * 
    * @return a data node with content.
    * @throws InterruptedException
@@ -79,8 +103,8 @@ public class EnactmentState {
   }
 
   /**
-   * Adds a finished task to the queue (Blocking should never happen here since we do not have a
-   * queue capacity limit).
+   * Adds a finished task to the queue (Blocking should never happen here since we
+   * do not have a queue capacity limit).
    * 
    * @param readyTask the finished task to be added to the queue.
    */
@@ -89,7 +113,8 @@ public class EnactmentState {
   }
 
   /**
-   * Returns a task node which is ready for execution or waits until the queue is non-empty.
+   * Returns a task node which is ready for execution or waits until the queue is
+   * non-empty.
    * 
    * @return a task node which is ready to be executed.
    * @throws InterruptedException
@@ -99,8 +124,8 @@ public class EnactmentState {
   }
 
   /**
-   * Adds a ready task to the queue (Blocking should never happen here since we do not have a queue
-   * capacity limit).
+   * Adds a ready task to the queue (Blocking should never happen here since we do
+   * not have a queue capacity limit).
    * 
    * @param readyTask the task to be added to the queue.
    */
@@ -109,8 +134,8 @@ public class EnactmentState {
   }
 
   /**
-   * Returns an element from the blocking queue. Can cause consumers to wait until content is
-   * available.
+   * Returns an element from the blocking queue. Can cause consumers to wait until
+   * content is available.
    * 
    * @param <E> task or dependency
    * @param queue the blocking queue
@@ -122,8 +147,8 @@ public class EnactmentState {
   }
 
   /**
-   * Puts an element into one of the blocking queues. Since none of them have a capacity limit,
-   * blocking should never happen.
+   * Puts an element into one of the blocking queues. Since none of them have a
+   * capacity limit, blocking should never happen.
    * 
    * @param <E> either task or dependency
    * @param queue the queue to put the element in

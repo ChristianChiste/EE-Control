@@ -73,7 +73,18 @@ public class GraphAccessConcurrent implements GraphAccess {
     } finally {
       writeLock.unlock();
     }
+  }
 
+  
+  @Override
+  public void writeOperationTask(BiConsumer<EnactmentGraph, Task> writeOperation, Task task) {
+    try {
+      writeLock.lock();
+      writeOperation.accept(graph, task);
+    }finally {
+      writeLock.unlock();
+    }
+    
   }
 
   @Override

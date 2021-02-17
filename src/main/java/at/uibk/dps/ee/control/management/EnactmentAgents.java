@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import at.uibk.dps.ee.control.agents.AgentActivationEnactment;
 import at.uibk.dps.ee.control.agents.AgentActivationExtraction;
 import at.uibk.dps.ee.control.agents.AgentActivationScheduling;
+import at.uibk.dps.ee.control.agents.AgentActivationTransform;
 import at.uibk.dps.ee.control.agents.AgentActivationTransmission;
 import at.uibk.dps.ee.control.agents.AgentFactoryActivation;
 import at.uibk.dps.ee.control.agents.PoisonPill;
@@ -25,6 +26,7 @@ public class EnactmentAgents implements EnactmentFunction {
   protected final AgentActivationExtraction activationExtraction;
   protected final AgentActivationTransmission activationTransmission;
   protected final AgentActivationScheduling activationScheduling;
+  protected final AgentActivationTransform activationTransform;
 
   protected final EnactmentState enactmentState;
   protected final DataHandler dataHandler;
@@ -45,10 +47,11 @@ public class EnactmentAgents implements EnactmentFunction {
     activationTransmission.addAgentTaskListener(emergencyManager);
     this.activationScheduling = agentFactory.createSchedulingActivationAgent();
     activationScheduling.addAgentTaskListener(emergencyManager);
+    this.activationTransform = agentFactory.createTransformActicationAgent();
+    activationTransform.addAgentTaskListener(emergencyManager);
     this.enactmentState = enactmentState;
     this.dataHandler = dataHandler;
     this.executor = executorProvider.getExecutorService();
-
   }
 
   @Override
@@ -59,6 +62,7 @@ public class EnactmentAgents implements EnactmentFunction {
     executor.submit(activationExtraction);
     executor.submit(activationTransmission);
     executor.submit(activationScheduling);
+    executor.submit(activationTransform);
     // go to sleep
     synchronized (this) {
       try {
@@ -96,5 +100,6 @@ public class EnactmentAgents implements EnactmentFunction {
     enactmentState.putFinishedTask(poisonPill);
     enactmentState.putLaunchableTask(poisonPill);
     enactmentState.putSchedulableTask(poisonPill);
+    enactmentState.putTransformTask(poisonPill);
   }
 }

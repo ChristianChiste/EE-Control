@@ -3,7 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
+import at.uibk.dps.ee.control.enactment.PostEnactmentQueueing;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import net.sf.opendse.model.Task;
 
@@ -30,6 +30,6 @@ public class AgentFactoryEnactment {
    * @return an agent for the enactment of the given function task
    */
   public AgentEnactment createEnactmentAgent(Task task, Set<AgentTaskListener> listeners) {
-    return new AgentEnactment(enactmentState, task, listeners);
+    return new AgentEnactment(task, new PostEnactmentQueueing(enactmentState), listeners);
   }
 }
