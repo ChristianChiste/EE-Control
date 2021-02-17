@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import at.uibk.dps.ee.control.agents.AgentActivationEnactment;
 import at.uibk.dps.ee.control.agents.AgentActivationExtraction;
 import at.uibk.dps.ee.control.agents.AgentActivationScheduling;
+import at.uibk.dps.ee.control.agents.AgentActivationTransform;
 import at.uibk.dps.ee.control.agents.AgentActivationTransmission;
 import at.uibk.dps.ee.control.agents.AgentFactoryActivation;
 import at.uibk.dps.ee.control.agents.PoisonPill;
@@ -52,10 +53,12 @@ public class EnactmentAgentsTest {
     AgentActivationExtraction extractionMock = mock(AgentActivationExtraction.class);
     AgentActivationTransmission transmissionMock = mock(AgentActivationTransmission.class);
     AgentActivationScheduling schedulingMock = mock(AgentActivationScheduling.class);
+    AgentActivationTransform transformMock = mock(AgentActivationTransform.class);
 
     when(factoryMock.createEnactmentActivationAgent()).thenReturn(enacterMock);
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
+    when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
         .thenReturn(transmissionMock);
 
@@ -76,10 +79,12 @@ public class EnactmentAgentsTest {
     AgentActivationExtraction extractionMock = mock(AgentActivationExtraction.class);
     AgentActivationTransmission transmissionMock = mock(AgentActivationTransmission.class);
     AgentActivationScheduling schedulingMock = mock(AgentActivationScheduling.class);
+    AgentActivationTransform transformMock = mock(AgentActivationTransform.class);
 
     when(factoryMock.createEnactmentActivationAgent()).thenReturn(enacterMock);
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
+    when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
         .thenReturn(transmissionMock);
 
@@ -128,10 +133,12 @@ public class EnactmentAgentsTest {
     AgentActivationExtraction extractionMock = mock(AgentActivationExtraction.class);
     AgentActivationTransmission transmissionMock = mock(AgentActivationTransmission.class);
     AgentActivationScheduling schedulingMock = mock(AgentActivationScheduling.class);
+    AgentActivationTransform transformMock = mock(AgentActivationTransform.class);
 
     when(factoryMock.createEnactmentActivationAgent()).thenReturn(enacterMock);
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
+    when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
         .thenReturn(transmissionMock);
 
@@ -174,10 +181,12 @@ public class EnactmentAgentsTest {
     AgentActivationExtraction extractionMock = mock(AgentActivationExtraction.class);
     AgentActivationTransmission transmissionMock = mock(AgentActivationTransmission.class);
     AgentActivationScheduling schedulingMock = mock(AgentActivationScheduling.class);
+    AgentActivationTransform transformMock = mock(AgentActivationTransform.class);
 
     when(factoryMock.createEnactmentActivationAgent()).thenReturn(enacterMock);
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
+    when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
         .thenReturn(transmissionMock);
 
@@ -198,5 +207,6 @@ public class EnactmentAgentsTest {
     verify(tested.enactmentState).putFinishedTask(any(PoisonPill.class));
     verify(tested.enactmentState).putLaunchableTask(any(PoisonPill.class));
     verify(tested.enactmentState).putSchedulableTask(any(PoisonPill.class));
+    verify(tested.enactmentState).putTransformTask(any(PoisonPill.class));
   }
 }

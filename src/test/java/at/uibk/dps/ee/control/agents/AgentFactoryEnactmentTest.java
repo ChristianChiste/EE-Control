@@ -19,6 +19,5 @@ public class AgentFactoryEnactmentTest {
     AgentEnactment result = tested.createEnactmentAgent(task, listeners);
     assertEquals(task, result.taskNode);
     assertEquals(listeners, result.listeners);
-    assertEquals(stateMock, result.enactmentState);
   }
 }

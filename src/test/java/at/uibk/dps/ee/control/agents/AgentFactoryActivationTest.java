@@ -18,9 +18,10 @@ public class AgentFactoryActivationTest {
     AgentFactoryEnactment enactMock = mock(AgentFactoryEnactment.class);
     AgentFactoryTransmission transMock = mock(AgentFactoryTransmission.class);
     AgentFactoryExtraction extractMock = mock(AgentFactoryExtraction.class);
+    AgentFactoryTransform transformMock = mock(AgentFactoryTransform.class);
     GraphAccess graphMock = mock(GraphAccess.class);
     AgentFactoryActivation tested = new AgentFactoryActivation(state, execProvider, schedMock,
-        transMock, enactMock, extractMock, graphMock);
+        transMock, enactMock, extractMock, transformMock, graphMock);
 
     EnactmentAgents agentMock = mock(EnactmentAgents.class);
     assertTrue(tested.createSchedulingActivationAgent() instanceof AgentActivationScheduling);
@@ -28,5 +29,6 @@ public class AgentFactoryActivationTest {
     assertTrue(tested.createEnactmentActivationAgent() instanceof AgentActivationEnactment);
     assertTrue(
         tested.createTransmissionActivationAgent(agentMock) instanceof AgentActivationTransmission);
+    assertTrue(tested.createTransformActicationAgent() instanceof AgentActivationTransform);
   }
 }
