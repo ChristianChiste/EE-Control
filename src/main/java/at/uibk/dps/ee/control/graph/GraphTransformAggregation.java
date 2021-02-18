@@ -35,7 +35,7 @@ public class GraphTransformAggregation implements GraphTransform {
    * @param graph the enactment graph
    * @param aggregationNode the finished aggregation node
    */
-  public synchronized void revertDistributionReproduction(final EnactmentGraph graph,
+  public void revertDistributionReproduction(final EnactmentGraph graph,
       final Task aggregationNode) {
     final String scope = PropertyServiceFunctionDataFlowCollections.getScope(aggregationNode);
     if (!readyForRevert(graph, scope)) {

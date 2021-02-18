@@ -11,7 +11,7 @@ import net.sf.opendse.model.Task;
  */
 public abstract class AgentContinuous implements Agent {
 
-  protected boolean stopped = false;
+  protected boolean stopped;
 
   @Override
   public Boolean call() throws Exception {

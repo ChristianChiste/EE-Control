@@ -16,13 +16,18 @@ import net.sf.opendse.model.Task;
 @ImplementedBy(GraphAccessConcurrent.class)
 public interface GraphAccess {
 
-  public class EdgeTupleAppl {
+  /**
+   * Convenience class to handle edge objects
+   * 
+   * @author Fedor Smirnov
+   */
+  class EdgeTupleAppl {
     protected final Task src;
     protected final Task dst;
     protected final Dependency edge;
 
     /**
-     * Convenience class to handle edge objects.
+     * Default constructor.
      * 
      * @param src the source node
      * @param dst the destination node

@@ -8,11 +8,6 @@ package at.uibk.dps.ee.control.agents;
  */
 public final class ConstantsAgents {
 
-  /**
-   * No constructor
-   */
-  private ConstantsAgents() {}
-
   // enactment
   public static final String ExcMessageEnactment = "Problem while enacting the function task ";
 
@@ -33,4 +28,9 @@ public final class ConstantsAgents {
   public static final String ExcMessageTransformPrefix =
       "Exception when performing the transformation ";
   public static final String ExcMessageTransformSuffix = " for task node ";
+
+  /**
+   * No constructor
+   */
+  private ConstantsAgents() {}
 }
