@@ -18,8 +18,15 @@ public class AgentEnactment extends AgentTask {
   protected final Task taskNode;
   protected final PostEnactment postEnactment;
 
-  public AgentEnactment(Task taskNode, PostEnactment postEnactment,
-      Set<AgentTaskListener> listeners) {
+  /**
+   * Default constructor
+   * 
+   * @param taskNode the task node modeling the function which is enacted
+   * @param postEnactment an operation describing what is done after the enactment
+   * @param listeners the {@link AgentTaskListener}s
+   */
+  public AgentEnactment(final Task taskNode, final PostEnactment postEnactment,
+      final Set<AgentTaskListener> listeners) {
     super(listeners);
     this.taskNode = taskNode;
     this.postEnactment = postEnactment;
@@ -27,7 +34,7 @@ public class AgentEnactment extends AgentTask {
 
   @Override
   protected boolean actualCall() throws Exception {
-    Enactable enactable = PropertyServiceFunction.getEnactable(taskNode);
+    final Enactable enactable = PropertyServiceFunction.getEnactable(taskNode);
     enactable.play();
     postEnactment.postEnactmentTreatment(taskNode);
     return true;

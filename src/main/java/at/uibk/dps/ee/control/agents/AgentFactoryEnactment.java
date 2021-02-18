@@ -17,8 +17,13 @@ public class AgentFactoryEnactment {
 
   protected final EnactmentState enactmentState;
 
+  /**
+   * The injection constructor
+   * 
+   * @param enactmentState the state of the enactment (to access the queues)
+   */
   @Inject
-  public AgentFactoryEnactment(EnactmentState enactmentState) {
+  public AgentFactoryEnactment(final EnactmentState enactmentState) {
     this.enactmentState = enactmentState;
   }
 
@@ -29,7 +34,8 @@ public class AgentFactoryEnactment {
    * @param listeners the agent task listeners
    * @return an agent for the enactment of the given function task
    */
-  public AgentEnactment createEnactmentAgent(Task task, Set<AgentTaskListener> listeners) {
+  public AgentEnactment createEnactmentAgent(final Task task,
+      final Set<AgentTaskListener> listeners) {
     return new AgentEnactment(task, new PostEnactmentQueueing(enactmentState), listeners);
   }
 }

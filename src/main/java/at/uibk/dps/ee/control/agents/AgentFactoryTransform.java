@@ -23,9 +23,18 @@ public class AgentFactoryTransform {
   protected final EnactableFactory enactableFactory;
   protected final EnactmentState enactmentState;
 
+  /**
+   * The injection constructor.
+   * 
+   * @param graphAccess the access to the graph
+   * @param enactableFactory the factory for the enactables (needed during node
+   *        reproduction)
+   * @param enactmentState the state of the enactment (for the access to the
+   *        queues)
+   */
   @Inject
-  public AgentFactoryTransform(GraphAccess graphAccess, EnactableFactory enactableFactory,
-      EnactmentState enactmentState) {
+  public AgentFactoryTransform(final GraphAccess graphAccess,
+      final EnactableFactory enactableFactory, final EnactmentState enactmentState) {
     this.graphAccess = graphAccess;
     this.enactableFactory = enactableFactory;
     this.enactmentState = enactmentState;
@@ -35,11 +44,13 @@ public class AgentFactoryTransform {
    * Creates a transformation agent for the provided task from the transformation
    * queue.
    * 
-   * @param taskNode
-   * @param listeners
-   * @return
+   * @param taskNode the task triggering the transformation
+   * @param listeners the {@link AgentTaskListener}s
+   * @return a transformation agent for the provided task from the transformation
+   *         queue
    */
-  public AgentTransform createTransformAgent(Task taskNode, Set<AgentTaskListener> listeners) {
+  public AgentTransform createTransformAgent(final Task taskNode,
+      final Set<AgentTaskListener> listeners) {
     if (PropertyServiceFunctionDataFlowCollections.getOperationType(taskNode)
         .equals(OperationType.Distribution)) {
       return new AgentTransform(listeners, graphAccess,
@@ -52,5 +63,4 @@ public class AgentFactoryTransform {
       throw new IllegalArgumentException("Unknown type of data flow operation.");
     }
   }
-
 }

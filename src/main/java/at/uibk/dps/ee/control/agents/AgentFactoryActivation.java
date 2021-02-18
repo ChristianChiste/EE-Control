@@ -6,6 +6,7 @@ import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentAgents;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
+import at.uibk.dps.ee.model.graph.EnactmentGraph;
 
 /**
  * The {@link AgentFactoryActivation} creates the activation agents.
@@ -23,11 +24,24 @@ public class AgentFactoryActivation {
   protected final AgentFactoryTransform transformFactory;
   protected final GraphAccess graphAccess;
 
+  /**
+   * The injection constructor.
+   * 
+   * @param enactmentState the state of the enactment
+   * @param executorProvider the provider for the executor service
+   * @param schedulingFactory the factory for the {@link AgentScheduling}s
+   * @param transmissionFactory the factory for the {@link AgentTransmission}s
+   * @param enactmentFactory the factory for the {@link AgentEnactment}s
+   * @param extractionFactory the factory for the {@link AgentExtraction}s
+   * @param transformFactory the factory for the {@link AgentTransform}s
+   * @param graphAccess the access to the {@link EnactmentGraph}
+   */
   @Inject
-  public AgentFactoryActivation(EnactmentState enactmentState, ExecutorProvider executorProvider,
-      AgentFactoryScheduling schedulingFactory, AgentFactoryTransmission transmissionFactory,
-      AgentFactoryEnactment enactmentFactory, AgentFactoryExtraction extractionFactory,
-      AgentFactoryTransform transformFactory, GraphAccess graphAccess) {
+  public AgentFactoryActivation(final EnactmentState enactmentState,
+      final ExecutorProvider executorProvider, final AgentFactoryScheduling schedulingFactory,
+      final AgentFactoryTransmission transmissionFactory,
+      final AgentFactoryEnactment enactmentFactory, final AgentFactoryExtraction extractionFactory,
+      final AgentFactoryTransform transformFactory, final GraphAccess graphAccess) {
     this.enactmentState = enactmentState;
     this.executorProvider = executorProvider;
     this.schedulingFactory = schedulingFactory;
@@ -50,13 +64,13 @@ public class AgentFactoryActivation {
   /**
    * Creates the agent monitoring the available data queue.
    * 
-   * @param rootEnactable the class starting and stopping the continuous agents
+   * @param mainAgent the class starting and stopping the continuous agents
    * @return the agent monitoring the available data queue.
    */
   public AgentActivationTransmission createTransmissionActivationAgent(
-      EnactmentAgents rootEnactable) {
+      final EnactmentAgents mainAgent) {
     return new AgentActivationTransmission(enactmentState, transmissionFactory, graphAccess,
-        executorProvider, rootEnactable);
+        executorProvider, mainAgent);
   }
 
   /**

@@ -24,9 +24,18 @@ public class AgentFactoryScheduling {
   protected final EnactmentState enactmentState;
   protected final ScheduleInterpreter scheduleInterpreter;
 
+  /**
+   * The injection constructor.
+   * 
+   * @param schedule the schedule map
+   * @param scheduleInterpreter the interpreter of the mapping edges
+   * @param scheduler the scheduler
+   * @param enactmentState the enactment state (for the access to the queues)
+   */
   @Inject
-  public AgentFactoryScheduling(ScheduleModel schedule, ScheduleInterpreter scheduleInterpreter,
-      Scheduler scheduler, EnactmentState enactmentState) {
+  public AgentFactoryScheduling(final ScheduleModel schedule,
+      final ScheduleInterpreter scheduleInterpreter, final Scheduler scheduler,
+      final EnactmentState enactmentState) {
     this.schedule = schedule;
     this.scheduler = scheduler;
     this.enactmentState = enactmentState;
@@ -39,8 +48,8 @@ public class AgentFactoryScheduling {
    * @param functionNode the provided function node
    * @return a scheduling agent for the provided function node
    */
-  public AgentScheduling createSchedulingAgent(Task functionNode,
-      Set<AgentTaskListener> listeners) {
+  public AgentScheduling createSchedulingAgent(final Task functionNode,
+      final Set<AgentTaskListener> listeners) {
     return new AgentScheduling(schedule, scheduler, functionNode, enactmentState,
         scheduleInterpreter, listeners);
   }

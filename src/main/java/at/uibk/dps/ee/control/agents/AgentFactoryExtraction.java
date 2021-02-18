@@ -17,13 +17,19 @@ public class AgentFactoryExtraction {
 
   protected final EnactmentState enactmentState;
 
+  /**
+   * The injection constructor.
+   * 
+   * @param enactmentState the state of the enactment (for the access to the
+   *        queues)
+   */
   @Inject
-  public AgentFactoryExtraction(EnactmentState enactmentState) {
+  public AgentFactoryExtraction(final EnactmentState enactmentState) {
     this.enactmentState = enactmentState;
   }
 
-  public AgentExtraction createExtractionAgent(EdgeTupleAppl edgeTuple,
-      Set<AgentTaskListener> listeners) {
+  public AgentExtraction createExtractionAgent(final EdgeTupleAppl edgeTuple,
+      final Set<AgentTaskListener> listeners) {
     return new AgentExtraction(edgeTuple.getSrc(), edgeTuple.getEdge(), edgeTuple.getDst(),
         enactmentState, listeners);
   }

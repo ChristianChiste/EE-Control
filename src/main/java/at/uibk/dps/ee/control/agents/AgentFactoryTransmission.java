@@ -19,21 +19,32 @@ public class AgentFactoryTransmission {
   protected final EnactmentState enactmentState;
   protected final GraphAccess graphAccess;
 
+  /**
+   * The injection constructor
+   * 
+   * @param enactmentState the state of the enactment (for the access to the
+   *        queues)
+   * @param graphAccess the access to the enactment graph
+   */
   @Inject
-  public AgentFactoryTransmission(EnactmentState enactmentState, GraphAccess graphAccess) {
+  public AgentFactoryTransmission(final EnactmentState enactmentState,
+      final GraphAccess graphAccess) {
     this.enactmentState = enactmentState;
     this.graphAccess = graphAccess;
   }
 
   /**
-   * Returns the transmission agent for the transmission of the data.
+   * Returns the transmission agent for the transmission of the data over the
+   * provided edge.
    * 
-   * @param edgeTuple the tuple describing the processed edge (from a data node to a function)
+   * @param edgeTuple the tuple describing the processed edge (from a data node to
+   *        a function)
    * @param functionNodeInEdges the in edges of the function node
-   * @return
+   * @return the transmission agent for the transmission of the data over the
+   *         provided edge
    */
-  public AgentTransmission createTransmissionAgent(EdgeTupleAppl edgeTuple,
-      Set<AgentTaskListener> listeners) {
+  public AgentTransmission createTransmissionAgent(final EdgeTupleAppl edgeTuple,
+      final Set<AgentTaskListener> listeners) {
     return new AgentTransmission(enactmentState, edgeTuple.getSrc(), edgeTuple.getEdge(),
         edgeTuple.getDst(), graphAccess, listeners);
   }

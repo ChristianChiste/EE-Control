@@ -26,8 +26,17 @@ public class AgentExtraction extends AgentTask {
   protected final Task dataNode;
   protected final EnactmentState enactmentState;
 
-  public AgentExtraction(Task finishedFunction, Dependency edge, Task dataNode,
-      EnactmentState enactmentState, Set<AgentTaskListener> listeners) {
+  /**
+   * Default constructor
+   * 
+   * @param finishedFunction the producer of the data to extract
+   * @param edge the edge to the data node
+   * @param dataNode the data node to fill with content
+   * @param enactmentState the enactment state (to access the queues)
+   * @param listeners the {@link AgentTaskListener}s
+   */
+  public AgentExtraction(final Task finishedFunction, final Dependency edge, final Task dataNode,
+      final EnactmentState enactmentState, final Set<AgentTaskListener> listeners) {
     super(listeners);
     this.finishedFunction = finishedFunction;
     this.edge = edge;
@@ -38,10 +47,10 @@ public class AgentExtraction extends AgentTask {
 
   @Override
   public boolean actualCall() throws Exception {
-    Enactable finishedEnactable = PropertyServiceFunction.getEnactable(finishedFunction);
-    JsonObject enactmentResult = finishedEnactable.getResult();
-    String key = PropertyServiceDependency.getJsonKey(edge);
-    JsonElement data = enactmentResult.get(key);
+    final Enactable finishedEnactable = PropertyServiceFunction.getEnactable(finishedFunction);
+    final JsonObject enactmentResult = finishedEnactable.getResult();
+    final String key = PropertyServiceDependency.getJsonKey(edge);
+    final JsonElement data = enactmentResult.get(key);
     PropertyServiceData.setContent(dataNode, data);
     enactmentState.putAvailableData(dataNode);
     return true;
