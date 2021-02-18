@@ -41,11 +41,11 @@ public class GraphAccessConcurrentTest {
 
     @Override
     public Boolean call() throws Exception {
-      graphAccess.writeOperationNodeInEdges(this::writeStuffInNode, task);
+      graphAccess.writeOperationTask(this::writeStuffInNode, task);
       return true;
     }
 
-    protected void writeStuffInNode(Set<Dependency> edges, Task task) {
+    protected void writeStuffInNode(EnactmentGraph graph, Task task) {
       task.setAttribute(attrName, true);
       try {
         Thread.sleep(waitTime);

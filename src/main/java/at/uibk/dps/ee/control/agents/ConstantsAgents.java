@@ -8,6 +8,9 @@ package at.uibk.dps.ee.control.agents;
  */
 public final class ConstantsAgents {
 
+  /**
+   * No constructor
+   */
   private ConstantsAgents() {}
 
   // enactment

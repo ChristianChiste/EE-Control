@@ -52,14 +52,6 @@ public interface GraphAccess {
   Set<EdgeTupleAppl> getOutEdges(Task node);
 
   /**
-   * Performs the given write operation on the in edges of the given node.
-   * 
-   * @param writeOperation the operation to perform
-   * @param node the function node whose in edges the operation is performed on
-   */
-  void writeOperationNodeInEdges(BiConsumer<Set<Dependency>, Task> writeOperation, Task node);
-
-  /**
    * Returns the root nodes of the graph (annotated with the WF input).
    * 
    * @return the root nodes of the graph (annotated with the WF input)

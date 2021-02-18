@@ -1,6 +1,5 @@
 package at.uibk.dps.ee.control.graph;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -63,19 +62,6 @@ public class GraphAccessConcurrent implements GraphAccess {
     return new EdgeTupleAppl(src, dst, edge);
   }
 
-  @Override
-  public void writeOperationNodeInEdges(BiConsumer<Set<Dependency>, Task> writeOperation,
-      Task node) {
-    try {
-      writeLock.lock();
-      Set<Dependency> inEdges = new HashSet<>(graph.getInEdges(node));
-      writeOperation.accept(inEdges, node);
-    } finally {
-      writeLock.unlock();
-    }
-  }
-
-  
   @Override
   public void writeOperationTask(BiConsumer<EnactmentGraph, Task> writeOperation, Task task) {
     try {

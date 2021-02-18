@@ -21,8 +21,17 @@ public class AgentTransform extends AgentTask {
   protected final Task taskNode;
   protected final EnactmentState enactmentState;
 
-  public AgentTransform(Set<AgentTaskListener> listeners, GraphAccess graphAccess,
-      GraphTransform modification, Task taskNode, EnactmentState enactmentState) {
+  /**
+   * The default constructor.
+   * 
+   * @param listeners the {@link AgentTaskListener}s
+   * @param graphAccess the graph access
+   * @param modification the operation describing the graph modification
+   * @param taskNode the task node triggering the transformation
+   * @param enactmentState the state of the enactment (for the queue access)
+   */
+  public AgentTransform(final Set<AgentTaskListener> listeners, final GraphAccess graphAccess,
+      final GraphTransform modification, final Task taskNode, final EnactmentState enactmentState) {
     super(listeners);
     this.modification = modification;
     this.graphAccess = graphAccess;
@@ -39,8 +48,7 @@ public class AgentTransform extends AgentTask {
 
   @Override
   protected String formulateExceptionMessage() {
-    String message = ConstantsAgents.ExcMessageTransformPrefix + modification.getTransformName()
+    return ConstantsAgents.ExcMessageTransformPrefix + modification.getTransformName()
         + ConstantsAgents.ExcMessageTransformSuffix + taskNode.getId();
-    return message;
   }
 }

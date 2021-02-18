@@ -4,7 +4,8 @@ import java.util.Set;
 import net.sf.opendse.model.Task;
 
 /**
- * Parent class for agents which execute a single action based on a given {@link Task}.
+ * Parent class for agents which execute a single action based on a given
+ * {@link Task}.
  * 
  * @author Fedor Smirnov
  */
@@ -12,7 +13,12 @@ public abstract class AgentTask implements Agent {
 
   protected final Set<AgentTaskListener> listeners;
 
-  public AgentTask(Set<AgentTaskListener> listeners) {
+  /**
+   * Default constructor
+   * 
+   * @param listeners the {@link AgentTaskListener}s
+   */
+  public AgentTask(final Set<AgentTaskListener> listeners) {
     this.listeners = listeners;
   }
 
@@ -23,7 +29,7 @@ public abstract class AgentTask implements Agent {
    * @param exc the exception which occurred
    * @param info additional information
    */
-  protected void notifyListeners(Exception exc, String info) {
+  protected void notifyListeners(final Exception exc, final String info) {
     listeners.forEach(listener -> listener.reactToException(exc, info));
   }
 
@@ -32,7 +38,7 @@ public abstract class AgentTask implements Agent {
     try {
       return actualCall();
     } catch (Exception exc) {
-      String message = formulateExceptionMessage();
+      final String message = formulateExceptionMessage();
       notifyListeners(exc, message);
       return false;
     }
@@ -41,16 +47,16 @@ public abstract class AgentTask implements Agent {
   /**
    * The actual behavior of the agent.
    * 
-   * @return
+   * @return true iff the action was successful
    */
   protected abstract boolean actualCall() throws Exception;
 
   /**
-   * Formulates a message related to the actual functionality of the agent, which is appended to the
-   * message of potentially occurring exceptions.
+   * Formulates a message related to the actual functionality of the agent, which
+   * is appended to the message of potentially occurring exceptions.
    * 
-   * @return a message related to the actual functionality of the agent, which is appended to the
-   *         message of potentially occurring exceptions
+   * @return a message related to the actual functionality of the agent, which is
+   *         appended to the message of potentially occurring exceptions
    */
   protected abstract String formulateExceptionMessage();
 }

@@ -8,6 +8,10 @@ import net.sf.opendse.model.Task;
  * @author Fedor Smirnov
  */
 public class PoisonPill extends Task {
+
+  /**
+   * Default constructor.
+   */
   public PoisonPill() {
     super("Poison Pill");
   }
