@@ -5,7 +5,7 @@ import net.sf.opendse.model.Task;
 
 /**
  * Interface for the operations which are to be performed after the enactment
- * associates with a task has been completed (such as putting the task into a
+ * associated with a task has been completed (such as putting the task into a
  * queue of the {@link EnactmentState}).
  * 
  * @author Fedor Smirnov

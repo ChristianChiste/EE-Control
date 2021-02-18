@@ -19,74 +19,74 @@ import at.uibk.dps.ee.core.exception.StopException;
 @Singleton
 public class Control implements EnactmentStateListener {
 
-	protected EnactmentState enactmentState = EnactmentState.PAUSED;
-	protected final Set<ControlStateListener> listeners = new HashSet<>();
-	protected boolean init;
+  protected EnactmentState enactmentState = EnactmentState.PAUSED;
+  protected final Set<ControlStateListener> listeners = new HashSet<>();
+  protected boolean init;
 
-	/**
-	 * Adds a {@link ControlStateListener}.
-	 * 
-	 * @param listener the listener to add
-	 */
-	public void addListener(final ControlStateListener listener) {
-		listeners.add(listener);
-	}
+  /**
+   * Adds a {@link ControlStateListener}.
+   * 
+   * @param listener the listener to add
+   */
+  public void addListener(final ControlStateListener listener) {
+    listeners.add(listener);
+  }
 
-	/**
-	 * Run if paused. Otherwise this does nothing.
-	 */
-	public void play() {
-		if (!init) {
-			throw new IllegalStateException("Control play triggerred before control initialization.");
-		}
-		if (enactmentState.equals(EnactmentState.PAUSED)) {
-			setState(EnactmentState.RUNNING);
-		}
-	}
+  /**
+   * Run if paused. Otherwise this does nothing.
+   */
+  public void play() {
+    if (!init) {
+      throw new IllegalStateException("Control play triggerred before control initialization.");
+    }
+    if (enactmentState.equals(EnactmentState.PAUSED)) {
+      setState(EnactmentState.RUNNING);
+    }
+  }
 
-	/**
-	 * Pause if running. Otherwise nothing.
-	 */
-	public void pause() {
-		if (enactmentState.equals(EnactmentState.RUNNING)) {
-			setState(EnactmentState.PAUSED);
-		}
-	}
+  /**
+   * Pause if running. Otherwise nothing.
+   */
+  public void pause() {
+    if (enactmentState.equals(EnactmentState.RUNNING)) {
+      setState(EnactmentState.PAUSED);
+    }
+  }
 
-	public boolean isInit() {
-		return init;
-	}
+  public boolean isInit() {
+    return init;
+  }
 
-	/**
-	 * Sets the current state and notifies all listeners.
-	 * 
-	 * @param stateToSet the state to set
-	 */
-	protected void setState(final EnactmentState stateToSet) {
-		final EnactmentState previous = enactmentState;
-		final EnactmentState current = stateToSet;
-		this.enactmentState = stateToSet;
-		for (final ControlStateListener listener : listeners) {
-			try {
-				listener.reactToStateChange(previous, current);
-			} catch (StopException stopExc) {
-				throw new IllegalStateException("Stop exception when changing the control state.", stopExc);
-			}
-		}
-	}
+  /**
+   * Sets the current state and notifies all listeners.
+   * 
+   * @param stateToSet the state to set
+   */
+  protected void setState(final EnactmentState stateToSet) {
+    final EnactmentState previous = enactmentState;
+    final EnactmentState current = stateToSet;
+    this.enactmentState = stateToSet;
+    for (final ControlStateListener listener : listeners) {
+      try {
+        listener.reactToStateChange(previous, current);
+      } catch (StopException stopExc) {
+        throw new IllegalStateException("Stop exception when changing the control state.", stopExc);
+      }
+    }
+  }
 
-	@Override
-	public void enactmentStarted() {
-		enactmentState = EnactmentState.RUNNING;
-		init = true;
-	}
+  @Override
+  public void enactmentStarted() {
+    enactmentState = EnactmentState.RUNNING;
+    init = true;
+  }
 
-	public EnactmentState getEnactmentState() {
-		return enactmentState;
-	}
+  public EnactmentState getEnactmentState() {
+    return enactmentState;
+  }
 
-	@Override
-	public void enactmentTerminated() {
-		// Nothing to do here
-	}
+  @Override
+  public void enactmentTerminated() {
+    // Nothing to do here
+  }
 }

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
@@ -27,13 +28,19 @@ import net.sf.opendse.model.properties.TaskPropertyService;
 public class GraphTransformDistribution implements GraphTransform {
 
   protected final EnactableFactory enactableFactory;
-  
-  public GraphTransformDistribution(EnactableFactory enactableFactory) {
+
+  /**
+   * The default constructor
+   * 
+   * @param enactableFactory factory for the {@link Enactable}s (to create
+   *        enactables for the nodes created by reproduction)
+   */
+  public GraphTransformDistribution(final EnactableFactory enactableFactory) {
     this.enactableFactory = enactableFactory;
   }
 
   @Override
-  public void modifyEnactmentGraph(GraphAccess graphAccess, Task taskNode) {
+  public void modifyEnactmentGraph(final GraphAccess graphAccess, final Task taskNode) {
     graphAccess.writeOperationTask(this::applyDistributionReproduction, taskNode);
   }
 
@@ -48,7 +55,7 @@ public class GraphTransformDistribution implements GraphTransform {
    * @param graph the enactment graph
    * @param distributionTask the distribution task
    */
-  protected void applyDistributionReproduction(EnactmentGraph graph,
+  protected void applyDistributionReproduction(final EnactmentGraph graph,
       final Task distributionTask) {
     final String scope = PropertyServiceFunctionDataFlowCollections.getScope(distributionTask);
     // find all edges which are relevant for the reproduction
@@ -89,8 +96,8 @@ public class GraphTransformDistribution implements GraphTransform {
    *        node and its aggregators
    * @param scope the reproduction scope
    */
-  protected void removeOriginalElements(EnactmentGraph graph, final Set<Dependency> reproducedEdges,
-      final String scope, final Task distributionTask) {
+  protected void removeOriginalElements(final EnactmentGraph graph,
+      final Set<Dependency> reproducedEdges, final String scope, final Task distributionTask) {
     // gather the vertices to remove
     final Set<Task> verticesToRemove =
         reproducedEdges.stream().map(edge -> graph.getSource(edge)).collect(Collectors.toSet());
@@ -115,7 +122,7 @@ public class GraphTransformDistribution implements GraphTransform {
    * @param originalEdge the original edge
    * @param graph the enactment graph
    */
-  protected void reproduceEdge(EnactmentGraph graph, final Dependency originalEdge,
+  protected void reproduceEdge(final EnactmentGraph graph, final Dependency originalEdge,
       final Task distributionNode) {
     final int iterationNum =
         PropertyServiceFunctionDataFlowCollections.getIterationNumber(distributionNode);
@@ -167,7 +174,7 @@ public class GraphTransformDistribution implements GraphTransform {
    * @param graph the enactment graph
    * @return an optional of the offspring with the given reproduction index
    */
-  protected Optional<Task> reproduceNode(EnactmentGraph graph, final Task original,
+  protected Optional<Task> reproduceNode(final EnactmentGraph graph, final Task original,
       final int reproductionIdx) {
     final String offspringId = getReproducedId(original.getId(), reproductionIdx);
     final Task offspring = Optional.ofNullable(graph.getVertex(offspringId)).orElseGet(() -> {
@@ -200,7 +207,7 @@ public class GraphTransformDistribution implements GraphTransform {
    * @return the edges which are relevant for the reproductions starting from the
    *         provided distribution node
    */
-  protected Set<Dependency> findEdgesToReproduce(EnactmentGraph graph,
+  protected Set<Dependency> findEdgesToReproduce(final EnactmentGraph graph,
       final Task distributionNode) {
     final Set<Dependency> result = new HashSet<>();
     final Task curNode = distributionNode;
@@ -221,7 +228,7 @@ public class GraphTransformDistribution implements GraphTransform {
    * @param distributionNode the distribution node doing the reproduction
    * @param result the edges gathered so far
    */
-  protected void recProcessOutEdgesNode(EnactmentGraph graph, final Task curNode,
+  protected void recProcessOutEdgesNode(final EnactmentGraph graph, final Task curNode,
       final String scope, final Set<Task> visited, final Set<Dependency> result,
       final Task distributionNode) {
     visited.add(curNode);

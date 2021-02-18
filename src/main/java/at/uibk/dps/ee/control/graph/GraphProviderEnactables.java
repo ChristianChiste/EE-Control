@@ -23,9 +23,16 @@ public class GraphProviderEnactables implements EnactmentGraphProvider {
 
   protected final EnactmentGraph graph;
 
+  /**
+   * The injection constructor
+   * 
+   * @param graphProvider the provider for the raw enactment graph
+   * @param factory the factory for the enactables
+   */
   @Inject
-  public GraphProviderEnactables(EnactmentGraphProvider graphProvider, EnactableFactory factory) {
-    EnactmentGraph graph = graphProvider.getEnactmentGraph();
+  public GraphProviderEnactables(final EnactmentGraphProvider graphProvider,
+      final EnactableFactory factory) {
+    final EnactmentGraph graph = graphProvider.getEnactmentGraph();
     createEnactables(graph, factory);
     this.graph = graph;
   }
@@ -37,7 +44,8 @@ public class GraphProviderEnactables implements EnactmentGraphProvider {
    * @param graph the enactment graph
    * @param factory the enactable factory
    */
-  protected final void createEnactables(EnactmentGraph graph, EnactableFactory factory) {
+  protected final void createEnactables(final EnactmentGraph graph,
+      final EnactableFactory factory) {
     graph.getVertices().stream().filter(task -> TaskPropertyService.isProcess(task))
         .forEach(task -> createTaskEnactable(task, factory));
   }
@@ -49,8 +57,8 @@ public class GraphProviderEnactables implements EnactmentGraphProvider {
    * @param functionNode the given function node
    * @param factory the factory for the creation of enactables
    */
-  protected void createTaskEnactable(Task functionNode, EnactableFactory factory) {
-    EnactableAtomic enactable = factory.createEnactable(functionNode);
+  protected void createTaskEnactable(final Task functionNode, final EnactableFactory factory) {
+    final EnactableAtomic enactable = factory.createEnactable(functionNode);
     PropertyServiceFunction.setEnactable(functionNode, enactable);
   }
 

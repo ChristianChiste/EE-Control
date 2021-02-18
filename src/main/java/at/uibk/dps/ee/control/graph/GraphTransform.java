@@ -3,7 +3,7 @@ package at.uibk.dps.ee.control.graph;
 import net.sf.opendse.model.Task;
 
 /**
- * Interface for an operation which modifies the enactment graph.
+ * Interface for an operation which transforms the enactment graph.
  * 
  * @author Fedor Smirnov
  *

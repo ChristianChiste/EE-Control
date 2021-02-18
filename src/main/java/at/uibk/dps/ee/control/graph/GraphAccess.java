@@ -8,8 +8,7 @@ import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 
 /**
- * Interface for the classes offering a thread-safe access to the enactment
- * graph.
+ * Interface for the classes offering access to the enactment graph.
  * 
  * @author Fedor Smirnov
  *
@@ -22,7 +21,14 @@ public interface GraphAccess {
     protected final Task dst;
     protected final Dependency edge;
 
-    public EdgeTupleAppl(Task src, Task dst, Dependency edge) {
+    /**
+     * Convenience class to handle edge objects.
+     * 
+     * @param src the source node
+     * @param dst the destination node
+     * @param edge the edge
+     */
+    public EdgeTupleAppl(final Task src, final Task dst, final Dependency edge) {
       super();
       this.src = src;
       this.dst = dst;
@@ -40,7 +46,6 @@ public interface GraphAccess {
     public Dependency getEdge() {
       return edge;
     }
-
   }
 
   /**
@@ -80,5 +85,4 @@ public interface GraphAccess {
    * @param task the given task
    */
   void writeOperationTask(BiConsumer<EnactmentGraph, Task> writeOperation, Task task);
-
 }

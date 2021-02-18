@@ -13,22 +13,31 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 
+/**
+ * The {@link GraphTransformAggregation} collapses the graph to revert the
+ * reproduction performed by the {@link GraphTransformDistribution}. It is used
+ * after all aggregation operations of a parallel for scope have been completed.
+ * 
+ * @author Fedor Smirnov
+ */
 public class GraphTransformAggregation implements GraphTransform {
 
   @Override
-  public void modifyEnactmentGraph(GraphAccess graphAccess, Task taskNode) {
+  public void modifyEnactmentGraph(final GraphAccess graphAccess, final Task taskNode) {
     graphAccess.writeOperationTask(this::revertDistributionReproduction, taskNode);
   }
 
   /**
-   * Reverts the reproduction idenitified by the provided scope string.
+   * Checks whether the completion of the provided aggregation node finishes up
+   * the operations within the corresponding reproduction scope. Collapses the
+   * graph if it does.
    * 
    * @param graph the enactment graph
-   * @param scope the provided scope string
+   * @param aggregationNode the finished aggregation node
    */
-  public synchronized void revertDistributionReproduction(EnactmentGraph graph,
-      Task aggregationNode) {
-    String scope = PropertyServiceFunctionDataFlowCollections.getScope(aggregationNode);
+  public synchronized void revertDistributionReproduction(final EnactmentGraph graph,
+      final Task aggregationNode) {
+    final String scope = PropertyServiceFunctionDataFlowCollections.getScope(aggregationNode);
     if (!readyForRevert(graph, scope)) {
       return;
     }
@@ -59,11 +68,13 @@ public class GraphTransformAggregation implements GraphTransform {
    * Finds the original edge and the original end points corresponding to the
    * given offspring edge and adds them to the graph.
    * 
-   * @param offspringEdge the offspring edge
    * @param graph the enactment graph
+   * @param offspringEdge the offspring edge
    * @param scope the reproduction scope
+   * @param distributionNode the distribution node responsible for the
+   *        reproduction which is being reverted
    */
-  protected void addOriginalEdge(EnactmentGraph graph, final Dependency offspringEdge,
+  protected void addOriginalEdge(final EnactmentGraph graph, final Dependency offspringEdge,
       final String scope, final Task distributionNode) {
     if (graph.containsEdge((Dependency) offspringEdge.getParent())) {
       return;
@@ -176,7 +187,7 @@ public class GraphTransformAggregation implements GraphTransform {
    * @return true if the reproduction indicated by the provided scope is ready to
    *         be reverted
    */
-  protected boolean readyForRevert(EnactmentGraph graph, final String scope) {
+  protected boolean readyForRevert(final EnactmentGraph graph, final String scope) {
     // get the aggregators
     final Set<Task> aggregators = graph.getVertices().stream()
         .filter(task -> PropertyServiceFunctionDataFlowCollections.isAggregationNode(task)

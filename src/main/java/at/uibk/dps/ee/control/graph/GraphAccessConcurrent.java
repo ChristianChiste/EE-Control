@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
+import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
@@ -31,8 +31,14 @@ public class GraphAccessConcurrent implements GraphAccess {
   protected final Lock readLock;
   protected final Lock writeLock;
 
+  /**
+   * The injection constructor.
+   * 
+   * @param graphProvider the provider for the enactment graph (where the function
+   *        nodes are annotated with the corresponding {@link Enactable}s.)
+   */
   @Inject
-  public GraphAccessConcurrent(GraphProviderEnactables graphProvider) {
+  public GraphAccessConcurrent(final GraphProviderEnactables graphProvider) {
     this.graph = graphProvider.getEnactmentGraph();
     this.readWriteLock = new ReentrantReadWriteLock();
     this.readLock = readWriteLock.readLock();
@@ -40,7 +46,7 @@ public class GraphAccessConcurrent implements GraphAccess {
   }
 
   @Override
-  public Set<EdgeTupleAppl> getOutEdges(Task node) {
+  public Set<EdgeTupleAppl> getOutEdges(final Task node) {
     try {
       readLock.lock();
       return graph.getOutEdges(node).stream().map(edge -> getEdgeTupleForEdge(edge))
@@ -56,28 +62,29 @@ public class GraphAccessConcurrent implements GraphAccess {
    * @param edge the edge to summarize
    * @return the edgeTuple of the edge
    */
-  protected EdgeTupleAppl getEdgeTupleForEdge(Dependency edge) {
-    Task src = graph.getSource(edge);
-    Task dst = graph.getDest(edge);
+  protected EdgeTupleAppl getEdgeTupleForEdge(final Dependency edge) {
+    final Task src = graph.getSource(edge);
+    final Task dst = graph.getDest(edge);
     return new EdgeTupleAppl(src, dst, edge);
   }
 
   @Override
-  public void writeOperationTask(BiConsumer<EnactmentGraph, Task> writeOperation, Task task) {
+  public void writeOperationTask(final BiConsumer<EnactmentGraph, Task> writeOperation,
+      final Task task) {
     try {
       writeLock.lock();
       writeOperation.accept(graph, task);
-    }finally {
+    } finally {
       writeLock.unlock();
     }
-    
+
   }
 
   @Override
   public Set<Task> getRootDataNodes() {
     try {
       readLock.lock();
-      Set<Task> result =
+      final Set<Task> result =
           graph.getVertices().stream().filter(task -> graph.getInEdges(task).size() == 0)
               .filter(task -> !PropertyServiceData.getNodeType(task).equals(NodeType.Constant))
               .collect(Collectors.toSet());
@@ -94,7 +101,7 @@ public class GraphAccessConcurrent implements GraphAccess {
   public Set<Task> getLeafDataNodes() {
     try {
       readLock.lock();
-      Set<Task> result = graph.getVertices().stream()
+      final Set<Task> result = graph.getVertices().stream()
           .filter(task -> graph.getOutEdges(task).size() == 0).collect(Collectors.toSet());
       if (result.stream().anyMatch(task -> !PropertyServiceData.isLeaf(task))) {
         throw new IllegalStateException("Non-root nodes without out edges present.");

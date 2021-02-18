@@ -17,15 +17,20 @@ public class PostEnactmentQueueing implements PostEnactment {
 
   protected final EnactmentState enactmentState;
 
-  public PostEnactmentQueueing(EnactmentState enactmentState) {
+  /**
+   * Default constructor
+   * 
+   * @param enactmentState the enactment state (for the access to the queues)
+   */
+  public PostEnactmentQueueing(final EnactmentState enactmentState) {
     this.enactmentState = enactmentState;
   }
 
   @Override
-  public void postEnactmentTreatment(Task enactedTask) {
+  public void postEnactmentTreatment(final Task enactedTask) {
     if (requiresTransformation(enactedTask)) {
       enactmentState.putTransformTask(enactedTask);
-    }else {
+    } else {
       enactmentState.putFinishedTask(enactedTask);
     }
   }
@@ -38,7 +43,7 @@ public class PostEnactmentQueueing implements PostEnactment {
    * @return true iff the provided task requires a graph transformation after its
    *         enactment
    */
-  protected boolean requiresTransformation(Task task) {
+  protected boolean requiresTransformation(final Task task) {
     return PropertyServiceFunction.getUsageType(task).equals(UsageType.DataFlow)
         && PropertyServiceFunctionDataFlow.getDataFlowType(task).equals(DataFlowType.Collections);
   }
