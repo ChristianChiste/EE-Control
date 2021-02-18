@@ -32,6 +32,7 @@
     	<exclude name="FieldNamingConventions"/>
     	<exclude name="AvoidProtectedMethodInFinalClassNotExtending"/>
     	<exclude name="AtLeastOneConstructor"/>
+    	<exclude name="CallSuperInConstructor"/>
     </rule>
     <rule ref="category/java/design.xml">
     	<exclude name="LawOfDemeter"/>
