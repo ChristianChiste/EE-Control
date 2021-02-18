@@ -11,8 +11,8 @@ import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link AgentActivationTransmission} monitors the queue of available data and creates the
- * transmission agents to transmit available data to the tasks.
+ * The {@link AgentActivationTransmission} monitors the queue of available data
+ * and creates the transmission agents to transmit available data to the tasks.
  * 
  * @author Fedor Smirnov
  */
@@ -26,25 +26,35 @@ public class AgentActivationTransmission extends AgentContinuous implements Agen
 
   protected final Set<Task> leafNodes;
   protected final Set<Task> availableWfResults = new HashSet<>();
-  protected final EnactmentAgents rootEnactable;
+  protected final EnactmentAgents mainAgent;
 
-  public AgentActivationTransmission(EnactmentState enactmentState,
-      AgentFactoryTransmission agentFactory, GraphAccess graphAccess,
-      ExecutorProvider executorProvider, EnactmentAgents rootEnactable) {
+  /**
+   * The default constructor.
+   * 
+   * @param enactmentState the state of the enactment (to access the queues)
+   * @param agentFactory the factory for the transmission agents
+   * @param graphAccess the access to the enactment graph
+   * @param executorProvider the provider for the executor service
+   * @param mainAgent reference to the main agent (to notify it when the enactment
+   *        is finished)
+   */
+  public AgentActivationTransmission(final EnactmentState enactmentState,
+      final AgentFactoryTransmission agentFactory, final GraphAccess graphAccess,
+      final ExecutorProvider executorProvider, final EnactmentAgents mainAgent) {
     this.enactmentState = enactmentState;
     this.agentFactory = agentFactory;
     this.graphAccess = graphAccess;
     this.executor = executorProvider.getExecutorService();
     this.leafNodes = graphAccess.getLeafDataNodes();
-    this.rootEnactable = rootEnactable;
+    this.mainAgent = mainAgent;
   }
 
   @Override
-  protected void operationOnTask(Task availableData) {
+  protected void operationOnTask(final Task availableData) {
     if (leafNodes.contains(availableData)) {
       availableWfResults.add(availableData);
       if (availableWfResults.containsAll(leafNodes)) {
-        rootEnactable.wakeUp();
+        mainAgent.wakeUp();
       }
     } else {
       graphAccess.getOutEdges(availableData).forEach(edgeTuple -> executor
@@ -67,7 +77,7 @@ public class AgentActivationTransmission extends AgentContinuous implements Agen
   }
 
   @Override
-  public void addAgentTaskListener(AgentTaskListener listener) {
+  public void addAgentTaskListener(final AgentTaskListener listener) {
     listeners.add(listener);
   }
 }

@@ -25,8 +25,17 @@ public class AgentActivationExtraction extends AgentContinuous implements AgentT
   protected final AgentFactoryExtraction agentFactory;
   protected final Set<AgentTaskListener> listeners = new HashSet<>();
 
-  public AgentActivationExtraction(EnactmentState enactmentState, ExecutorProvider executorProvider,
-      GraphAccess graphAccess, AgentFactoryExtraction agentFactory) {
+  /**
+   * The default constructor
+   * 
+   * @param enactmentState the state of the enactment (to access the queues)
+   * @param executorProvider the provider for the executor service
+   * @param graphAccess the access to the enactment graph
+   * @param agentFactory the factory for the extraction agents
+   */
+  public AgentActivationExtraction(final EnactmentState enactmentState,
+      final ExecutorProvider executorProvider, final GraphAccess graphAccess,
+      final AgentFactoryExtraction agentFactory) {
     this.enactmentState = enactmentState;
     this.executor = executorProvider.getExecutorService();
     this.graphAccess = graphAccess;
@@ -34,7 +43,7 @@ public class AgentActivationExtraction extends AgentContinuous implements AgentT
   }
 
   @Override
-  protected void operationOnTask(Task finishedTask) {
+  protected void operationOnTask(final Task finishedTask) {
     // finds all of its out edges and start an extraction agent for each of them
     graphAccess.getOutEdges(finishedTask).forEach(tuple -> executor
         .submit(agentFactory.createExtractionAgent(tuple, getAgentTaskListeners())));
@@ -55,7 +64,7 @@ public class AgentActivationExtraction extends AgentContinuous implements AgentT
   }
 
   @Override
-  public void addAgentTaskListener(AgentTaskListener listener) {
+  public void addAgentTaskListener(final AgentTaskListener listener) {
     listeners.add(listener);
   }
 }

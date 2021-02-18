@@ -9,8 +9,8 @@ import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link AgentActivationScheduling} monitors the queue containing the launchable tasks and
- * creates {@link AgentScheduling}s to process them.
+ * The {@link AgentActivationScheduling} monitors the queue containing the
+ * launchable tasks and creates {@link AgentScheduling}s to process them.
  * 
  * @author Fedor Smirnov
  */
@@ -21,15 +21,22 @@ public class AgentActivationScheduling extends AgentContinuous implements AgentT
   protected final ExecutorService executor;
   protected final Set<AgentTaskListener> listeners = new HashSet<>();
 
-  public AgentActivationScheduling(EnactmentState enactmentState,
-      AgentFactoryScheduling agentFactory, ExecutorProvider executorProvider) {
+  /**
+   * The default constructor.
+   * 
+   * @param enactmentState the state of the enactment (to access the queues)
+   * @param agentFactory the factory for the scheduling agents
+   * @param executorProvider the provider for the executor service
+   */
+  public AgentActivationScheduling(final EnactmentState enactmentState,
+      final AgentFactoryScheduling agentFactory, final ExecutorProvider executorProvider) {
     this.enactmentState = enactmentState;
     this.agentFactory = agentFactory;
     this.executor = executorProvider.getExecutorService();
   }
 
   @Override
-  protected void operationOnTask(Task schedulableTask) {
+  protected void operationOnTask(final Task schedulableTask) {
     executor.submit(agentFactory.createSchedulingAgent(schedulableTask, getAgentTaskListeners()));
   }
 
@@ -48,7 +55,7 @@ public class AgentActivationScheduling extends AgentContinuous implements AgentT
   }
 
   @Override
-  public void addAgentTaskListener(AgentTaskListener listener) {
+  public void addAgentTaskListener(final AgentTaskListener listener) {
     listeners.add(listener);
   }
 }

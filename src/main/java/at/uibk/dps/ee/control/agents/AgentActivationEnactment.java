@@ -21,16 +21,23 @@ public class AgentActivationEnactment extends AgentContinuous implements AgentTa
   protected final AgentFactoryEnactment agentFactory;
   protected final Set<AgentTaskListener> listeners = new HashSet<>();
 
-  public AgentActivationEnactment(EnactmentState enactmentState, ExecutorProvider executorProvider,
-      AgentFactoryEnactment agentFactory) {
+  /**
+   * The default constructor.
+   * 
+   * @param enactmentState the enactment state (to access the queues)
+   * @param executorProvider the executor service provider
+   * @param agentFactory the factory for the enactment agents
+   */
+  public AgentActivationEnactment(final EnactmentState enactmentState,
+      final ExecutorProvider executorProvider, final AgentFactoryEnactment agentFactory) {
     this.enactmentState = enactmentState;
     this.executor = executorProvider.getExecutorService();
     this.agentFactory = agentFactory;
   }
 
   @Override
-  protected void operationOnTask(Task launchableTask) {
-    AgentEnactment enacterAgent =
+  protected void operationOnTask(final Task launchableTask) {
+    final AgentEnactment enacterAgent =
         agentFactory.createEnactmentAgent(launchableTask, getAgentTaskListeners());
     executor.submit(enacterAgent);
   }
@@ -40,7 +47,7 @@ public class AgentActivationEnactment extends AgentContinuous implements AgentTa
    * 
    * @param listener the listener to add
    */
-  public void addAgentTaskListener(AgentTaskListener listener) {
+  public void addAgentTaskListener(final AgentTaskListener listener) {
     listeners.add(listener);
   }
 

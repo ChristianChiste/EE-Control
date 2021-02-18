@@ -8,15 +8,29 @@ import at.uibk.dps.ee.control.management.ExecutorProvider;
 import at.uibk.dps.ee.core.exception.StopException;
 import net.sf.opendse.model.Task;
 
-public class AgentActivationTransform extends AgentContinuous implements AgentTaskCreator{
+/**
+ * The {@link AgentActivationTransform} monitors the queue with the task
+ * requiring a graph transformation and creates {@link AgentTransform}s to
+ * address the tranformation requests.
+ * 
+ * @author Fedor Smirnov
+ */
+public class AgentActivationTransform extends AgentContinuous implements AgentTaskCreator {
 
   protected final EnactmentState enactmentState;
   protected final AgentFactoryTransform agentFactory;
   protected final ExecutorService executor;
   protected final Set<AgentTaskListener> listeners = new HashSet<>();
-  
-  public AgentActivationTransform(EnactmentState enactmentState, AgentFactoryTransform agentFactory,
-      ExecutorProvider execProvider) {
+
+  /**
+   * Default constructor.
+   * 
+   * @param enactmentState the state of the enactment (to access the queues)
+   * @param agentFactory the factory for the transform agents
+   * @param execProvider the provider for the executor services
+   */
+  public AgentActivationTransform(final EnactmentState enactmentState,
+      final AgentFactoryTransform agentFactory, final ExecutorProvider execProvider) {
     this.enactmentState = enactmentState;
     this.agentFactory = agentFactory;
     this.executor = execProvider.getExecutorService();
@@ -28,12 +42,12 @@ public class AgentActivationTransform extends AgentContinuous implements AgentTa
   }
 
   @Override
-  public void addAgentTaskListener(AgentTaskListener listener) {
+  public void addAgentTaskListener(final AgentTaskListener listener) {
     listeners.add(listener);
   }
 
   @Override
-  protected void operationOnTask(Task task) throws StopException {
+  protected void operationOnTask(final Task task) throws StopException {
     executor.submit(agentFactory.createTransformAgent(task, getAgentTaskListeners()));
   }
 
