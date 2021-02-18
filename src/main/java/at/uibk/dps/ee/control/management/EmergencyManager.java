@@ -30,5 +30,5 @@ public interface EmergencyManager extends AgentTaskListener {
    * 
    * @param mainAgent the main agent
    */
-  void registerMain(EnactmentAgents mainAgent);
+  void registerMain(EnactmentAgent mainAgent);
 }

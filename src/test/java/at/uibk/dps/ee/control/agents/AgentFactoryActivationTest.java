@@ -3,7 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
-import at.uibk.dps.ee.control.management.EnactmentAgents;
+import at.uibk.dps.ee.control.management.EnactmentAgent;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import static org.mockito.Mockito.mock;
@@ -23,7 +23,7 @@ public class AgentFactoryActivationTest {
     AgentFactoryActivation tested = new AgentFactoryActivation(state, execProvider, schedMock,
         transMock, enactMock, extractMock, transformMock, graphMock);
 
-    EnactmentAgents agentMock = mock(EnactmentAgents.class);
+    EnactmentAgent agentMock = mock(EnactmentAgent.class);
     assertTrue(tested.createSchedulingActivationAgent() instanceof AgentActivationScheduling);
     assertTrue(tested.createExtractionActivationAgent() instanceof AgentActivationExtraction);
     assertTrue(tested.createEnactmentActivationAgent() instanceof AgentActivationEnactment);

@@ -3,7 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import com.google.inject.Inject;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
-import at.uibk.dps.ee.control.management.EnactmentAgents;
+import at.uibk.dps.ee.control.management.EnactmentAgent;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
@@ -68,7 +68,7 @@ public class AgentFactoryActivation {
    * @return the agent monitoring the available data queue.
    */
   public AgentActivationTransmission createTransmissionActivationAgent(
-      final EnactmentAgents mainAgent) {
+      final EnactmentAgent mainAgent) {
     return new AgentActivationTransmission(enactmentState, transmissionFactory, graphAccess,
         executorProvider, mainAgent);
   }

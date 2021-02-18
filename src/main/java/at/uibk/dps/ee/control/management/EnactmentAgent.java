@@ -16,11 +16,13 @@ import at.uibk.dps.ee.core.enactable.EnactmentFunction;
 import at.uibk.dps.ee.core.exception.StopException;
 
 /**
- * The {@link EnactmentAgents}
+ * The {@link EnactmentAgent} is the main-thread agent for the enactment of the
+ * workflow. It performs the init operations, creates the agents monitoring the
+ * state queues, and defines the behavior in case of run-time problems.
  * 
  * @author Fedor Smirnov
  */
-public class EnactmentAgents implements EnactmentFunction {
+public class EnactmentAgent implements EnactmentFunction {
 
   protected final AgentActivationEnactment activationEnactment;
   protected final AgentActivationExtraction activationExtraction;
@@ -33,10 +35,19 @@ public class EnactmentAgents implements EnactmentFunction {
   protected final EmergencyManager emergencyManager;
   protected final ExecutorService executor;
 
+  /**
+   * The injection constructor.
+   * 
+   * @param agentFactory the factory for the activation agents
+   * @param enactmentState the state of the enactment
+   * @param executorProvider the provider for the execution services
+   * @param dataHandler the object handling the wf input and output
+   * @param emergencyManager the object handling run-time problems
+   */
   @Inject
-  protected EnactmentAgents(AgentFactoryActivation agentFactory, EnactmentState enactmentState,
-      ExecutorProvider executorProvider, DataHandler dataHandler,
-      EmergencyManager emergencyManager) {
+  protected EnactmentAgent(final AgentFactoryActivation agentFactory,
+      final EnactmentState enactmentState, final ExecutorProvider executorProvider,
+      final DataHandler dataHandler, final EmergencyManager emergencyManager) {
     this.emergencyManager = emergencyManager;
     this.emergencyManager.registerMain(this);
     this.activationEnactment = agentFactory.createEnactmentActivationAgent();
@@ -55,7 +66,7 @@ public class EnactmentAgents implements EnactmentFunction {
   }
 
   @Override
-  public JsonObject processInput(JsonObject input) throws StopException {
+  public JsonObject processInput(final JsonObject input) throws StopException {
     dataHandler.annotateAvailableData(input);
     // start up the activation agents
     executor.submit(activationEnactment);
@@ -95,7 +106,7 @@ public class EnactmentAgents implements EnactmentFunction {
    * Stops the activation agents.
    */
   protected void stopActivationAgents() {
-    PoisonPill poisonPill = new PoisonPill();
+    final PoisonPill poisonPill = new PoisonPill();
     enactmentState.putAvailableData(poisonPill);
     enactmentState.putFinishedTask(poisonPill);
     enactmentState.putLaunchableTask(poisonPill);

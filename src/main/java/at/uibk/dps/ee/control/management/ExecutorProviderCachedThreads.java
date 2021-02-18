@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
- * Executor provider working with a single thread executor.
+ * Executor provider working with a cached thread pool executor.
  * 
  * @author Fedor Smirnov
  *
@@ -15,15 +15,18 @@ import com.google.inject.Singleton;
 @Singleton
 public class ExecutorProviderCachedThreads implements ExecutorProvider {
 
-	protected final ExecutorService executor;
+  protected final ExecutorService executor;
 
-	@Inject
-	public ExecutorProviderCachedThreads() {
-		this.executor = Executors.newCachedThreadPool();
-	}
+  /**
+   * Injection constructor.
+   */
+  @Inject
+  public ExecutorProviderCachedThreads() {
+    this.executor = Executors.newCachedThreadPool();
+  }
 
-	@Override
-	public ExecutorService getExecutorService() {
-		return executor;
-	}
+  @Override
+  public ExecutorService getExecutorService() {
+    return executor;
+  }
 }

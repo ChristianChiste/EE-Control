@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
-import at.uibk.dps.ee.control.management.EnactmentAgents;
+import at.uibk.dps.ee.control.management.EnactmentAgent;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
@@ -26,7 +26,7 @@ public class AgentActivationTransmission extends AgentContinuous implements Agen
 
   protected final Set<Task> leafNodes;
   protected final Set<Task> availableWfResults = new HashSet<>();
-  protected final EnactmentAgents mainAgent;
+  protected final EnactmentAgent mainAgent;
 
   /**
    * The default constructor.
@@ -40,7 +40,7 @@ public class AgentActivationTransmission extends AgentContinuous implements Agen
    */
   public AgentActivationTransmission(final EnactmentState enactmentState,
       final AgentFactoryTransmission agentFactory, final GraphAccess graphAccess,
-      final ExecutorProvider executorProvider, final EnactmentAgents mainAgent) {
+      final ExecutorProvider executorProvider, final EnactmentAgent mainAgent) {
     this.enactmentState = enactmentState;
     this.agentFactory = agentFactory;
     this.graphAccess = graphAccess;

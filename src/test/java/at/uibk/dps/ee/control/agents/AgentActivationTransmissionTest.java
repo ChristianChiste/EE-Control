@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
-import at.uibk.dps.ee.control.management.EnactmentAgents;
+import at.uibk.dps.ee.control.management.EnactmentAgent;
 import at.uibk.dps.ee.control.management.EnactmentState;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Communication;
@@ -47,7 +47,7 @@ public class AgentActivationTransmissionTest {
     leaves.add(leaf);
     when(gAccess.getLeafDataNodes()).thenReturn(leaves);
 
-    EnactmentAgents mockRoot = mock(EnactmentAgents.class);
+    EnactmentAgent mockRoot = mock(EnactmentAgent.class);
 
     AgentTransmission mockAgent1 = mock(AgentTransmission.class);
     AgentTransmission mockAgent2 = mock(AgentTransmission.class);

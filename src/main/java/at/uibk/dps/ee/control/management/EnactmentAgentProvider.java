@@ -16,12 +16,12 @@ import at.uibk.dps.ee.core.enactable.EnactableStateListener;
  * @author Fedor Smirnov
  */
 @Singleton
-public class EnactmentAgentsProvider implements EnactableProvider {
+public class EnactmentAgentProvider implements EnactableProvider {
 
 	protected final EnactableRoot rootEnactableAgents;
 	
 	@Inject
-	public EnactmentAgentsProvider(EnactmentAgents enactmentAgents, Set<EnactableStateListener> listeners) {
+	public EnactmentAgentProvider(EnactmentAgent enactmentAgents, Set<EnactableStateListener> listeners) {
 		this.rootEnactableAgents = new EnactableRoot(listeners, enactmentAgents);
 	}
 	

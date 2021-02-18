@@ -11,7 +11,7 @@ public class EmergencyManagerHardStopTest {
   @Test
   public void test() {
     EmergencyManagerHardStop tested = new EmergencyManagerHardStop();
-    EnactmentAgents mainMock = mock(EnactmentAgents.class);
+    EnactmentAgent mainMock = mock(EnactmentAgent.class);
     
     assertTrue(tested.mainAgent.isEmpty());
     tested.registerMain(mainMock);

@@ -19,15 +19,21 @@ public class DataHandlerDefault implements DataHandler {
   protected final GraphAccess graphAccess;
   protected final EnactmentState enactmentState;
 
-
+  /**
+   * Injection constructor.
+   * 
+   * @param graphAccess the access to the enactment graph
+   * @param enactmentState the state of the enactment (to put the data into
+   *        queues)
+   */
   @Inject
-  public DataHandlerDefault(GraphAccess graphAccess, EnactmentState enactmentState) {
+  public DataHandlerDefault(final GraphAccess graphAccess, final EnactmentState enactmentState) {
     this.graphAccess = graphAccess;
     this.enactmentState = enactmentState;
   }
 
   @Override
-  public void annotateAvailableData(JsonObject input) {
+  public void annotateAvailableData(final JsonObject input) {
     // get the input, annotate the root nodes, and add them to the
     // availableDataQueue
     graphAccess.getRootDataNodes().forEach(rootNode -> processRootNode(rootNode, input));
@@ -42,9 +48,9 @@ public class DataHandlerDefault implements DataHandler {
    * 
    * @param rootNode the given root node
    */
-  protected void processRootNode(Task rootNode, JsonObject jsonInput) {
-    String jsonKey = PropertyServiceData.getJsonKey(rootNode);
-    JsonElement content =
+  protected void processRootNode(final Task rootNode, final JsonObject jsonInput) {
+    final String jsonKey = PropertyServiceData.getJsonKey(rootNode);
+    final JsonElement content =
         Optional.ofNullable(jsonInput.get(jsonKey)).orElseThrow(() -> new IllegalArgumentException(
             "No entry with the key " + jsonKey + " in the WF input."));
     PropertyServiceData.setContent(rootNode, content);
@@ -53,7 +59,7 @@ public class DataHandlerDefault implements DataHandler {
 
   @Override
   public JsonObject extractResult() {
-    JsonObject result = new JsonObject();
+    final JsonObject result = new JsonObject();
     graphAccess.getLeafDataNodes().forEach(leafNode -> processLeafNode(leafNode, result));
     return result;
   }
@@ -63,11 +69,8 @@ public class DataHandlerDefault implements DataHandler {
    * 
    * @param leafNode the given leaf node
    */
-  protected void processLeafNode(Task leafNode, JsonObject result) {
-    String jsonKey = PropertyServiceData.getJsonKey(leafNode);
+  protected void processLeafNode(final Task leafNode, final JsonObject result) {
+    final String jsonKey = PropertyServiceData.getJsonKey(leafNode);
     result.add(jsonKey, PropertyServiceData.getContent(leafNode));
   }
-
-
-
 }

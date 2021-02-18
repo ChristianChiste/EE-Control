@@ -8,8 +8,9 @@ import com.google.inject.Singleton;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link EnactmentState} captures the current state of the enactment and
- * manages the access to the enactment graph.
+ * The {@link EnactmentState} captures the current state of the enactment
+ * (within queues representing the state of different tasks) and manages the
+ * access to the enactment graph.
  * 
  * @author Fedor Smirnov
  */
@@ -22,6 +23,9 @@ public class EnactmentState {
   protected final LinkedBlockingQueue<Task> availableData;
   protected final LinkedBlockingQueue<Task> awaitingTransform;
 
+  /**
+   * The injection constructor
+   */
   @Inject
   public EnactmentState() {
     this.launchableTasks = new LinkedBlockingQueue<>();
@@ -48,7 +52,7 @@ public class EnactmentState {
    * 
    * @param functionTask the task which requires graph transformation
    */
-  public void putTransformTask(Task functionTask) {
+  public void putTransformTask(final Task functionTask) {
     putInQueue(awaitingTransform, functionTask);
   }
 
@@ -68,7 +72,7 @@ public class EnactmentState {
    * 
    * @param functionTask the task which is ready to be launched
    */
-  public void putSchedulableTask(Task functionTask) {
+  public void putSchedulableTask(final Task functionTask) {
     putInQueue(schedulableTasks, functionTask);
   }
 
@@ -88,7 +92,7 @@ public class EnactmentState {
    * 
    * @param dataNode the data node with available content
    */
-  public void putAvailableData(Task dataNode) {
+  public void putAvailableData(final Task dataNode) {
     putInQueue(availableData, dataNode);
   }
 
@@ -108,7 +112,7 @@ public class EnactmentState {
    * 
    * @param readyTask the finished task to be added to the queue.
    */
-  public void putFinishedTask(Task finishedTask) {
+  public void putFinishedTask(final Task finishedTask) {
     putInQueue(finishedTasks, finishedTask);
   }
 
@@ -129,7 +133,7 @@ public class EnactmentState {
    * 
    * @param readyTask the task to be added to the queue.
    */
-  public void putLaunchableTask(Task readyTask) {
+  public void putLaunchableTask(final Task readyTask) {
     putInQueue(launchableTasks, readyTask);
   }
 
@@ -142,7 +146,7 @@ public class EnactmentState {
    * @return an element from the blocking queue
    * @throws InterruptedException
    */
-  protected Task takeFromQueue(LinkedBlockingQueue<Task> queue) throws InterruptedException {
+  protected Task takeFromQueue(final LinkedBlockingQueue<Task> queue) throws InterruptedException {
     return queue.take();
   }
 
@@ -154,7 +158,7 @@ public class EnactmentState {
    * @param queue the queue to put the element in
    * @param element the element to put into the queue
    */
-  protected void putInQueue(LinkedBlockingQueue<Task> queue, Task element) {
+  protected void putInQueue(final LinkedBlockingQueue<Task> queue, final Task element) {
     try {
       queue.put(element);
     } catch (InterruptedException e) {

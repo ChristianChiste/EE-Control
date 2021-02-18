@@ -21,13 +21,13 @@ import static org.mockito.Mockito.verify;
 
 import static org.mockito.ArgumentMatchers.any;
 
-public class EnactmentAgentsTest {
+public class EnactmentAgentTest {
 
   protected static class WakeUpCall implements Callable<Boolean> {
 
-    protected final EnactmentAgents mainAgent;
+    protected final EnactmentAgent mainAgent;
 
-    public WakeUpCall(EnactmentAgents mainAgent) {
+    public WakeUpCall(EnactmentAgent mainAgent) {
       super();
       this.mainAgent = mainAgent;
     }
@@ -40,7 +40,7 @@ public class EnactmentAgentsTest {
     }
   }
 
-  protected static EnactmentAgents getTested() {
+  protected static EnactmentAgent getTested() {
     DataHandler handlerMock = mock(DataHandler.class);
     EnactmentState stateMock = mock(EnactmentState.class);
     ExecutorService execMock = mock(ExecutorService.class);
@@ -59,10 +59,10 @@ public class EnactmentAgentsTest {
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
-    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
+    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
 
-    return new EnactmentAgents(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+    return new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
   }
 
   @Test
@@ -85,12 +85,12 @@ public class EnactmentAgentsTest {
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
-    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
+    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
 
-    EnactmentAgents tested =
-        new EnactmentAgents(factoryMock, stateMock, providerMock, handlerMock, emerMan);
-    EnactmentAgents spy = spy(tested);
+    EnactmentAgent tested =
+        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+    EnactmentAgent spy = spy(tested);
 
     JsonObject mockInput = new JsonObject();
     when(emerMan.isEmergency()).thenReturn(true);
@@ -139,12 +139,12 @@ public class EnactmentAgentsTest {
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
-    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
+    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
 
-    EnactmentAgents tested =
-        new EnactmentAgents(factoryMock, stateMock, providerMock, handlerMock, emerMan);
-    EnactmentAgents spy = spy(tested);
+    EnactmentAgent tested =
+        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+    EnactmentAgent spy = spy(tested);
 
     JsonObject mockInput = new JsonObject();
     when(emerMan.isEmergency()).thenReturn(false);
@@ -187,11 +187,11 @@ public class EnactmentAgentsTest {
     when(factoryMock.createExtractionActivationAgent()).thenReturn(extractionMock);
     when(factoryMock.createSchedulingActivationAgent()).thenReturn(schedulingMock);
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
-    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgents.class)))
+    when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
 
-    EnactmentAgents tested =
-        new EnactmentAgents(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+    EnactmentAgent tested =
+        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
 
     assertEquals(schedulingMock, tested.activationScheduling);
     assertEquals(extractionMock, tested.activationExtraction);
@@ -201,7 +201,7 @@ public class EnactmentAgentsTest {
 
   @Test
   public void testStopMonitors() {
-    EnactmentAgents tested = getTested();
+    EnactmentAgent tested = getTested();
     tested.stopActivationAgents();
     verify(tested.enactmentState).putAvailableData(any(PoisonPill.class));
     verify(tested.enactmentState).putFinishedTask(any(PoisonPill.class));

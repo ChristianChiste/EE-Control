@@ -15,15 +15,15 @@ public class EmergencyManagerHardStop implements EmergencyManager {
   protected boolean emergencyState = false;
   protected Optional<Exception> exc = Optional.empty();
   protected String additionalInformation;
-  protected Optional<EnactmentAgents> mainAgent = Optional.empty();
+  protected Optional<EnactmentAgent> mainAgent = Optional.empty();
 
   @Override
-  public void registerMain(EnactmentAgents mainAgent) {
+  public void registerMain(EnactmentAgent mainAgent) {
     this.mainAgent = Optional.of(mainAgent);
   }
 
   @Override
-  public void reactToException(Exception exc, String additionalInformation) {
+  public void reactToException(final Exception exc, final String additionalInformation) {
     emergencyState = true;
     this.exc = Optional.of(exc);
     this.additionalInformation = additionalInformation;
@@ -36,7 +36,7 @@ public class EmergencyManagerHardStop implements EmergencyManager {
   }
 
   @Override
-  public void emergencyProtocol() throws StopException{
+  public void emergencyProtocol() throws StopException {
     String message = additionalInformation + "\n";
     message += exc.get().getMessage();
     throw new StopException(message, exc.get());
