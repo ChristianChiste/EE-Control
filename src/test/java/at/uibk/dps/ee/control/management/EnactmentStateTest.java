@@ -71,6 +71,11 @@ public class EnactmentStateTest {
     Instant finishedSUbmission = Instant.now();
     assertTrue(Duration.between(start, finishedSUbmission).toMillis() < 30);
     Future<Task> f1 = executor.submit(take);
+    try {
+      Thread.sleep(30);
+    } catch (InterruptedException e1) {
+      fail();
+    }
     Future<Task> f2 = executor.submit(take);
     try {
       Task result1 = f1.get();
