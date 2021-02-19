@@ -22,6 +22,7 @@ import net.sf.opendse.model.Task;
  */
 public class GraphTransformAggregation implements GraphTransform {
 
+
   @Override
   public void modifyEnactmentGraph(final GraphAccess graphAccess, final Task taskNode) {
     graphAccess.writeOperationTask(this::revertDistributionReproduction, taskNode);
@@ -46,7 +47,8 @@ public class GraphTransformAggregation implements GraphTransform {
         .filter(task -> PropertyServiceFunctionDataFlowCollections.isDistributionNode(task)
             && PropertyServiceFunctionDataFlowCollections.getScope(task).equals(scope))
         .collect(Collectors.toSet());
-    if (dNodes.size() > 1) {
+    final boolean moreThanOneDistNode = dNodes.size() > 1;
+    if (moreThanOneDistNode) {
       throw new IllegalArgumentException("Multiple distribution nodes with the scope " + scope);
     }
 
@@ -80,14 +82,16 @@ public class GraphTransformAggregation implements GraphTransform {
       return;
     }
     final Task offspringSrc = graph.getSource(offspringEdge);
-    final Task offspringDst = graph.getDest(offspringEdge);
-    final Task originalSrc = !wasReproduced(offspringSrc, scope, distributionNode) ? offspringSrc
-        : (Task) offspringSrc.getParent();
+    final Task originalSrc =
+        wasReproduced(offspringSrc, scope, distributionNode) ? (Task) offspringSrc.getParent()
+            : offspringSrc;
     if (originalSrc == null) {
       throw new IllegalStateException("The offspring " + offspringSrc + " has no parent.");
     }
-    final Task originalDst = !wasReproduced(offspringDst, scope, distributionNode) ? offspringDst
-        : (Task) offspringDst.getParent();
+    final Task offspringDst = graph.getDest(offspringEdge);
+    final Task originalDst =
+        wasReproduced(offspringDst, scope, distributionNode) ? (Task) offspringDst.getParent()
+            : offspringDst;
     if (originalDst == null) {
       throw new IllegalStateException("The offspring " + offspringDst + " has no parent.");
     }

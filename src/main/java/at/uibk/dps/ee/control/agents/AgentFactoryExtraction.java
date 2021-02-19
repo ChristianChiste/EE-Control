@@ -28,6 +28,15 @@ public class AgentFactoryExtraction {
     this.enactmentState = enactmentState;
   }
 
+  /**
+   * Creates an {@link AgentExtraction} to extract the data from the finished task
+   * (edge src) and write it into the data node (edge destination).
+   * 
+   * @param edgeTuple the edge tuple with src, dst, and the edge
+   * @param listeners the {@link AgentTaskListener}s
+   * @return an {@link AgentExtraction} to extract the data from the finished task
+   *         (edge src) and write it into the data node (edge destination)
+   */
   public AgentExtraction createExtractionAgent(final EdgeTupleAppl edgeTuple,
       final Set<AgentTaskListener> listeners) {
     return new AgentExtraction(edgeTuple.getSrc(), edgeTuple.getEdge(), edgeTuple.getDst(),

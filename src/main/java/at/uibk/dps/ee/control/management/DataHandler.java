@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.inject.ImplementedBy;
 
 /**
- * The {@link DataHandler} is responsible for the annotation of the input
- * data to the graph and for the extraction of the enactment result from the
- * leaf nodes.
+ * The {@link DataHandler} is responsible for the annotation of the input data
+ * to the graph and for the extraction of the enactment result from the leaf
+ * nodes.
  * 
  * @author Fedor Smirnov
  *

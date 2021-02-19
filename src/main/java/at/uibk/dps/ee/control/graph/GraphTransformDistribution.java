@@ -132,21 +132,21 @@ public class GraphTransformDistribution implements GraphTransform {
 
     for (int reproductionIdx = 0; reproductionIdx < iterationNum; reproductionIdx++) {
 
-      Optional<Task> offspringSrc = null;
+      Optional<Task> offspringSrc;
       String jsonKey = PropertyServiceDependency.getJsonKey(originalEdge);
-      Optional<Task> offspringDst = null;
+      Optional<Task> offspringDst;
 
       // assign src
-      if (!PropertyServiceReproduction.belongsToDistributionNode(originalSrc, distributionNode)) {
+      if (PropertyServiceReproduction.belongsToDistributionNode(originalSrc, distributionNode)) {
+        // src needs to be reproduced
+        offspringSrc = reproduceNode(graph, originalSrc, reproductionIdx);
+      } else {
         // edge from distribution node
         offspringSrc = Optional.of(originalSrc);
-        String collectionName = PropertyServiceDependency.getJsonKey(originalEdge);
+        final String collectionName = PropertyServiceDependency.getJsonKey(originalEdge);
         if (originalSrc.equals(distributionNode)) {
           jsonKey = ConstantsEEModel.getCollectionElementKey(collectionName, reproductionIdx);
         }
-      } else {
-        // src needs to be reproduced
-        offspringSrc = reproduceNode(graph, originalSrc, reproductionIdx);
       }
 
       if (PropertyServiceFunctionDataFlowCollections.isAggregationNode(originalDst)
@@ -246,7 +246,7 @@ public class GraphTransformDistribution implements GraphTransform {
           && scope.equals(PropertyServiceFunctionDataFlowCollections.getScope(curNode)))) {
         result.addAll(graph.getInEdges(curNode));
       }
-      for (Dependency outEdge : graph.getOutEdges(curNode)) {
+      for (final Dependency outEdge : graph.getOutEdges(curNode)) {
         result.add(outEdge);
         final Task dest = graph.getDest(outEdge);
         if (!visited.contains(dest)) {

@@ -12,13 +12,13 @@ import at.uibk.dps.ee.core.exception.StopException;
  */
 public class EmergencyManagerHardStop implements EmergencyManager {
 
-  protected boolean emergencyState = false;
+  protected boolean emergencyState;
   protected Optional<Exception> exc = Optional.empty();
   protected String additionalInformation;
   protected Optional<EnactmentAgent> mainAgent = Optional.empty();
 
   @Override
-  public void registerMain(EnactmentAgent mainAgent) {
+  public void registerMain(final EnactmentAgent mainAgent) {
     this.mainAgent = Optional.of(mainAgent);
   }
 

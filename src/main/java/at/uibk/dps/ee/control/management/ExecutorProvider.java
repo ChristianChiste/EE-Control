@@ -14,10 +14,10 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(ExecutorProviderCachedThreads.class)
 public interface ExecutorProvider {
 
-	/**
-	 * Returns an executor service which is to be used for the creation of threads.
-	 * 
-	 * @return the executor service which is to be used for the creation of threads
-	 */
-	ExecutorService getExecutorService();
+  /**
+   * Returns an executor service which is to be used for the creation of threads.
+   * 
+   * @return the executor service which is to be used for the creation of threads
+   */
+  ExecutorService getExecutorService();
 }

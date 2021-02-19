@@ -18,15 +18,22 @@ import at.uibk.dps.ee.core.enactable.EnactableStateListener;
 @Singleton
 public class EnactmentAgentProvider implements EnactableProvider {
 
-	protected final EnactableRoot rootEnactableAgents;
-	
-	@Inject
-	public EnactmentAgentProvider(EnactmentAgent enactmentAgents, Set<EnactableStateListener> listeners) {
-		this.rootEnactableAgents = new EnactableRoot(listeners, enactmentAgents);
-	}
-	
-	@Override
-	public EnactableRoot getEnactableApplication() {
-		return rootEnactableAgents;
-	}
+  protected final EnactableRoot rootEnactableAgents;
+
+  /**
+   * The injection constructor.
+   * 
+   * @param enactmentAgents the main agent starting and ending the enactment
+   * @param listeners the {@link EnactableStateListener}s.
+   */
+  @Inject
+  public EnactmentAgentProvider(final EnactmentAgent enactmentAgents,
+      Set<EnactableStateListener> listeners) {
+    this.rootEnactableAgents = new EnactableRoot(listeners, enactmentAgents);
+  }
+
+  @Override
+  public EnactableRoot getEnactableApplication() {
+    return rootEnactableAgents;
+  }
 }
