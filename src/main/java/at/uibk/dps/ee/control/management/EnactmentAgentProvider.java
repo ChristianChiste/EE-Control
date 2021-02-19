@@ -28,7 +28,7 @@ public class EnactmentAgentProvider implements EnactableProvider {
    */
   @Inject
   public EnactmentAgentProvider(final EnactmentAgent enactmentAgents,
-      Set<EnactableStateListener> listeners) {
+      final Set<EnactableStateListener> listeners) {
     this.rootEnactableAgents = new EnactableRoot(listeners, enactmentAgents);
   }
 
