@@ -2,10 +2,12 @@ package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
 import java.util.HashSet;
+import java.util.Set;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphTransform;
 import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.core.ModelModificationListener;
 import net.sf.opendse.model.Task;
 
 import static org.mockito.Mockito.mock;
@@ -22,8 +24,11 @@ public class AgentTransformTest {
     when(modification.getTransformName()).thenReturn(modName);
     GraphAccess gAccess = mock(GraphAccess.class);
     EnactmentState eState = mock(EnactmentState.class);
+    ModelModificationListener modificationListener = mock(ModelModificationListener.class);
+    Set<ModelModificationListener> modificationListeners = new HashSet<>();
+    modificationListeners.add(modificationListener);
     AgentTransform tested =
-        new AgentTransform(new HashSet<>(), gAccess, modification, taskNode, eState);
+        new AgentTransform(new HashSet<>(), gAccess, modification, taskNode, eState, modificationListeners);
 
     String expectedMessage = ConstantsAgents.ExcMessageTransformPrefix + modName
         + ConstantsAgents.ExcMessageTransformSuffix + taskNode.getId();
@@ -33,6 +38,7 @@ public class AgentTransformTest {
       assertTrue(tested.actualCall());
       verify(modification).modifyEnactmentGraph(gAccess, taskNode);
       verify(eState).putFinishedTask(taskNode);
+      verify(modificationListener).reactToModelModification();
     } catch (Exception e) {
       fail();
     }

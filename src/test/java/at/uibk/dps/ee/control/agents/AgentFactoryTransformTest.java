@@ -20,7 +20,8 @@ public class AgentFactoryTransformTest {
     GraphAccess gMock = mock(GraphAccess.class);
     EnactableFactory factoryMock = mock(EnactableFactory.class);
     EnactmentState stateMock = mock(EnactmentState.class);
-    AgentFactoryTransform tested = new AgentFactoryTransform(gMock, factoryMock, stateMock);
+    AgentFactoryTransform tested =
+        new AgentFactoryTransform(gMock, factoryMock, stateMock, new HashSet<>());
     Task aggregationTask = PropertyServiceFunctionDataFlowCollections
         .createCollectionDataFlowTask("t1", OperationType.Aggregation, "scope");
     Task distributionTask = PropertyServiceFunctionDataFlowCollections
