@@ -14,15 +14,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class EnactmentStateTest {
+public class EnactmentQueuesTest {
 
   protected class PutRunnable implements Callable<Boolean> {
 
     protected final Task task;
     protected final int waitTimeMillis;
-    protected final EnactmentState state;
+    protected final EnactmentQueues state;
 
-    protected PutRunnable(Task task, int waitTime, EnactmentState state) {
+    protected PutRunnable(Task task, int waitTime, EnactmentQueues state) {
       this.task = task;
       this.waitTimeMillis = waitTime;
       this.state = state;
@@ -41,9 +41,9 @@ public class EnactmentStateTest {
   }
 
   protected class TakeRunnable implements Callable<Task> {
-    protected final EnactmentState state;
+    protected final EnactmentQueues state;
 
-    protected TakeRunnable(EnactmentState state) {
+    protected TakeRunnable(EnactmentQueues state) {
       this.state = state;
     }
 
@@ -55,7 +55,7 @@ public class EnactmentStateTest {
 
   @Test
   public void testReadyTaskQueueTake() {
-    EnactmentState tested = new EnactmentState();
+    EnactmentQueues tested = new EnactmentQueues();
     assertTrue(tested.launchableTasks.isEmpty());
     ExecutorService executor = Executors.newCachedThreadPool();
     Task task1 = new Task("task1");
@@ -97,7 +97,7 @@ public class EnactmentStateTest {
 
   @Test
   public void testReadyTaskQueuePut() {
-    EnactmentState tested = new EnactmentState();
+    EnactmentQueues tested = new EnactmentQueues();
     assertTrue(tested.launchableTasks.isEmpty());
     ExecutorService executor = Executors.newCachedThreadPool();
     Task task1 = new Task("task1");

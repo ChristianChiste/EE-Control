@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
@@ -16,7 +16,7 @@ public class AgentFactoryTransmissionTest {
 
   @Test
   public void test() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     GraphAccess graphMock = mock(GraphAccess.class);
     Communication data = new Communication("data");
     Dependency edge = new Dependency("edge");

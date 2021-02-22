@@ -2,7 +2,7 @@ package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import net.sf.opendse.model.Task;
 import static org.mockito.Mockito.mock;
 import java.util.HashSet;
@@ -12,7 +12,7 @@ public class AgentFactoryEnactmentTest {
 
   @Test
   public void test() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     AgentFactoryEnactment tested = new AgentFactoryEnactment(stateMock);
     Task task = new Task("task");
     Set<AgentTaskListener> listeners = new HashSet<>();

@@ -2,7 +2,7 @@ package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import at.uibk.dps.ee.core.exception.StopException;
 import net.sf.opendse.model.Task;
@@ -17,7 +17,7 @@ public class AgentActivationTransformTest {
 
   @Test
   public void testGetSetListener() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     AgentFactoryTransform factoryMock = mock(AgentFactoryTransform.class);
     ExecutorService execMock = mock(ExecutorService.class);
     ExecutorProvider providerMock = mock(ExecutorProvider.class);
@@ -31,7 +31,7 @@ public class AgentActivationTransformTest {
 
   @Test
   public void testOperationOnTask() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     AgentFactoryTransform factoryMock = mock(AgentFactoryTransform.class);
     ExecutorService execMock = mock(ExecutorService.class);
     ExecutorProvider providerMock = mock(ExecutorProvider.class);
@@ -52,7 +52,7 @@ public class AgentActivationTransformTest {
 
   @Test
   public void getTaskFromQueueTest() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     AgentFactoryTransform factoryMock = mock(AgentFactoryTransform.class);
     ExecutorService execMock = mock(ExecutorService.class);
     ExecutorProvider providerMock = mock(ExecutorProvider.class);

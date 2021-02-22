@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentAgent;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import static org.mockito.Mockito.mock;
 
@@ -12,7 +12,7 @@ public class AgentFactoryActivationTest {
 
   @Test
   public void test() {
-    EnactmentState state = mock(EnactmentState.class);
+    EnactmentQueues state = mock(EnactmentQueues.class);
     ExecutorProvider execProvider = mock(ExecutorProvider.class);
     AgentFactoryScheduling schedMock = mock(AgentFactoryScheduling.class);
     AgentFactoryEnactment enactMock = mock(AgentFactoryEnactment.class);

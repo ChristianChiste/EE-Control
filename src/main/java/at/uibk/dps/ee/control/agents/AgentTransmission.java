@@ -5,7 +5,7 @@ import java.util.Set;
 import com.google.gson.JsonElement;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
@@ -25,7 +25,7 @@ import net.sf.opendse.model.Task;
  */
 public class AgentTransmission extends AgentTask {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final Task dataNode;
   protected final Dependency edge;
   protected final Task functionNode;
@@ -42,7 +42,7 @@ public class AgentTransmission extends AgentTask {
    * @param graphAccess the access to the graph
    * @param listeners the {@link AgentTaskListener}s
    */
-  public AgentTransmission(final EnactmentState enactmentState, final Task dataNode,
+  public AgentTransmission(final EnactmentQueues enactmentState, final Task dataNode,
       final Dependency edge, final Task functionNode, final GraphAccess graphAccess,
       final Set<AgentTaskListener> listeners) {
     super(listeners);

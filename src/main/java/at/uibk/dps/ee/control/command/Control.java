@@ -2,7 +2,8 @@ package at.uibk.dps.ee.control.command;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import org.opt4j.core.start.Constant;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import at.uibk.dps.ee.core.ControlStateListener;
@@ -22,7 +23,14 @@ public class Control implements EnactmentStateListener {
   protected EnactmentState enactmentState = EnactmentState.PAUSED;
   protected final Set<ControlStateListener> listeners = new HashSet<>();
   protected boolean init;
+  
+  protected final boolean pauseOnStart;
 
+  @Inject
+  public Control(@Constant(namespace = Control.class, value = "pauseOnStart") final boolean pauseOnStart) {
+    this.pauseOnStart = pauseOnStart;
+  }
+  
   /**
    * Adds a {@link ControlStateListener}.
    * 
@@ -52,6 +60,10 @@ public class Control implements EnactmentStateListener {
       setState(EnactmentState.PAUSED);
     }
   }
+  
+  public void stop() {
+    setState(EnactmentState.STOPPED);
+  }
 
   public boolean isInit() {
     return init;
@@ -79,6 +91,9 @@ public class Control implements EnactmentStateListener {
   public void enactmentStarted() {
     enactmentState = EnactmentState.RUNNING;
     init = true;
+    if (pauseOnStart) {
+      setState(EnactmentState.PAUSED);
+    }
   }
 
   public EnactmentState getEnactmentState() {

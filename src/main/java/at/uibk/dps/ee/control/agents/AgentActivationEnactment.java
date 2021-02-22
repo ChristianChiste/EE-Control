@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
@@ -16,7 +16,7 @@ import net.sf.opendse.model.Task;
  */
 public class AgentActivationEnactment extends AgentContinuous implements AgentTaskCreator {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final ExecutorService executor;
   protected final AgentFactoryEnactment agentFactory;
   protected final Set<AgentTaskListener> listeners = new HashSet<>();
@@ -28,7 +28,7 @@ public class AgentActivationEnactment extends AgentContinuous implements AgentTa
    * @param executorProvider the executor service provider
    * @param agentFactory the factory for the enactment agents
    */
-  public AgentActivationEnactment(final EnactmentState enactmentState,
+  public AgentActivationEnactment(final EnactmentQueues enactmentState,
       final ExecutorProvider executorProvider, final AgentFactoryEnactment agentFactory) {
     this.enactmentState = enactmentState;
     this.executor = executorProvider.getExecutorService();

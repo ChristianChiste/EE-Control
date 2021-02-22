@@ -8,14 +8,14 @@ import com.google.inject.Singleton;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link EnactmentState} captures the current state of the enactment
+ * The {@link EnactmentQueues} captures the current state of the enactment
  * (within queues representing the state of different tasks) and manages the
  * access to the enactment graph.
  * 
  * @author Fedor Smirnov
  */
 @Singleton
-public class EnactmentState {
+public class EnactmentQueues {
 
   protected final LinkedBlockingQueue<Task> launchableTasks;
   protected final LinkedBlockingQueue<Task> schedulableTasks;
@@ -27,7 +27,7 @@ public class EnactmentState {
    * The injection constructor
    */
   @Inject
-  public EnactmentState() {
+  public EnactmentQueues() {
     this.launchableTasks = new LinkedBlockingQueue<>();
     this.finishedTasks = new LinkedBlockingQueue<>();
     this.availableData = new LinkedBlockingQueue<>();

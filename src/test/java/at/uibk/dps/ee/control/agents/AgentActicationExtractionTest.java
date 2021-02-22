@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
@@ -57,7 +57,7 @@ public class AgentActicationExtractionTest {
     when(mockFactory.createExtractionAgent(tuple2, listeners)).thenReturn(mockAgent2);
     when(mockFactory.createExtractionAgent(tuple3, listeners)).thenReturn(mockAgent3);
 
-    EnactmentState state = new EnactmentState();
+    EnactmentQueues state = new EnactmentQueues();
 
     AgentActivationExtraction tested =
         new AgentActivationExtraction(state, execProvider, gAccess, mockFactory);

@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 
 /**
  * The default factory for the creation of {@link AgentExtraction}s.
@@ -15,7 +15,7 @@ import at.uibk.dps.ee.control.management.EnactmentState;
 @Singleton
 public class AgentFactoryExtraction {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
 
   /**
    * The injection constructor.
@@ -24,7 +24,7 @@ public class AgentFactoryExtraction {
    *        queues)
    */
   @Inject
-  public AgentFactoryExtraction(final EnactmentState enactmentState) {
+  public AgentFactoryExtraction(final EnactmentQueues enactmentState) {
     this.enactmentState = enactmentState;
   }
 

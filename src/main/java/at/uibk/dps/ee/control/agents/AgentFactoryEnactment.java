@@ -4,7 +4,7 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import at.uibk.dps.ee.control.enactment.PostEnactmentQueueing;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import net.sf.opendse.model.Task;
 
 /**
@@ -15,7 +15,7 @@ import net.sf.opendse.model.Task;
 @Singleton
 public class AgentFactoryEnactment {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
 
   /**
    * The injection constructor
@@ -23,7 +23,7 @@ public class AgentFactoryEnactment {
    * @param enactmentState the state of the enactment (to access the queues)
    */
   @Inject
-  public AgentFactoryEnactment(final EnactmentState enactmentState) {
+  public AgentFactoryEnactment(final EnactmentQueues enactmentState) {
     this.enactmentState = enactmentState;
   }
 

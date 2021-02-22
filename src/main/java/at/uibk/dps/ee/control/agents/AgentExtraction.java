@@ -4,7 +4,7 @@ import java.util.Set;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
@@ -24,7 +24,7 @@ public class AgentExtraction extends AgentTask {
   protected final Task finishedFunction;
   protected final Dependency edge;
   protected final Task dataNode;
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
 
   /**
    * Default constructor
@@ -36,7 +36,7 @@ public class AgentExtraction extends AgentTask {
    * @param listeners the {@link AgentTaskListener}s
    */
   public AgentExtraction(final Task finishedFunction, final Dependency edge, final Task dataNode,
-      final EnactmentState enactmentState, final Set<AgentTaskListener> listeners) {
+      final EnactmentQueues enactmentState, final Set<AgentTaskListener> listeners) {
     super(listeners);
     this.finishedFunction = finishedFunction;
     this.edge = edge;

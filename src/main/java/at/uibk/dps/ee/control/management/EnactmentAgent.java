@@ -12,6 +12,9 @@ import at.uibk.dps.ee.control.agents.AgentActivationTransform;
 import at.uibk.dps.ee.control.agents.AgentActivationTransmission;
 import at.uibk.dps.ee.control.agents.AgentFactoryActivation;
 import at.uibk.dps.ee.control.agents.PoisonPill;
+import at.uibk.dps.ee.control.command.Control;
+import at.uibk.dps.ee.core.ControlStateListener;
+import at.uibk.dps.ee.core.EnactmentState;
 import at.uibk.dps.ee.core.enactable.EnactmentFunction;
 import at.uibk.dps.ee.core.exception.StopException;
 
@@ -22,7 +25,7 @@ import at.uibk.dps.ee.core.exception.StopException;
  * 
  * @author Fedor Smirnov
  */
-public class EnactmentAgent implements EnactmentFunction {
+public class EnactmentAgent implements EnactmentFunction, ControlStateListener {
 
   protected final AgentActivationEnactment activationEnactment;
   protected final AgentActivationExtraction activationExtraction;
@@ -30,10 +33,12 @@ public class EnactmentAgent implements EnactmentFunction {
   protected final AgentActivationScheduling activationScheduling;
   protected final AgentActivationTransform activationTransform;
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final DataHandler dataHandler;
   protected final EmergencyManager emergencyManager;
   protected final ExecutorService executor;
+
+  protected boolean enactmentStopped;
 
   /**
    * The injection constructor.
@@ -46,8 +51,9 @@ public class EnactmentAgent implements EnactmentFunction {
    */
   @Inject
   protected EnactmentAgent(final AgentFactoryActivation agentFactory,
-      final EnactmentState enactmentState, final ExecutorProvider executorProvider,
-      final DataHandler dataHandler, final EmergencyManager emergencyManager) {
+      final EnactmentQueues enactmentState, final ExecutorProvider executorProvider,
+      final DataHandler dataHandler, final EmergencyManager emergencyManager,
+      final Control control) {
     this.emergencyManager = emergencyManager;
     this.emergencyManager.registerMain(this);
     this.activationEnactment = agentFactory.createEnactmentActivationAgent();
@@ -63,6 +69,12 @@ public class EnactmentAgent implements EnactmentFunction {
     this.enactmentState = enactmentState;
     this.dataHandler = dataHandler;
     this.executor = executorProvider.getExecutorService();
+    control.addListener(this);
+    control.addListener(activationEnactment);
+    control.addListener(activationExtraction);
+    control.addListener(activationScheduling);
+    control.addListener(activationTransform);
+    control.addListener(activationTransmission);
   }
 
   @Override
@@ -89,9 +101,15 @@ public class EnactmentAgent implements EnactmentFunction {
       emergencyManager.emergencyProtocol();
       throw new IllegalStateException("This should be dead code.");
     } else {
-      return dataHandler.extractResult();
+      if (!enactmentStopped) {
+        return dataHandler.extractResult();
+      } else {
+        throw new StopException("Enactment stopped by user.");
+      }
     }
   }
+
+
 
   /**
    * Called to wake up the main agent.
@@ -112,5 +130,14 @@ public class EnactmentAgent implements EnactmentFunction {
     enactmentState.putLaunchableTask(poisonPill);
     enactmentState.putSchedulableTask(poisonPill);
     enactmentState.putTransformTask(poisonPill);
+  }
+
+  @Override
+  public void reactToStateChange(EnactmentState previousState, EnactmentState currentState)
+      throws StopException {
+    if (currentState.equals(EnactmentState.STOPPED)) {
+      this.enactmentStopped = true;
+      wakeUp();
+    }
   }
 }

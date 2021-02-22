@@ -22,7 +22,7 @@ public class DataHandlerDefaultTest {
   @Test
   public void annotateAvailableData() {
     GraphAccess gAccess = mock(GraphAccess.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     DataHandlerDefault tested = new DataHandlerDefault(gAccess, stateMock);
 
     Communication root = new Communication("root");
@@ -56,7 +56,7 @@ public class DataHandlerDefaultTest {
   @Test
   public void testProcessRootNode() {
     GraphAccess gAccess = mock(GraphAccess.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     DataHandlerDefault tested = new DataHandlerDefault(gAccess, stateMock);
 
     Communication root = new Communication("root");
@@ -75,7 +75,7 @@ public class DataHandlerDefaultTest {
   @Test(expected = IllegalArgumentException.class)
   public void testProcessRootNodeExc() {
     GraphAccess gAccess = mock(GraphAccess.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     DataHandlerDefault tested = new DataHandlerDefault(gAccess, stateMock);
 
     Communication root = new Communication("root");
@@ -106,7 +106,7 @@ public class DataHandlerDefaultTest {
     leafNodes.add(leafNode2);
 
     GraphAccess gAccess = mock(GraphAccess.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     DataHandlerDefault tested = new DataHandlerDefault(gAccess, stateMock);
     when(gAccess.getLeafDataNodes()).thenReturn(leafNodes);
 
@@ -126,7 +126,7 @@ public class DataHandlerDefaultTest {
     JsonObject result = new JsonObject();
 
     GraphAccess gAccess = mock(GraphAccess.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     DataHandlerDefault tested = new DataHandlerDefault(gAccess, stateMock);
     tested.processLeafNode(leafNode, result);
     assertEquals(content, result.get(key));

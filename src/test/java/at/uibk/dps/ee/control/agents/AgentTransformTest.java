@@ -6,7 +6,7 @@ import java.util.Set;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphTransform;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.ModelModificationListener;
 import net.sf.opendse.model.Task;
 
@@ -23,7 +23,7 @@ public class AgentTransformTest {
     String modName = "modification";
     when(modification.getTransformName()).thenReturn(modName);
     GraphAccess gAccess = mock(GraphAccess.class);
-    EnactmentState eState = mock(EnactmentState.class);
+    EnactmentQueues eState = mock(EnactmentQueues.class);
     ModelModificationListener modificationListener = mock(ModelModificationListener.class);
     Set<ModelModificationListener> modificationListeners = new HashSet<>();
     modificationListeners.add(modificationListener);

@@ -10,6 +10,7 @@ import at.uibk.dps.ee.control.agents.AgentActivationTransform;
 import at.uibk.dps.ee.control.agents.AgentActivationTransmission;
 import at.uibk.dps.ee.control.agents.AgentFactoryActivation;
 import at.uibk.dps.ee.control.agents.PoisonPill;
+import at.uibk.dps.ee.control.command.Control;
 import at.uibk.dps.ee.core.exception.StopException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,7 +43,7 @@ public class EnactmentAgentTest {
 
   protected static EnactmentAgent getTested() {
     DataHandler handlerMock = mock(DataHandler.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     ExecutorService execMock = mock(ExecutorService.class);
     ExecutorProvider providerMock = mock(ExecutorProvider.class);
     when(providerMock.getExecutorService()).thenReturn(execMock);
@@ -61,14 +62,15 @@ public class EnactmentAgentTest {
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
-
-    return new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+    Control controlMock = mock(Control.class);
+    return new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan,
+        controlMock);
   }
 
   @Test
   public void testEmergencyExecution() {
     DataHandler handlerMock = mock(DataHandler.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     ExecutorService execMock = mock(ExecutorService.class);
     ExecutorProvider providerMock = mock(ExecutorProvider.class);
     when(providerMock.getExecutorService()).thenReturn(execMock);
@@ -87,9 +89,9 @@ public class EnactmentAgentTest {
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
-
+    Control controlMock = mock(Control.class);
     EnactmentAgent tested =
-        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan, controlMock);
     EnactmentAgent spy = spy(tested);
 
     JsonObject mockInput = new JsonObject();
@@ -122,7 +124,7 @@ public class EnactmentAgentTest {
   @Test
   public void testNormalExecution() {
     DataHandler handlerMock = mock(DataHandler.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     ExecutorService execMock = mock(ExecutorService.class);
     ExecutorProvider providerMock = mock(ExecutorProvider.class);
     when(providerMock.getExecutorService()).thenReturn(execMock);
@@ -141,9 +143,9 @@ public class EnactmentAgentTest {
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
-
+    Control controlMock = mock(Control.class);
     EnactmentAgent tested =
-        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan, controlMock);
     EnactmentAgent spy = spy(tested);
 
     JsonObject mockInput = new JsonObject();
@@ -170,7 +172,7 @@ public class EnactmentAgentTest {
   @Test
   public void testConstructor() {
     DataHandler handlerMock = mock(DataHandler.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     ExecutorService execMock = mock(ExecutorService.class);
     ExecutorProvider providerMock = mock(ExecutorProvider.class);
     when(providerMock.getExecutorService()).thenReturn(execMock);
@@ -189,9 +191,9 @@ public class EnactmentAgentTest {
     when(factoryMock.createTransformActicationAgent()).thenReturn(transformMock);
     when(factoryMock.createTransmissionActivationAgent(any(EnactmentAgent.class)))
         .thenReturn(transmissionMock);
-
+    Control controlMock = mock(Control.class);
     EnactmentAgent tested =
-        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan);
+        new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan, controlMock);
 
     assertEquals(schedulingMock, tested.activationScheduling);
     assertEquals(extractionMock, tested.activationExtraction);

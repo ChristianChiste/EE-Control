@@ -17,7 +17,7 @@ import net.sf.opendse.model.Task;
 public class DataHandlerDefault implements DataHandler {
 
   protected final GraphAccess graphAccess;
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
 
   /**
    * Injection constructor.
@@ -27,7 +27,7 @@ public class DataHandlerDefault implements DataHandler {
    *        queues)
    */
   @Inject
-  public DataHandlerDefault(final GraphAccess graphAccess, final EnactmentState enactmentState) {
+  public DataHandlerDefault(final GraphAccess graphAccess, final EnactmentQueues enactmentState) {
     this.graphAccess = graphAccess;
     this.enactmentState = enactmentState;
   }

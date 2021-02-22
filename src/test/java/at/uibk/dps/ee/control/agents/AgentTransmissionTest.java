@@ -5,7 +5,7 @@ import org.junit.Test;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import at.uibk.dps.ee.control.graph.GraphAccess;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
@@ -25,7 +25,7 @@ public class AgentTransmissionTest {
 
   @Test
   public void testActualCall() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     Communication dataNode = new Communication("data");
     JsonElement content = new JsonPrimitive(42);
     PropertyServiceData.setContent(dataNode, content);
@@ -53,7 +53,7 @@ public class AgentTransmissionTest {
 
   @Test
   public void testTransmitData() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     Communication dataNode = new Communication("data");
     JsonElement content = new JsonPrimitive(42);
     PropertyServiceData.setContent(dataNode, content);

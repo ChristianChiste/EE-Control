@@ -4,7 +4,7 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.sc.core.ScheduleModel;
 import at.uibk.dps.sc.core.interpreter.ScheduleInterpreter;
 import at.uibk.dps.sc.core.scheduler.Scheduler;
@@ -21,7 +21,7 @@ public class AgentFactoryScheduling {
 
   protected final ScheduleModel schedule;
   protected final Scheduler scheduler;
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final ScheduleInterpreter scheduleInterpreter;
 
   /**
@@ -35,7 +35,7 @@ public class AgentFactoryScheduling {
   @Inject
   public AgentFactoryScheduling(final ScheduleModel schedule,
       final ScheduleInterpreter scheduleInterpreter, final Scheduler scheduler,
-      final EnactmentState enactmentState) {
+      final EnactmentQueues enactmentState) {
     this.schedule = schedule;
     this.scheduler = scheduler;
     this.enactmentState = enactmentState;

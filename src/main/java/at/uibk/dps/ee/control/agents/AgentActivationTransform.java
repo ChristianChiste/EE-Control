@@ -3,7 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import at.uibk.dps.ee.core.exception.StopException;
 import net.sf.opendse.model.Task;
@@ -17,7 +17,7 @@ import net.sf.opendse.model.Task;
  */
 public class AgentActivationTransform extends AgentContinuous implements AgentTaskCreator {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final AgentFactoryTransform agentFactory;
   protected final ExecutorService executor;
   protected final Set<AgentTaskListener> listeners = new HashSet<>();
@@ -29,7 +29,7 @@ public class AgentActivationTransform extends AgentContinuous implements AgentTa
    * @param agentFactory the factory for the transform agents
    * @param execProvider the provider for the executor services
    */
-  public AgentActivationTransform(final EnactmentState enactmentState,
+  public AgentActivationTransform(final EnactmentQueues enactmentState,
       final AgentFactoryTransform agentFactory, final ExecutorProvider execProvider) {
     this.enactmentState = enactmentState;
     this.agentFactory = agentFactory;

@@ -2,7 +2,7 @@ package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.sc.core.ScheduleModel;
 import at.uibk.dps.sc.core.interpreter.ScheduleInterpreter;
 import at.uibk.dps.sc.core.scheduler.Scheduler;
@@ -17,7 +17,7 @@ public class AgentFactorySchedulingTest {
   public void test() {
     ScheduleModel scheduleMock = mock(ScheduleModel.class);
     Scheduler schedulerMock = mock(Scheduler.class);
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     ScheduleInterpreter interpreterMock = mock(ScheduleInterpreter.class);
 
     Task task = new Task("task");

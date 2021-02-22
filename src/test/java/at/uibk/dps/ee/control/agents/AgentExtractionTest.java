@@ -5,7 +5,7 @@ import org.junit.Test;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
@@ -33,7 +33,7 @@ public class AgentExtractionTest {
     result.add("key", content);
     when(mockEnactable.getResult()).thenReturn(result);
     PropertyServiceFunction.setEnactable(finished, mockEnactable);
-    EnactmentState mockState = mock(EnactmentState.class);
+    EnactmentQueues mockState = mock(EnactmentQueues.class);
     PropertyServiceDependency.setJsonKey(dep, "key");
     AgentExtraction tested =
         new AgentExtraction(finished, dep, dataNode, mockState, new HashSet<>());

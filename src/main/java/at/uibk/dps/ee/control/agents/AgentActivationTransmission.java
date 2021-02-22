@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentAgent;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
@@ -18,7 +18,7 @@ import net.sf.opendse.model.Task;
  */
 public class AgentActivationTransmission extends AgentContinuous implements AgentTaskCreator {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final AgentFactoryTransmission agentFactory;
   protected final GraphAccess graphAccess;
   protected final ExecutorService executor;
@@ -38,7 +38,7 @@ public class AgentActivationTransmission extends AgentContinuous implements Agen
    * @param mainAgent reference to the main agent (to notify it when the enactment
    *        is finished)
    */
-  public AgentActivationTransmission(final EnactmentState enactmentState,
+  public AgentActivationTransmission(final EnactmentQueues enactmentState,
       final AgentFactoryTransmission agentFactory, final GraphAccess graphAccess,
       final ExecutorProvider executorProvider, final EnactmentAgent mainAgent) {
     this.enactmentState = enactmentState;

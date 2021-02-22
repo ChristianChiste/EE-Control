@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.junit.Test;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 
@@ -38,7 +38,7 @@ public class AgentActivationSchedulingTest {
     when(mockFactory.createSchedulingAgent(task2, listeners)).thenReturn(mockAgent2);
     when(mockFactory.createSchedulingAgent(task3, listeners)).thenReturn(mockAgent3);
 
-    EnactmentState state = new EnactmentState();
+    EnactmentQueues state = new EnactmentQueues();
 
     AgentActivationScheduling tested =
         new AgentActivationScheduling(state, mockFactory, execProvider);

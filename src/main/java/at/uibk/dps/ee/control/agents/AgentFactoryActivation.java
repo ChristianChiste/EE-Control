@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentAgent;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 
@@ -15,7 +15,7 @@ import at.uibk.dps.ee.model.graph.EnactmentGraph;
  */
 public class AgentFactoryActivation {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final ExecutorProvider executorProvider;
   protected final AgentFactoryScheduling schedulingFactory;
   protected final AgentFactoryTransmission transmissionFactory;
@@ -37,7 +37,7 @@ public class AgentFactoryActivation {
    * @param graphAccess the access to the {@link EnactmentGraph}
    */
   @Inject
-  public AgentFactoryActivation(final EnactmentState enactmentState,
+  public AgentFactoryActivation(final EnactmentQueues enactmentState,
       final ExecutorProvider executorProvider, final AgentFactoryScheduling schedulingFactory,
       final AgentFactoryTransmission transmissionFactory,
       final AgentFactoryEnactment enactmentFactory, final AgentFactoryExtraction extractionFactory,

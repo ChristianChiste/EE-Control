@@ -2,7 +2,7 @@ package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Task;
 import static org.mockito.Mockito.mock;
@@ -38,7 +38,7 @@ public class AgentActivationEnactmentTest {
     when(mockFactory.createEnactmentAgent(task2, listeners)).thenReturn(mockAgent2);
     when(mockFactory.createEnactmentAgent(task3, listeners)).thenReturn(mockAgent3);
 
-    EnactmentState state = new EnactmentState();
+    EnactmentQueues state = new EnactmentQueues();
 
     AgentActivationEnactment tested =
         new AgentActivationEnactment(state, execProvider, mockFactory);

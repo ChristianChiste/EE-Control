@@ -2,7 +2,7 @@ package at.uibk.dps.ee.control.agents;
 
 import java.util.Set;
 
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.EnactmentFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
@@ -24,7 +24,7 @@ public class AgentScheduling extends AgentTask {
   protected final ScheduleModel schedule;
   protected final Scheduler scheduler;
   protected final Task functionNode;
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final ScheduleInterpreter interpreter;
 
   /**
@@ -39,7 +39,7 @@ public class AgentScheduling extends AgentTask {
    * @param listeners the {@link AgentTaskListener}s
    */
   public AgentScheduling(final ScheduleModel schedule, final Scheduler scheduler,
-      final Task functionNode, final EnactmentState enactmentState,
+      final Task functionNode, final EnactmentQueues enactmentState,
       final ScheduleInterpreter interpreter, final Set<AgentTaskListener> listeners) {
     super(listeners);
     this.schedule = schedule;

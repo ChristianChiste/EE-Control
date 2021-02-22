@@ -1,5 +1,7 @@
 package at.uibk.dps.ee.control.agents;
 
+import at.uibk.dps.ee.core.ControlStateListener;
+import at.uibk.dps.ee.core.EnactmentState;
 import at.uibk.dps.ee.core.exception.StopException;
 import net.sf.opendse.model.Task;
 
@@ -9,13 +11,24 @@ import net.sf.opendse.model.Task;
  * 
  * @author Fedor Smirnov
  */
-public abstract class AgentContinuous implements Agent {
+public abstract class AgentContinuous implements Agent, ControlStateListener {
 
   protected boolean stopped;
+  protected boolean paused;
 
   @Override
   public Boolean call() throws Exception {
     while (!stopped) {
+      if (paused) {
+        // go to sleep
+        synchronized (this) {
+          try {
+            wait();
+          } catch (InterruptedException e) {
+            throw new IllegalArgumentException("Continuous agent interrupted.", e);
+          }
+        }
+      }
       final Task task = getTaskFromBlockingQueue();
       if (task instanceof PoisonPill) {
         // stopping
@@ -40,4 +53,23 @@ public abstract class AgentContinuous implements Agent {
    * @return a task from the blocking queue monitored by this agent
    */
   protected abstract Task getTaskFromBlockingQueue();
+
+  @Override
+  public void reactToStateChange(EnactmentState previousState, EnactmentState currentState)
+      throws StopException {
+    if (previousState.equals(EnactmentState.RUNNING)
+        && currentState.equals(EnactmentState.PAUSED)) {
+      // pausing
+      synchronized (this) {
+        this.paused = true;
+      }
+    } else if (previousState.equals(EnactmentState.PAUSED)
+        && currentState.equals(EnactmentState.RUNNING)) {
+      // resuming
+      synchronized (this) {
+        this.paused = false;
+        notifyAll();
+      }
+    }
+  }
 }

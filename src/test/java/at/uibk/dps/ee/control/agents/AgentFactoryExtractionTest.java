@@ -3,7 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 import static org.mockito.Mockito.mock;
@@ -14,7 +14,7 @@ public class AgentFactoryExtractionTest {
 
   @Test
   public void test() {
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     Task src = new Task("src");
     Task dst = new Task("dst");
     Dependency edge = new Dependency("dep");

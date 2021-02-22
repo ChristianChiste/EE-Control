@@ -6,7 +6,7 @@ import com.google.inject.Singleton;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 
 /**
  * The {@link AgentFactoryTransmission} is used to create transmission agents.
@@ -16,7 +16,7 @@ import at.uibk.dps.ee.control.management.EnactmentState;
 @Singleton
 public class AgentFactoryTransmission {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
   protected final GraphAccess graphAccess;
 
   /**
@@ -27,7 +27,7 @@ public class AgentFactoryTransmission {
    * @param graphAccess the access to the enactment graph
    */
   @Inject
-  public AgentFactoryTransmission(final EnactmentState enactmentState,
+  public AgentFactoryTransmission(final EnactmentQueues enactmentState,
       final GraphAccess graphAccess) {
     this.enactmentState = enactmentState;
     this.graphAccess = graphAccess;

@@ -1,6 +1,6 @@
 package at.uibk.dps.ee.control.enactment;
 
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlow.DataFlowType;
@@ -9,20 +9,20 @@ import net.sf.opendse.model.Task;
 
 /**
  * The {@link PostEnactmentQueueing} is the operation of putting a task into the
- * appropriate queue of the {@link EnactmentState} after it was enacted.
+ * appropriate queue of the {@link EnactmentQueues} after it was enacted.
  * 
  * @author Fedor Smirnov
  */
 public class PostEnactmentQueueing implements PostEnactment {
 
-  protected final EnactmentState enactmentState;
+  protected final EnactmentQueues enactmentState;
 
   /**
    * Default constructor
    * 
    * @param enactmentState the enactment state (for the access to the queues)
    */
-  public PostEnactmentQueueing(final EnactmentState enactmentState) {
+  public PostEnactmentQueueing(final EnactmentQueues enactmentState) {
     this.enactmentState = enactmentState;
   }
 

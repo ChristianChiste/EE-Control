@@ -2,7 +2,7 @@ package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.EnactmentFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
@@ -27,7 +27,7 @@ public class AgentSchedulingTest {
     ScheduleModel scheduleMock = mock(ScheduleModel.class);
     Scheduler schedulerMock = mock(Scheduler.class);
     Task task = new Task("task");
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     ScheduleInterpreter interpreterMock = mock(ScheduleInterpreter.class);
     Set<AgentTaskListener> listeners = new HashSet<>();
     Enactable enactableMock = mock(Enactable.class);
@@ -56,7 +56,7 @@ public class AgentSchedulingTest {
     ScheduleModel scheduleMock = mock(ScheduleModel.class);
     Scheduler schedulerMock = mock(Scheduler.class);
     Task task = new Task("task");
-    EnactmentState stateMock = mock(EnactmentState.class);
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
     ScheduleInterpreter interpreterMock = mock(ScheduleInterpreter.class);
     Set<AgentTaskListener> listeners = new HashSet<>();
     Enactable enactableMock = mock(Enactable.class);

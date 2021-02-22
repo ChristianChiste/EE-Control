@@ -13,7 +13,7 @@ import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
 import at.uibk.dps.ee.control.management.EnactmentAgent;
-import at.uibk.dps.ee.control.management.EnactmentState;
+import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.control.management.ExecutorProvider;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
@@ -65,7 +65,7 @@ public class AgentActivationTransmissionTest {
     when(mockFactory.createTransmissionAgent(tuple2, listeners)).thenReturn(mockAgent2);
     when(mockFactory.createTransmissionAgent(tuple3, listeners)).thenReturn(mockAgent3);
 
-    EnactmentState state = new EnactmentState();
+    EnactmentQueues state = new EnactmentQueues();
 
     AgentActivationTransmission tested =
         new AgentActivationTransmission(state, mockFactory, gAccess, execProvider, mockRoot);
