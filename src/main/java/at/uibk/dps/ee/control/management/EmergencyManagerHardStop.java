@@ -1,5 +1,7 @@
 package at.uibk.dps.ee.control.management;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 import at.uibk.dps.ee.core.exception.StopException;
 
@@ -38,7 +40,12 @@ public class EmergencyManagerHardStop implements EmergencyManager {
   @Override
   public void emergencyProtocol() throws StopException {
     String message = additionalInformation + "\n";
-    message += exc.get().getMessage();
+    message += exc.get().getMessage() + "\n";
+    // convert the exc stack trace to string
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(stringWriter);
+    exc.get().printStackTrace(printWriter);
+    message += stringWriter.toString();
     throw new StopException(message, exc.get());
   }
 }

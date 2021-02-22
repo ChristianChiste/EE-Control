@@ -2,7 +2,7 @@ package at.uibk.dps.ee.control.graph;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
+import at.uibk.dps.ee.control.management.ResourceMonitor;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
@@ -31,8 +31,9 @@ public class GraphProviderEnactables implements EnactmentGraphProvider {
    */
   @Inject
   public GraphProviderEnactables(final EnactmentGraphProvider graphProvider,
-      final EnactableFactory factory) {
+      final EnactableFactory factory, final ResourceMonitor resMonitor) {
     final EnactmentGraph graph = graphProvider.getEnactmentGraph();
+    factory.addEnactableStateListener(resMonitor);
     createEnactables(graph, factory);
     this.graph = graph;
   }
