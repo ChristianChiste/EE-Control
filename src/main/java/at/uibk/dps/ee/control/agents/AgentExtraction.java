@@ -50,6 +50,10 @@ public class AgentExtraction extends AgentTask {
     final Enactable finishedEnactable = PropertyServiceFunction.getEnactable(finishedFunction);
     final JsonObject enactmentResult = finishedEnactable.getResult();
     final String key = PropertyServiceDependency.getJsonKey(edge);
+    if (!enactmentResult.has(key)) {
+      throw new IllegalStateException("The execution of the task " + finishedFunction.getId()
+          + " did not produce an entry named " + key);
+    }
     final JsonElement data = enactmentResult.get(key);
     PropertyServiceData.setContent(dataNode, data);
     enactmentState.putAvailableData(dataNode);
