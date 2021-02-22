@@ -1,15 +1,40 @@
 package at.uibk.dps.ee.control.agents;
 
 import static org.junit.Assert.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.junit.Test;
+import at.uibk.dps.ee.core.EnactmentState;
 import at.uibk.dps.ee.core.exception.StopException;
 import net.sf.opendse.model.Task;
 
 public class AgentContinuousTest {
+
+  protected static class WakeUpCall implements Runnable {
+
+    protected final ContinuousMock mock;
+    protected final long waitTime = 75;
+
+    protected WakeUpCall(ContinuousMock mock) {
+      this.mock = mock;
+    }
+
+    @Override
+    public void run() {
+      try {
+        Thread.sleep(waitTime);
+        mock.stopped = false;
+        mock.reactToStateChange(EnactmentState.PAUSED, EnactmentState.RUNNING);
+      } catch (InterruptedException | StopException e) {
+        fail();
+      }
+    }
+  }
 
   protected static class ContinuousMock extends AgentContinuous {
 
@@ -43,6 +68,46 @@ public class AgentContinuousTest {
         return null;
       }
     }
+  }
+
+  @Test
+  public void testPauseBehavior() {
+    ContinuousMock mock = new ContinuousMock();
+    mock.putTask(new PoisonPill());
+    mock.paused = true;
+    ExecutorService cached = Executors.newCachedThreadPool();
+    WakeUpCall wakeUp = new WakeUpCall(mock);
+    Instant before = Instant.now();
+    cached.submit(wakeUp);
+    Future<Boolean> future = cached.submit(mock);
+    try {
+      future.get();
+    } catch (InterruptedException e) {
+      fail();
+    } catch (ExecutionException e) {
+      fail();
+    }
+    Instant after = Instant.now();
+    assertTrue(future.isDone());
+    assertTrue(Duration.between(before, after).toMillis() >= wakeUp.waitTime);
+  }
+
+  @Test
+  public void testReact() {
+    ContinuousMock mock = new ContinuousMock();
+    assertFalse(mock.paused);
+    try {
+      mock.reactToStateChange(EnactmentState.RUNNING, EnactmentState.PAUSED);
+    } catch (StopException e) {
+      fail();
+    }
+    assertTrue(mock.paused);
+    try {
+      mock.reactToStateChange(EnactmentState.PAUSED, EnactmentState.RUNNING);
+    } catch (StopException e) {
+      fail();
+    }
+    assertFalse(mock.paused);
   }
 
   @Test

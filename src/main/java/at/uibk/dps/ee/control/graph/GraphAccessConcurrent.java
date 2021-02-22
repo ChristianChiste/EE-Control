@@ -104,7 +104,7 @@ public class GraphAccessConcurrent implements GraphAccess {
       final Set<Task> result = graph.getVertices().stream()
           .filter(task -> graph.getOutEdges(task).size() == 0).collect(Collectors.toSet());
       if (result.stream().anyMatch(task -> !PropertyServiceData.isLeaf(task))) {
-        throw new IllegalStateException("Non-root nodes without out edges present.");
+        throw new IllegalStateException("Non-leaf nodes without out edges present.");
       }
       return result;
     } finally {
