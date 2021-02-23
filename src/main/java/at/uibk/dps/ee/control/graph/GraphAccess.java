@@ -52,6 +52,13 @@ public interface GraphAccess {
       return edge;
     }
   }
+  
+  /**
+   * Returns a copy of the enactment graph which can be used for read purposes.
+   * 
+   * @return A copy of the enactment graph which can be used for read purposes
+   */
+  EnactmentGraph getGraphCopy();
 
   /**
    * Returns the edgeTuples (end nodes + edge) for all out edges of the given node

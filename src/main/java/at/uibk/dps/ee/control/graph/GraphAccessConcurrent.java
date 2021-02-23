@@ -13,7 +13,10 @@ import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
+import edu.uci.ics.jung.graph.util.EdgeType;
+import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
+import net.sf.opendse.model.Element;
 import net.sf.opendse.model.Task;
 import net.sf.opendse.model.properties.TaskPropertyService;
 
@@ -122,5 +125,66 @@ public class GraphAccessConcurrent implements GraphAccess {
     } finally {
       readLock.unlock();
     }
+  }
+
+  @Override
+  public EnactmentGraph getGraphCopy() {
+    try {
+      readLock.lock();
+      return copyGraph();
+    } finally {
+      readLock.unlock();
+    }
+
+  }
+
+  /**
+   * Generates a copy of the enactment graph
+   * 
+   * @return a copy of the enactment graph
+   */
+  protected EnactmentGraph copyGraph() {
+    EnactmentGraph result = new EnactmentGraph();
+    // add all vertices
+    for (Task task : graph) {
+      result.addVertex((Task) copy(task));
+    }
+    // add all edges
+    for (Dependency dep : graph.getEdges()) {
+      Dependency copyDep = (Dependency) copy(dep);
+      Task srcOrigin = graph.getSource(dep);
+      Task dstOrigin = graph.getDest(dep);
+      Task srcCopy = result.getVertex(srcOrigin.getId());
+      Task dstCopy = result.getVertex(dstOrigin.getId());
+      result.addEdge(copyDep, srcCopy, dstCopy, EdgeType.DIRECTED);
+    }
+    return result;
+  }
+
+  /**
+   * Returns a copy of the given element, identical in everything but the
+   * reference.
+   * 
+   * @param original the original element
+   * @return the element copy
+   */
+  protected Element copy(Element original) {
+    // make the object
+    Element result = null;
+    if (original instanceof Communication) {
+      result = new Communication(original.getId());
+    } else if (original instanceof Task) {
+      result = new Task(original.getId());
+    } else if (original instanceof Dependency) {
+      result = new Dependency(original.getId());
+    } else {
+      throw new IllegalArgumentException("Unknown element type for element " + original.getId());
+    }
+    // copy the attributes
+    for (String attrName : original.getAttributeNames()) {
+      result.setAttribute(attrName, original.getAttribute(attrName));
+    }
+    result.setParent(original);
+    return result;
   }
 }
