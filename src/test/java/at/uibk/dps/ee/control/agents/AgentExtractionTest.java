@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
+import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
@@ -47,5 +48,51 @@ public class AgentExtractionTest {
     }
     assertEquals(content, PropertyServiceData.getContent(dataNode));
     verify(mockState).putAvailableData(dataNode);
+  }
+
+  @Test
+  public void testSequentiality() {
+    Task finished = new Task("finished");
+    Dependency dep = new Dependency("dep");
+    Task dataNode = PropertyServiceData.createSequentialityNode("node");
+    Enactable mockEnactable = mock(Enactable.class);
+    JsonObject result = new JsonObject();
+    when(mockEnactable.getResult()).thenReturn(result);
+    PropertyServiceFunction.setEnactable(finished, mockEnactable);
+    EnactmentQueues mockState = mock(EnactmentQueues.class);
+    PropertyServiceDependency.setJsonKey(dep, ConstantsEEModel.JsonKeySequentiality);
+    AgentExtraction tested =
+        new AgentExtraction(finished, dep, dataNode, mockState, new HashSet<>());
+    try {
+      tested.actualCall();
+    } catch (Exception e) {
+      fail();
+    }
+    assertEquals(true, PropertyServiceData.getContent(dataNode).getAsBoolean());
+    verify(mockState).putAvailableData(dataNode);
+  }
+
+  @Test
+  public void testNoKey() {
+    Task finished = new Task("finished");
+    Dependency dep = new Dependency("dep");
+    Communication dataNode = new Communication("data");
+    Enactable mockEnactable = mock(Enactable.class);
+    JsonObject result = new JsonObject();
+    when(mockEnactable.getResult()).thenReturn(result);
+    PropertyServiceFunction.setEnactable(finished, mockEnactable);
+    EnactmentQueues mockState = mock(EnactmentQueues.class);
+    PropertyServiceDependency.setJsonKey(dep, "key");
+    AgentExtraction tested =
+        new AgentExtraction(finished, dep, dataNode, mockState, new HashSet<>());
+    String expectedMessage = ConstantsAgents.ExcMessageExtractionPrefix + finished.getId()
+        + ConstantsAgents.ExcMessageExtractionSuffix + dataNode.getId();
+    assertEquals(expectedMessage, tested.formulateExceptionMessage());
+    try {
+      tested.actualCall();
+      fail();
+    } catch (Exception e) {
+      assertTrue(e instanceof IllegalStateException);
+    }
   }
 }

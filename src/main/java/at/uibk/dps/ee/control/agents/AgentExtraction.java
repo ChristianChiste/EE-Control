@@ -3,10 +3,11 @@ package at.uibk.dps.ee.control.agents;
 import java.util.Set;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import com.google.gson.JsonPrimitive;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
+import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Dependency;
@@ -47,14 +48,17 @@ public class AgentExtraction extends AgentTask {
 
   @Override
   public boolean actualCall() throws Exception {
+    boolean dataNodeModelsSequentiality =
+        PropertyServiceData.getNodeType(dataNode).equals(NodeType.Sequentiality);
     final Enactable finishedEnactable = PropertyServiceFunction.getEnactable(finishedFunction);
     final JsonObject enactmentResult = finishedEnactable.getResult();
     final String key = PropertyServiceDependency.getJsonKey(edge);
-    if (!enactmentResult.has(key)) {
+    if (!enactmentResult.has(key) && !dataNodeModelsSequentiality) {
       throw new IllegalStateException("The execution of the task " + finishedFunction.getId()
           + " did not produce an entry named " + key);
     }
-    final JsonElement data = enactmentResult.get(key);
+    final JsonElement data =
+        dataNodeModelsSequentiality ? new JsonPrimitive(true) : enactmentResult.get(key);
     PropertyServiceData.setContent(dataNode, data);
     enactmentState.putAvailableData(dataNode);
     return true;
