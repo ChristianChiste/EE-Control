@@ -178,10 +178,17 @@ public class GraphTransformDistribution implements GraphTransform {
       final int reproductionIdx) {
     final String offspringId = getReproducedId(original.getId(), reproductionIdx);
     final Task offspring = Optional.ofNullable(graph.getVertex(offspringId)).orElseGet(() -> {
+      boolean adjustScope = PropertyServiceFunctionDataFlowCollections.isAggregationNode(original)
+          || PropertyServiceFunctionDataFlowCollections.isDistributionNode(original);
       final Task task =
           TaskPropertyService.isCommunication(original) ? new Communication(offspringId)
               : new Task(offspringId);
       task.setParent(original);
+      if (adjustScope) {
+        String adjustedScope = PropertyServiceFunctionDataFlowCollections.getScope(original)
+            + ConstantsEEModel.KeywordSeparator1 + reproductionIdx;
+        PropertyServiceFunctionDataFlowCollections.setScope(task, adjustedScope);
+      }
       return task;
     });
     return Optional.of(offspring);

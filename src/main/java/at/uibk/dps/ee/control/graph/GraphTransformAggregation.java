@@ -111,7 +111,10 @@ public class GraphTransformAggregation implements GraphTransform {
    */
   protected boolean wasReproduced(final Task task, final String scope,
       final Task distributionNode) {
-    return PropertyServiceReproduction.belongsToDistributionNode(task, distributionNode)
+    if (task.getParent() == null) {
+      return false;
+    }
+    return PropertyServiceReproduction.belongsToDistributionNode((Task) task.getParent(), distributionNode)
         && !isEndNodeInScope(task, scope);
   }
 
