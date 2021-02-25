@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
-import at.uibk.dps.ee.enactables.EnactableFactory;
+import at.uibk.dps.ee.enactables.wrapperSkeletton.FactoryInterface;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
@@ -27,16 +27,16 @@ import net.sf.opendse.model.properties.TaskPropertyService;
  */
 public class GraphTransformDistribution implements GraphTransform {
 
-  protected final EnactableFactory enactableFactory;
+  protected final FactoryInterface enactableFactory;
 
   /**
    * The default constructor
    * 
-   * @param enactableFactory factory for the {@link Enactable}s (to create
+   * @param enactableFactory2 factory for the {@link Enactable}s (to create
    *        enactables for the nodes created by reproduction)
    */
-  public GraphTransformDistribution(final EnactableFactory enactableFactory) {
-    this.enactableFactory = enactableFactory;
+  public GraphTransformDistribution(final FactoryInterface enactableFactory2) {
+    this.enactableFactory = enactableFactory2;
   }
 
   @Override

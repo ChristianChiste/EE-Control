@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import at.uibk.dps.ee.control.management.ResourceMonitor;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
+import at.uibk.dps.ee.enactables.wrapperSkeletton.FactoryInterface;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
@@ -31,7 +32,7 @@ public class GraphProviderEnactables implements EnactmentGraphProvider {
    */
   @Inject
   public GraphProviderEnactables(final EnactmentGraphProvider graphProvider,
-      final EnactableFactory factory, final ResourceMonitor resMonitor) {
+      final FactoryInterface factory, final ResourceMonitor resMonitor) {
     final EnactmentGraph graph = graphProvider.getEnactmentGraph();
     factory.addEnactableStateListener(resMonitor);
     createEnactables(graph, factory);
@@ -46,7 +47,7 @@ public class GraphProviderEnactables implements EnactmentGraphProvider {
    * @param factory the enactable factory
    */
   protected final void createEnactables(final EnactmentGraph graph,
-      final EnactableFactory factory) {
+      final FactoryInterface factory) {
     graph.getVertices().stream().filter(task -> TaskPropertyService.isProcess(task))
         .forEach(task -> createTaskEnactable(task, factory));
   }
@@ -58,7 +59,7 @@ public class GraphProviderEnactables implements EnactmentGraphProvider {
    * @param functionNode the given function node
    * @param factory the factory for the creation of enactables
    */
-  protected void createTaskEnactable(final Task functionNode, final EnactableFactory factory) {
+  protected void createTaskEnactable(final Task functionNode, final FactoryInterface factory) {
     final EnactableAtomic enactable = factory.createEnactable(functionNode);
     PropertyServiceFunction.setEnactable(functionNode, enactable);
   }

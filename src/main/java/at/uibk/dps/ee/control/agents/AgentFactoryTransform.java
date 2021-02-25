@@ -7,7 +7,7 @@ import at.uibk.dps.ee.control.graph.GraphTransformAggregation;
 import at.uibk.dps.ee.control.graph.GraphTransformDistribution;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.ModelModificationListener;
-import at.uibk.dps.ee.enactables.EnactableFactory;
+import at.uibk.dps.ee.enactables.wrapperSkeletton.FactoryInterface;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections.OperationType;
 import net.sf.opendse.model.Task;
@@ -21,7 +21,7 @@ import net.sf.opendse.model.Task;
 public class AgentFactoryTransform {
 
   protected final GraphAccess graphAccess;
-  protected final EnactableFactory enactableFactory;
+  protected final FactoryInterface enactableFactory;
   protected final EnactmentQueues enactmentState;
   protected final Set<ModelModificationListener> modificationListeners;
 
@@ -36,7 +36,7 @@ public class AgentFactoryTransform {
    */
   @Inject
   public AgentFactoryTransform(final GraphAccess graphAccess,
-      final EnactableFactory enactableFactory, final EnactmentQueues enactmentState,
+      final FactoryInterface enactableFactory, final EnactmentQueues enactmentState,
       final Set<ModelModificationListener> modificationListeners) {
     this.graphAccess = graphAccess;
     this.enactableFactory = enactableFactory;
