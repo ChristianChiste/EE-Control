@@ -31,7 +31,7 @@ dependencies {
 	implementation 'com.github.Apollo-Core:EE-Core:master-SNAPSHOT'
 	implementation 'com.github.Apollo-Core:EE-Guice:main-SNAPSHOT'
 	implementation 'com.github.Apollo-Core:EE-Model:main-SNAPSHOT'
-	implementation 'com.github.Apollo-Core:EE-Enactables:master-SNAPSHOT'
+	implementation 'com.github.ChristianChiste:EE-Enactables:master-SNAPSHOT'
     implementation 'com.github.Apollo-Core:SC-Core:main-SNAPSHOT'
 		
 	// dependency to Opt4J
