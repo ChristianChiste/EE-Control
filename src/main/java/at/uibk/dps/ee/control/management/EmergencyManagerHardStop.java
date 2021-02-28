@@ -39,10 +39,8 @@ public class EmergencyManagerHardStop implements EmergencyManager {
 
   @Override
   public void emergencyProtocol() throws StopException {
-    final StringBuffer buffer = new StringBuffer(additionalInformation);
-    buffer.append("\n");
-    buffer.append(exc.get().getMessage());
-    buffer.append("\n");
+    final StringBuffer buffer = new StringBuffer(additionalInformation).append('\n')
+        .append(exc.get().getMessage()).append('\n');
     // convert the exc stack trace to string
     final StringWriter stringWriter = new StringWriter();
     final PrintWriter printWriter = new PrintWriter(stringWriter);
