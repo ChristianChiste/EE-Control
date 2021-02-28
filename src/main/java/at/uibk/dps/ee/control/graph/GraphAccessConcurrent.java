@@ -171,7 +171,7 @@ public class GraphAccessConcurrent implements GraphAccess {
    */
   protected Element copy(final Element original) {
     // make the object
-    Optional<Element> result = Optional.empty();
+    Optional<Element> result;
     // Element result = null;
     if (original instanceof Communication) {
       result = Optional.of(new Communication(original.getId()));

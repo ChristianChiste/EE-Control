@@ -8,8 +8,8 @@ import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlow;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link PostEnactmentQueueingTest} is the operation of putting a task into the
- * appropriate queue of the {@link EnactmentQueues} after it was enacted.
+ * The {@link PostEnactmentQueueingTest} is the operation of putting a task into
+ * the appropriate queue of the {@link EnactmentQueues} after it was enacted.
  * 
  * @author Fedor Smirnov
  */
