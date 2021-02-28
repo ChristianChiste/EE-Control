@@ -55,7 +55,7 @@ public abstract class AgentContinuous implements Agent, ControlStateListener {
   protected abstract Task getTaskFromBlockingQueue();
 
   @Override
-  public void reactToStateChange(EnactmentState previousState, EnactmentState currentState)
+  public void reactToStateChange(final EnactmentState previousState, final EnactmentState currentState)
       throws StopException {
     if (previousState.equals(EnactmentState.RUNNING)
         && currentState.equals(EnactmentState.PAUSED)) {

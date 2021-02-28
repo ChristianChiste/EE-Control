@@ -10,6 +10,8 @@ import at.uibk.dps.ee.model.properties.PropertyServiceData.DataType;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
+import net.sf.opendse.model.Element;
+import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 
 import static org.mockito.Mockito.mock;
@@ -268,5 +270,77 @@ public class GraphAccessConcurrentTest {
     when(providerMock.getEnactmentGraph()).thenReturn(graph);
     GraphAccessConcurrent tested = new GraphAccessConcurrent(providerMock);
     tested.getRootDataNodes();
+  }
+
+  @Test
+  public void getGraphCopyTest() {
+    Task task = new Task("task1");
+    Communication comm = new Communication("comm");
+    Task task2 = new Task("task2");
+    Dependency dep1 = new Dependency("dep1");
+    Dependency dep2 = new Dependency("dep2");
+    EnactmentGraph original = new EnactmentGraph();
+    original.addEdge(dep1, task, comm, EdgeType.DIRECTED);
+    original.addEdge(dep2, comm, task2, EdgeType.DIRECTED);
+    GraphProviderEnactables mockProvider = mock(GraphProviderEnactables.class);
+    when(mockProvider.getEnactmentGraph()).thenReturn(original);
+    GraphAccessConcurrent tested = new GraphAccessConcurrent(mockProvider);
+    EnactmentGraph result = tested.getGraphCopy();
+    assertEquals(3, result.getVertexCount());
+    assertEquals(2, result.getEdgeCount());
+  }
+
+  @Test
+  public void testCopyElement() {
+    String attName1 = "name1";
+    int val1 = 42;
+    String attName2 = "name2";
+    String val2 = "hi";
+    String attName3 = "name3";
+    boolean val3 = false;
+
+    Task original1 = new Task("task1");
+    original1.setAttribute(attName1, val1);
+
+    Communication original2 = new Communication("comm");
+    original2.setAttribute(attName2, val2);
+
+    Dependency original3 = new Dependency("dep");
+    original3.setAttribute(attName1, val1);
+    original3.setAttribute(attName2, val2);
+    original3.setAttribute(attName3, val3);
+
+    EnactmentGraph graph = new EnactmentGraph();
+    GraphProviderEnactables mockProvider = mock(GraphProviderEnactables.class);
+    when(mockProvider.getEnactmentGraph()).thenReturn(graph);
+    GraphAccessConcurrent tested = new GraphAccessConcurrent(mockProvider);
+
+    Element copy1 = tested.copy(original1);
+    Element copy2 = tested.copy(original2);
+    Element copy3 = tested.copy(original3);
+
+    assertTrue(checkElements(original1, copy1));
+    assertTrue(checkElements(original2, copy2));
+    assertTrue(checkElements(original3, copy3));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testCopyElementExc() {
+    Resource original = new Resource("res");
+    EnactmentGraph graph = new EnactmentGraph();
+    GraphProviderEnactables mockProvider = mock(GraphProviderEnactables.class);
+    when(mockProvider.getEnactmentGraph()).thenReturn(graph);
+    GraphAccessConcurrent tested = new GraphAccessConcurrent(mockProvider);
+    tested.copy(original);
+  }
+
+  protected boolean checkElements(Element original, Element copy) {
+    boolean result = true;
+    result &= original.getId().equals(copy.getId());
+    result &= (original != (copy));
+    for (String attrName : original.getAttributeNames()) {
+      result &= original.getAttribute(attrName).equals(copy.getAttribute(attrName));
+    }
+    return result;
   }
 }

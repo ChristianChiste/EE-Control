@@ -88,7 +88,7 @@ public class EnactmentQueuesTest {
       long duration1 = Duration.between(start, finish1).toMillis();
       long duration2 = Duration.between(start, finish2).toMillis();
       assertTrue(duration1 < 50);
-      assertTrue(duration2 > 500);
+      assertTrue(duration2 >= 500);
 
     } catch (InterruptedException | ExecutionException e) {
       fail();

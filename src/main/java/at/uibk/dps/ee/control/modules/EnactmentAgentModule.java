@@ -19,7 +19,7 @@ public class EnactmentAgentModule extends EeModule {
   @Order(1)
   @Info("If checked, the EE will be initially in the PAUSED state.")
   @Constant(namespace = Control.class, value = "pauseOnStart")
-  protected boolean pauseOnStart = false;
+  protected boolean pauseOnStart;
 
   @Override
   protected void config() {
@@ -31,7 +31,7 @@ public class EnactmentAgentModule extends EeModule {
     return pauseOnStart;
   }
 
-  public void setPauseOnStart(boolean pauseOnStart) {
+  public void setPauseOnStart(final boolean pauseOnStart) {
     this.pauseOnStart = pauseOnStart;
   }
 }
