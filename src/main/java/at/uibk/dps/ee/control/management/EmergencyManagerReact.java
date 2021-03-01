@@ -27,10 +27,11 @@ public class EmergencyManagerReact implements EmergencyManager{
 	    emergencyState = true;
 	    this.exc = Optional.of(exc);
 	    this.additionalInformation = additionalInformation;
-	    final Enactable enactable = PropertyServiceFunction.getEnactable(new Task(additionalInformation));
+	    Task task = new Task(additionalInformation + "1");
+	    final Enactable enactable = PropertyServiceFunction.getEnactable(task);
 	    enactable.setState(State.SCHEDULABLE);
-	    mainAgent.get().enactmentState.schedulableTasks.add(new Task(additionalInformation));
-	    if(mainAgent.get().enactmentStopped)
+	    mainAgent.get().enactmentState.schedulableTasks.add(task);
+	    if(!mainAgent.get().enactmentStopped)
 	    	mainAgent.get().wakeUp();
 	  }
 
