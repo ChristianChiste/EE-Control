@@ -19,7 +19,7 @@ public class AgentEnactmentTest {
     Task task = new Task("task");
     PropertyServiceFunction.setEnactable(task, mockEnactable);
     AgentEnactment tested = new AgentEnactment(task, postMock, new HashSet<>());
-    assertEquals(ConstantsAgents.ExcMessageEnactment + task.getId(),
+    assertEquals(/*ConstantsAgents.ExcMessageEnactment +*/ task.getId(),
         tested.formulateExceptionMessage());
     try {
       tested.actualCall();

@@ -30,6 +30,8 @@ public class EmergencyManagerReact implements EmergencyManager{
 	    final Enactable enactable = PropertyServiceFunction.getEnactable(new Task(additionalInformation));
 	    enactable.setState(State.SCHEDULABLE);
 	    mainAgent.get().enactmentState.schedulableTasks.add(new Task(additionalInformation));
+	    if(mainAgent.get().enactmentStopped)
+	    	mainAgent.get().wakeUp();
 	  }
 
 	  @Override
