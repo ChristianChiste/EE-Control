@@ -42,6 +42,6 @@ public class AgentEnactment extends AgentTask {
 
   @Override
   protected String formulateExceptionMessage() {
-    return ConstantsAgents.ExcMessageEnactment + taskNode.getId();
+    return /*ConstantsAgents.ExcMessageEnactment + */taskNode.getId();
   }
 }
