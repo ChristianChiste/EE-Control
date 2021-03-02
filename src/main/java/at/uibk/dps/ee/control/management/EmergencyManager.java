@@ -11,7 +11,7 @@ import at.uibk.dps.ee.core.exception.StopException;
  * 
  * @author Fedor Smirnov
  */
-@ImplementedBy(EmergencyManagerReact.class)
+@ImplementedBy(EmergencyManagerHardStop.class)
 public interface EmergencyManager extends AgentTaskListener {
 
   /**
