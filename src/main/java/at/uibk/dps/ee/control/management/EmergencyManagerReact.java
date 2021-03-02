@@ -12,36 +12,44 @@ import net.sf.opendse.model.Task;
 
 public class EmergencyManagerReact implements EmergencyManager{
 
-	  protected boolean emergencyState;
-	  protected Optional<Exception> exc = Optional.empty();
-	  protected String additionalInformation;
-	  protected Optional<EnactmentAgent> mainAgent = Optional.empty();
+	protected boolean emergencyState;
+	protected Optional<Exception> exc = Optional.empty();
+	protected String additionalInformation;
+	protected Optional<EnactmentAgent> mainAgent = Optional.empty();
 
-	  @Override
-	  public void registerMain(final EnactmentAgent mainAgent) {
-	    this.mainAgent = Optional.of(mainAgent);
-	  }
+	@Override
+	public void registerMain(final EnactmentAgent mainAgent) {
+		this.mainAgent = Optional.of(mainAgent);
+	}
 
-	  @Override
-	  public void reactToException(final Exception exc, final String additionalInformation) {
-	    emergencyState = true;
-	    this.exc = Optional.of(exc);
-	    this.additionalInformation = additionalInformation;
-	    Task task = new Task(additionalInformation + "1");
-	    final Enactable enactable = PropertyServiceFunction.getEnactable(task);
-	    enactable.setState(State.SCHEDULABLE);
-	    mainAgent.get().enactmentState.schedulableTasks.add(task);
-	    if(!mainAgent.get().enactmentStopped)
-	    	mainAgent.get().wakeUp();
-	  }
+	@Override
+	public void reactToException(final Exception exc, final String additionalInformation) {
+		emergencyState = true;
+		this.exc = Optional.of(exc);
+		this.additionalInformation = additionalInformation;
+		mainAgent.get().wakeUp();
+	}
 
-	  @Override
-	  public boolean isEmergency() {
-	    return emergencyState;
-	  }
+	@Override
+	public boolean isEmergency() {
+		return emergencyState;
+	}
 
-	  @Override
-	  public void emergencyProtocol() throws StopException {
-	  }
+	@Override
+	public void emergencyProtocol() throws StopException {
+		Task task = new Task(additionalInformation);
+		final Enactable enactable = PropertyServiceFunction.getEnactable(task);
+		enactable.setState(State.SCHEDULABLE);
+		mainAgent.get().enactmentState.schedulableTasks.add(task);
+
+		String message = additionalInformation + "\n";
+		message += exc.get().getMessage() + "\n";
+		// convert the exc stack trace to string
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(stringWriter);
+		exc.get().printStackTrace(printWriter);
+		message += stringWriter.toString();
+		throw new StopException(message, exc.get());
+	}
 
 }
