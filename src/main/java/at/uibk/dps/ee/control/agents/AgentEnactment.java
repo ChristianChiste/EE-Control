@@ -40,6 +40,8 @@ public class AgentEnactment extends AgentTask {
 			enactable.play();
 		}
 		catch(StopException stopExc) {
+			postEnactment.postEnactmentTreatment(taskNode);
+			return false;
 		}
 		postEnactment.postEnactmentTreatment(taskNode);
 		return true;
