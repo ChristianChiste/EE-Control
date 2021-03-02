@@ -3,6 +3,7 @@ package at.uibk.dps.ee.control.agents;
 import java.util.Set;
 import at.uibk.dps.ee.control.enactment.PostEnactment;
 import at.uibk.dps.ee.core.enactable.Enactable;
+import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.core.exception.StopException;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Task;
@@ -40,8 +41,7 @@ public class AgentEnactment extends AgentTask {
 			enactable.play();
 		}
 		catch(StopException stopExc) {
-			postEnactment.postEnactmentTreatment(taskNode);
-			return false;
+			enactable.setState(State.STOPPED);
 		}
 		postEnactment.postEnactmentTreatment(taskNode);
 		return true;
