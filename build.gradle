@@ -47,6 +47,7 @@ dependencies {
 	testCompile group: 'org.mockito',     name: 'mockito-core',     version: '3.4.4'
 	// dependency to local files
 	// compile files('libs/lib.jar')
+	//compile files('libs/EE-Enactables-1.0-SNAPSHOT.jar')
 }
 
 jacocoTestReport {

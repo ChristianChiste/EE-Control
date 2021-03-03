@@ -39,7 +39,7 @@ public class AgentEnactment extends AgentTask {
 		final Enactable enactable = PropertyServiceFunction.getEnactable(taskNode);
 		try {
 			enactable.play();
-		}
+		} 
 		catch(StopException stopExc) {
 			enactable.setState(State.STOPPED);
 		}
