@@ -6,13 +6,12 @@ import com.google.gson.JsonElement;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheck;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
-import at.uibk.dps.ee.model.properties.PropertyServiceDependency.TypeDependency;
-import at.uibk.dps.ee.model.properties.PropertyServiceDependencyControlIf;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
@@ -32,6 +31,7 @@ public class AgentTransmission extends AgentTask {
   protected final Dependency edge;
   protected final Task functionNode;
   protected final GraphAccess graphAccess;
+  protected final SchedulabilityCheck schedulabilityCheck;
 
   /**
    * The default constructor.
@@ -46,13 +46,14 @@ public class AgentTransmission extends AgentTask {
    */
   public AgentTransmission(final EnactmentQueues enactmentState, final Task dataNode,
       final Dependency edge, final Task functionNode, final GraphAccess graphAccess,
-      final Set<AgentTaskListener> listeners) {
+      final Set<AgentTaskListener> listeners, SchedulabilityCheck schedulabilityCheck) {
     super(listeners);
     this.enactmentState = enactmentState;
     this.dataNode = dataNode;
     this.edge = edge;
     this.functionNode = functionNode;
     this.graphAccess = graphAccess;
+    this.schedulabilityCheck = schedulabilityCheck;
   }
 
   @Override
@@ -80,38 +81,10 @@ public class AgentTransmission extends AgentTask {
   protected void annotateTransmission(final EnactmentGraph graph, final Task functionNode) {
     // annotate the dependency
     PropertyServiceDependency.annotateFinishedTransmission(edge);
-    // check the annotation of all in edges
-    if (graph.getInEdges(functionNode).stream()
-        .allMatch(edge -> PropertyServiceDependency.isTransmissionDone(edge))) {
-      // check for control if edges
-      boolean schedulable = true;
-      if (graph.getInEdges(functionNode).stream().anyMatch(
-          edge -> PropertyServiceDependency.getType(edge).equals(TypeDependency.ControlIf))) {
-        schedulable = graph.getInEdges(functionNode).stream()
-            .filter(
-                edge -> PropertyServiceDependency.getType(edge).equals(TypeDependency.ControlIf))
-            .allMatch(controlEdge -> isIfEdgeActive(graph, controlEdge));
-      }
-      if (schedulable) {
-        PropertyServiceFunction.getEnactable(functionNode).setState(State.SCHEDULABLE);
-        enactmentState.putSchedulableTask(functionNode);
-      }
+    if (schedulabilityCheck.isTargetSchedulable(functionNode, graph)) {
+      PropertyServiceFunction.getEnactable(functionNode).setState(State.SCHEDULABLE);
+      enactmentState.putSchedulableTask(functionNode);
     }
-  }
-
-  /**
-   * Checks whether the given control if edge is active, i.e., whether its
-   * activation matches the data in its src data node.
-   * 
-   * @param graph the enactment graph
-   * @param edge the given edge
-   * @return true if the edge is active
-   */
-  protected boolean isIfEdgeActive(EnactmentGraph graph, Dependency edge) {
-    boolean edgeActivation = PropertyServiceDependencyControlIf.getActivation(edge);
-    Task dataNode = graph.getSource(edge);
-    boolean decisionVariable = PropertyServiceData.getContent(dataNode).getAsBoolean();
-    return edgeActivation == decisionVariable;
   }
 
   @Override

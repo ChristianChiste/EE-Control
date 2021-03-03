@@ -7,6 +7,11 @@ import com.google.inject.Singleton;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheck;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheckDefault;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheckMuxer;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlow;
+import net.sf.opendse.model.Task;
 
 /**
  * The {@link AgentFactoryTransmission} is used to create transmission agents.
@@ -45,7 +50,22 @@ public class AgentFactoryTransmission {
    */
   public AgentTransmission createTransmissionAgent(final EdgeTupleAppl edgeTuple,
       final Set<AgentTaskListener> listeners) {
+    SchedulabilityCheck schedulabilityCheck = getCheckForTarget(edgeTuple.getDst());
     return new AgentTransmission(enactmentState, edgeTuple.getSrc(), edgeTuple.getEdge(),
-        edgeTuple.getDst(), graphAccess, listeners);
+        edgeTuple.getDst(), graphAccess, listeners, schedulabilityCheck);
+  }
+
+  /**
+   * Gets the appropriate schedulability check for the provided function node.
+   * 
+   * @param target the provided function node
+   * @return the appropriate schedulability check for the provided function node
+   */
+  protected SchedulabilityCheck getCheckForTarget(Task target) {
+    if (PropertyServiceFunctionDataFlow.isMultiplexerNode(target)) {
+      return new SchedulabilityCheckMuxer();
+    } else {
+      return new SchedulabilityCheckDefault();
+    }
   }
 }
