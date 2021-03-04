@@ -1,5 +1,6 @@
 package at.uibk.dps.ee.control.graph;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -144,18 +145,18 @@ public class GraphAccessConcurrent implements GraphAccess {
    * @return a copy of the enactment graph
    */
   protected EnactmentGraph copyGraph() {
-    EnactmentGraph result = new EnactmentGraph();
+    final EnactmentGraph result = new EnactmentGraph();
     // add all vertices
-    for (Task task : graph) {
+    for (final Task task : graph) {
       result.addVertex((Task) copy(task));
     }
     // add all edges
-    for (Dependency dep : graph.getEdges()) {
-      Dependency copyDep = (Dependency) copy(dep);
-      Task srcOrigin = graph.getSource(dep);
-      Task dstOrigin = graph.getDest(dep);
-      Task srcCopy = result.getVertex(srcOrigin.getId());
-      Task dstCopy = result.getVertex(dstOrigin.getId());
+    for (final Dependency dep : graph.getEdges()) {
+      final Dependency copyDep = (Dependency) copy(dep);
+      final Task srcOrigin = graph.getSource(dep);
+      final Task dstOrigin = graph.getDest(dep);
+      final Task srcCopy = result.getVertex(srcOrigin.getId());
+      final Task dstCopy = result.getVertex(dstOrigin.getId());
       result.addEdge(copyDep, srcCopy, dstCopy, EdgeType.DIRECTED);
     }
     return result;
@@ -168,23 +169,25 @@ public class GraphAccessConcurrent implements GraphAccess {
    * @param original the original element
    * @return the element copy
    */
-  protected Element copy(Element original) {
+  protected Element copy(final Element original) {
     // make the object
-    Element result = null;
+    Optional<Element> result;
+    // Element result = null;
     if (original instanceof Communication) {
-      result = new Communication(original.getId());
+      result = Optional.of(new Communication(original.getId()));
     } else if (original instanceof Task) {
-      result = new Task(original.getId());
+      result = Optional.of(new Task(original.getId()));
     } else if (original instanceof Dependency) {
-      result = new Dependency(original.getId());
+      result = Optional.of(new Dependency(original.getId()));
     } else {
       throw new IllegalArgumentException("Unknown element type for element " + original.getId());
     }
+    final Element resultElement = result.get();
     // copy the attributes
-    for (String attrName : original.getAttributeNames()) {
-      result.setAttribute(attrName, original.getAttribute(attrName));
+    for (final String attrName : original.getAttributeNames()) {
+      resultElement.setAttribute(attrName, original.getAttribute(attrName));
     }
-    result.setParent(original);
-    return result;
+    resultElement.setParent(original);
+    return resultElement;
   }
 }

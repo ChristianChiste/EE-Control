@@ -5,6 +5,7 @@ import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
@@ -20,7 +21,7 @@ public class AgentFactoryTransmissionTest {
     GraphAccess graphMock = mock(GraphAccess.class);
     Communication data = new Communication("data");
     Dependency edge = new Dependency("edge");
-    Task task = new Task("task");
+    Task task = PropertyServiceFunctionUser.createUserTask("task", "addition");
     EdgeTupleAppl tuple = new EdgeTupleAppl(data, task, edge);
     Set<AgentTaskListener> listeners = new HashSet<>();
     AgentFactoryTransmission tested = new AgentFactoryTransmission(stateMock, graphMock);

@@ -9,8 +9,8 @@ import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlow;
 import net.sf.opendse.model.Task;
 
 /**
- * The {@link PostEnactmentQueueing} is the operation of putting a task into the
- * appropriate queue of the {@link EnactmentQueues} after it was enacted.
+ * The {@link PostEnactmentQueueingTest} is the operation of putting a task into
+ * the appropriate queue of the {@link EnactmentQueues} after it was enacted.
  * 
  * @author Fedor Smirnov
  */
@@ -31,7 +31,7 @@ public class PostEnactmentQueueing implements PostEnactment {
 	public void postEnactmentTreatment(final Task enactedTask) {
 		if (requiresTransformation(enactedTask)) {
 			enactmentState.putTransformTask(enactedTask);
-		} else if (PropertyServiceFunction.getEnactable(enactedTask).getState() == State.STOPPED){
+		} else if (PropertyServiceFunction.getEnactable(enactedTask).getState() == State.STOPPED) {
 			PropertyServiceFunction.getEnactable(enactedTask).setState(State.SCHEDULABLE);
 			enactmentState.putSchedulableTask(enactedTask);
 		} else {

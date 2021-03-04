@@ -7,7 +7,7 @@ import at.uibk.dps.ee.control.graph.GraphTransformAggregation;
 import at.uibk.dps.ee.control.graph.GraphTransformDistribution;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.ModelModificationListener;
-import at.uibk.dps.ee.enactables.wrapperSkeletton.FactoryInterface;
+import at.uibk.dps.ee.enactables.wrapper.FactoryInterface;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections.OperationType;
 import net.sf.opendse.model.Task;

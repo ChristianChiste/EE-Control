@@ -101,10 +101,10 @@ public class EnactmentAgent implements EnactmentFunction, ControlStateListener {
       emergencyManager.emergencyProtocol();
       throw new IllegalStateException("This should be dead code.");
     } else {
-      if (!enactmentStopped) {
-        return dataHandler.extractResult();
-      } else {
+      if (enactmentStopped) {
         throw new StopException("Enactment stopped by user.");
+      } else {
+        return dataHandler.extractResult();
       }
     }
   }
@@ -133,8 +133,8 @@ public class EnactmentAgent implements EnactmentFunction, ControlStateListener {
   }
 
   @Override
-  public void reactToStateChange(EnactmentState previousState, EnactmentState currentState)
-      throws StopException {
+  public void reactToStateChange(final EnactmentState previousState,
+      final EnactmentState currentState) throws StopException {
     if (currentState.equals(EnactmentState.STOPPED)) {
       this.enactmentStopped = true;
       wakeUp();

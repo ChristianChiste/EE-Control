@@ -23,14 +23,21 @@ public class Control implements EnactmentStateListener {
   protected EnactmentState enactmentState = EnactmentState.PAUSED;
   protected final Set<ControlStateListener> listeners = new HashSet<>();
   protected boolean init;
-  
+
   protected final boolean pauseOnStart;
 
+  /**
+   * Injection constructor
+   * 
+   * @param pauseOnStart boolean set in the GUI. If true, the enactment will start
+   *        in the paused state.
+   */
   @Inject
-  public Control(@Constant(namespace = Control.class, value = "pauseOnStart") final boolean pauseOnStart) {
+  public Control(
+      @Constant(namespace = Control.class, value = "pauseOnStart") final boolean pauseOnStart) {
     this.pauseOnStart = pauseOnStart;
   }
-  
+
   /**
    * Adds a {@link ControlStateListener}.
    * 
@@ -60,7 +67,10 @@ public class Control implements EnactmentStateListener {
       setState(EnactmentState.PAUSED);
     }
   }
-  
+
+  /**
+   * Terminate the enactment.
+   */
   public void stop() {
     setState(EnactmentState.STOPPED);
   }

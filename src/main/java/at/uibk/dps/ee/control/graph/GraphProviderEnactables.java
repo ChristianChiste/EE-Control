@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import at.uibk.dps.ee.control.management.ResourceMonitor;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.enactables.EnactableFactory;
-import at.uibk.dps.ee.enactables.wrapperSkeletton.FactoryInterface;
+import at.uibk.dps.ee.enactables.wrapper.FactoryInterface;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;

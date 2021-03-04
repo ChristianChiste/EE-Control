@@ -48,7 +48,7 @@ public class AgentExtraction extends AgentTask {
 
   @Override
   public boolean actualCall() throws Exception {
-    boolean dataNodeModelsSequentiality =
+    final boolean dataNodeModelsSequentiality =
         PropertyServiceData.getNodeType(dataNode).equals(NodeType.Sequentiality);
     final Enactable finishedEnactable = PropertyServiceFunction.getEnactable(finishedFunction);
     final JsonObject enactmentResult = finishedEnactable.getResult();

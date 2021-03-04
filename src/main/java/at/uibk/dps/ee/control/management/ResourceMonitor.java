@@ -30,25 +30,33 @@ public class ResourceMonitor implements EnactableStateListener {
   protected final ScheduleModel scheduleModel;
   protected final Resource eeRes;
 
+  /**
+   * The injection constructor.
+   * 
+   * @param scheduleModel the schedule map
+   * @param rGraphProvider the provider of the resource graph
+   */
   @Inject
-  public ResourceMonitor(ScheduleModel scheduleModel, ResourceGraphProvider rGraphProvider) {
+  public ResourceMonitor(final ScheduleModel scheduleModel,
+      final ResourceGraphProvider rGraphProvider) {
     this.scheduleModel = scheduleModel;
     this.eeRes = rGraphProvider.getResourceGraph().getVertex(ConstantsEEModel.idLocalResource);
   }
 
   @Override
-  public void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
+  public void enactableStateChanged(final Enactable enactable, final State previousState,
+      final State currentState) {
     if (enactable instanceof EnactableAtomic) {
-      EnactableAtomic atomic = (EnactableAtomic) enactable;
-      Task task = atomic.getFunctionNode();
+      final EnactableAtomic atomic = (EnactableAtomic) enactable;
+      final Task task = atomic.getFunctionNode();
       if (currentState.equals(State.RUNNING) && !previousState.equals(State.RUNNING)) {
-        Set<Resource> taskResources = getResourceOfAtomic(atomic);
+        final Set<Resource> taskResources = getResourceOfAtomic(atomic);
         // state change to running => resource is being used
         synchronized (this) {
           taskResources.forEach(res -> PropertyServiceResource.addUsingTask(task, res));
         }
       } else if (previousState.equals(State.RUNNING) && !currentState.equals(State.RUNNING)) {
-        Set<Resource> taskResources = getResourceOfAtomic(atomic);
+        final Set<Resource> taskResources = getResourceOfAtomic(atomic);
         // state change from running => resource in not being used any more
         synchronized (this) {
           taskResources.forEach(res -> PropertyServiceResource.removeUsingTask(task, res));
@@ -63,9 +71,9 @@ public class ResourceMonitor implements EnactableStateListener {
    * @param atomic the atomic enactable
    * @return the resources used by the provided atomic enactable.
    */
-  protected Set<Resource> getResourceOfAtomic(EnactableAtomic atomic) {
-    Set<Resource> result = new HashSet<>();
-    Task task = atomic.getFunctionNode();
+  protected Set<Resource> getResourceOfAtomic(final EnactableAtomic atomic) {
+    final Set<Resource> result = new HashSet<>();
+    final Task task = atomic.getFunctionNode();
     if (PropertyServiceFunction.getUsageType(task).equals(UsageType.User)) {
       // user task
       if (!scheduleModel.isScheduled(task)) {

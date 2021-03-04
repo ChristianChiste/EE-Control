@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheck;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
@@ -30,6 +31,7 @@ public class AgentTransmission extends AgentTask {
   protected final Dependency edge;
   protected final Task functionNode;
   protected final GraphAccess graphAccess;
+  protected final SchedulabilityCheck schedulabilityCheck;
 
   /**
    * The default constructor.
@@ -44,13 +46,14 @@ public class AgentTransmission extends AgentTask {
    */
   public AgentTransmission(final EnactmentQueues enactmentState, final Task dataNode,
       final Dependency edge, final Task functionNode, final GraphAccess graphAccess,
-      final Set<AgentTaskListener> listeners) {
+      final Set<AgentTaskListener> listeners, SchedulabilityCheck schedulabilityCheck) {
     super(listeners);
     this.enactmentState = enactmentState;
     this.dataNode = dataNode;
     this.edge = edge;
     this.functionNode = functionNode;
     this.graphAccess = graphAccess;
+    this.schedulabilityCheck = schedulabilityCheck;
   }
 
   @Override
@@ -78,9 +81,7 @@ public class AgentTransmission extends AgentTask {
   protected void annotateTransmission(final EnactmentGraph graph, final Task functionNode) {
     // annotate the dependency
     PropertyServiceDependency.annotateFinishedTransmission(edge);
-    // check the annotation of all in edges
-    if (graph.getInEdges(functionNode).stream()
-        .allMatch(edge -> PropertyServiceDependency.isTransmissionDone(edge))) {
+    if (schedulabilityCheck.isTargetSchedulable(functionNode, graph)) {
       PropertyServiceFunction.getEnactable(functionNode).setState(State.SCHEDULABLE);
       enactmentState.putSchedulableTask(functionNode);
     }

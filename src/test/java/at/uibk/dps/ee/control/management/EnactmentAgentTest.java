@@ -11,6 +11,7 @@ import at.uibk.dps.ee.control.agents.AgentActivationTransmission;
 import at.uibk.dps.ee.control.agents.AgentFactoryActivation;
 import at.uibk.dps.ee.control.agents.PoisonPill;
 import at.uibk.dps.ee.control.command.Control;
+import at.uibk.dps.ee.core.EnactmentState;
 import at.uibk.dps.ee.core.exception.StopException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,6 +66,19 @@ public class EnactmentAgentTest {
     Control controlMock = mock(Control.class);
     return new EnactmentAgent(factoryMock, stateMock, providerMock, handlerMock, emerMan,
         controlMock);
+  }
+  
+  @Test
+  public void testStop() {
+    EnactmentAgent agent = getTested();
+    EnactmentAgent spy = spy(agent);
+    try {
+      spy.reactToStateChange(EnactmentState.RUNNING, EnactmentState.STOPPED);
+      assertTrue(spy.enactmentStopped);
+      verify(spy).wakeUp();
+    } catch (StopException e) {
+      fail();
+    }
   }
 
   @Test

@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheck;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
@@ -17,6 +18,7 @@ import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,9 +39,9 @@ public class AgentTransmissionTest {
     PropertyServiceDependency.setJsonKey(edge, key);
     Enactable enactableMock = mock(Enactable.class);
     PropertyServiceFunction.setEnactable(function, enactableMock);
-
+    SchedulabilityCheck checkMock = mock(SchedulabilityCheck.class);
     AgentTransmission tested =
-        new AgentTransmission(stateMock, dataNode, edge, function, gMock, listeners);
+        new AgentTransmission(stateMock, dataNode, edge, function, gMock, listeners, checkMock);
     String expected = ConstantsAgents.ExcMessageTransmissionPrefix + dataNode.getId()
         + ConstantsAgents.ExcMessageTransmissionSuffix + function.getId();
     assertEquals(expected, tested.formulateExceptionMessage());
@@ -65,10 +67,9 @@ public class AgentTransmissionTest {
     PropertyServiceDependency.setJsonKey(edge, key);
     Enactable enactableMock = mock(Enactable.class);
     PropertyServiceFunction.setEnactable(function, enactableMock);
-
+    SchedulabilityCheck checkMock = mock(SchedulabilityCheck.class);
     AgentTransmission tested =
-        new AgentTransmission(stateMock, dataNode, edge, function, gMock, listeners);
-
+        new AgentTransmission(stateMock, dataNode, edge, function, gMock, listeners, checkMock);
     assertFalse(PropertyServiceDependency.isTransmissionDone(edge));
 
     Dependency otherEdge1 = new Dependency("e1");
@@ -86,11 +87,12 @@ public class AgentTransmissionTest {
     graph.addEdge(otherEdge2, comm3, function, EdgeType.DIRECTED);
 
     PropertyServiceDependency.annotateFinishedTransmission(otherEdge1);
+    when(checkMock.isTargetSchedulable(function, graph)).thenReturn(false);
 
     tested.annotateTransmission(graph, function);
     assertTrue(PropertyServiceDependency.isTransmissionDone(edge));
     verify(stateMock, times(0)).putSchedulableTask(function);
-
+    when(checkMock.isTargetSchedulable(function, graph)).thenReturn(true);
     PropertyServiceDependency.annotateFinishedTransmission(otherEdge2);
     tested.annotateTransmission(graph, function);
     assertTrue(PropertyServiceDependency.isTransmissionDone(edge));

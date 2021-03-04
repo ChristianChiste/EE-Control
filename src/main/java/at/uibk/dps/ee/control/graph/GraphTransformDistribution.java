@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
-import at.uibk.dps.ee.enactables.wrapperSkeletton.FactoryInterface;
+import at.uibk.dps.ee.enactables.wrapper.FactoryInterface;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.properties.PropertyServiceDependency;
