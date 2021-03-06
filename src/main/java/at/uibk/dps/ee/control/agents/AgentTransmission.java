@@ -46,7 +46,7 @@ public class AgentTransmission extends AgentTask {
    */
   public AgentTransmission(final EnactmentQueues enactmentState, final Task dataNode,
       final Dependency edge, final Task functionNode, final GraphAccess graphAccess,
-      final Set<AgentTaskListener> listeners, SchedulabilityCheck schedulabilityCheck) {
+      final Set<AgentTaskListener> listeners, final SchedulabilityCheck schedulabilityCheck) {
     super(listeners);
     this.enactmentState = enactmentState;
     this.dataNode = dataNode;
