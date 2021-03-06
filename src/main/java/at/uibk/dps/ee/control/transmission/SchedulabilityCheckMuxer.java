@@ -57,7 +57,7 @@ public class SchedulabilityCheckMuxer implements SchedulabilityCheck {
    * @param inEdges the in edges of the muxer node.
    * @param muxer the muxer node
    */
-  protected void checkInEdges(Set<Dependency> inEdges, Task muxer) {
+  protected void checkInEdges(final Set<Dependency> inEdges, final Task muxer) {
     if (inEdges.size() != expectedInEdgeNumber) {
       throw new IllegalArgumentException(
           "The muxer node " + muxer.getId() + " does not have 3 in edges.");
