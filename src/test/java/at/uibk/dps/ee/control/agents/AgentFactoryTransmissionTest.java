@@ -5,7 +5,11 @@ import org.junit.Test;
 import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphAccess.EdgeTupleAppl;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheckDefault;
+import at.uibk.dps.ee.control.transmission.SchedulabilityCheckMuxer;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlow;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlow.DataFlowType;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Task;
@@ -32,5 +36,17 @@ public class AgentFactoryTransmissionTest {
     assertEquals(edge, result.edge);
     assertEquals(task, result.functionNode);
     assertEquals(listeners, result.listeners);
+  }
+
+  @Test
+  public void testGetCheckForTarget() {
+    EnactmentQueues stateMock = mock(EnactmentQueues.class);
+    GraphAccess graphMock = mock(GraphAccess.class);
+    AgentFactoryTransmission tested = new AgentFactoryTransmission(stateMock, graphMock);
+    Task normalTask = PropertyServiceFunctionUser.createUserTask("userTask", "addition");
+    Task muxer =
+        PropertyServiceFunctionDataFlow.createDataFlowFunction("muxer", DataFlowType.Multiplexer);
+    assertTrue(tested.getCheckForTarget(normalTask) instanceof SchedulabilityCheckDefault);
+    assertTrue(tested.getCheckForTarget(muxer) instanceof SchedulabilityCheckMuxer);
   }
 }

@@ -50,7 +50,7 @@ public class AgentFactoryTransmission {
    */
   public AgentTransmission createTransmissionAgent(final EdgeTupleAppl edgeTuple,
       final Set<AgentTaskListener> listeners) {
-    SchedulabilityCheck schedulabilityCheck = getCheckForTarget(edgeTuple.getDst());
+    final SchedulabilityCheck schedulabilityCheck = getCheckForTarget(edgeTuple.getDst());
     return new AgentTransmission(enactmentState, edgeTuple.getSrc(), edgeTuple.getEdge(),
         edgeTuple.getDst(), graphAccess, listeners, schedulabilityCheck);
   }
@@ -61,7 +61,7 @@ public class AgentFactoryTransmission {
    * @param target the provided function node
    * @return the appropriate schedulability check for the provided function node
    */
-  protected SchedulabilityCheck getCheckForTarget(Task target) {
+  protected SchedulabilityCheck getCheckForTarget(final Task target) {
     if (PropertyServiceFunctionDataFlow.isMultiplexerNode(target)) {
       return new SchedulabilityCheckMuxer();
     } else {

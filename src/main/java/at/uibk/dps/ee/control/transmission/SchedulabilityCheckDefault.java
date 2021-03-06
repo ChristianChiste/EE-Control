@@ -17,19 +17,24 @@ import net.sf.opendse.model.Task;
 public class SchedulabilityCheckDefault implements SchedulabilityCheck {
 
   @Override
-  public boolean isTargetSchedulable(Task target, EnactmentGraph graph) {
-    if (!graph.getInEdges(target).stream()
+  public boolean isTargetSchedulable(final Task target, final EnactmentGraph graph) {
+    if (graph.getInEdges(target).stream()
         .allMatch(edge -> PropertyServiceDependency.isTransmissionDone(edge))) {
-      // Not all transmissions are done yet
-      return false;
-    } else if (graph.getInEdges(target).stream().anyMatch(
-        edge -> PropertyServiceDependency.getType(edge).equals(TypeDependency.ControlIf))) {
-      // Checking the activation of if Edges
-      return graph.getInEdges(target).stream()
-          .filter(edge -> PropertyServiceDependency.getType(edge).equals(TypeDependency.ControlIf))
-          .allMatch(controlEdge -> isIfEdgeActive(graph, controlEdge));
+      // All transmissions are finished
+      if (graph.getInEdges(target).stream().anyMatch(
+          edge -> PropertyServiceDependency.getType(edge).equals(TypeDependency.ControlIf))) {
+        // Checking the activation of if Edges
+        return graph.getInEdges(target).stream()
+            .filter(
+                edge -> PropertyServiceDependency.getType(edge).equals(TypeDependency.ControlIf))
+            .allMatch(controlEdge -> isIfEdgeActive(graph, controlEdge));
+      } else {
+        // No in edges an all edges active
+        return true;
+      }
     } else {
-      return true;
+      // Not all transmissions finished
+      return false;
     }
   }
 
@@ -41,11 +46,10 @@ public class SchedulabilityCheckDefault implements SchedulabilityCheck {
    * @param edge the given edge
    * @return true if the edge is active
    */
-  protected boolean isIfEdgeActive(EnactmentGraph graph, Dependency edge) {
-    boolean edgeActivation = PropertyServiceDependencyControlIf.getActivation(edge);
-    Task dataNode = graph.getSource(edge);
-    boolean decisionVariable = PropertyServiceData.getContent(dataNode).getAsBoolean();
+  protected boolean isIfEdgeActive(final EnactmentGraph graph, final Dependency edge) {
+    final boolean edgeActivation = PropertyServiceDependencyControlIf.getActivation(edge);
+    final Task dataNode = graph.getSource(edge);
+    final boolean decisionVariable = PropertyServiceData.getContent(dataNode).getAsBoolean();
     return edgeActivation == decisionVariable;
   }
-
 }
