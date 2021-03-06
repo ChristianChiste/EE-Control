@@ -44,7 +44,7 @@ public class SchedulabilityCheckMuxerTest {
   }
   
   @Test(expected = IllegalArgumentException.class)
-  public void testExcBothFalse() {
+  public void testExcNotTwo() {
     Task src1 = new Communication("comm1");
     Task src2 = new Communication("comm2");
     Task dest = new Task("task");
@@ -52,8 +52,8 @@ public class SchedulabilityCheckMuxerTest {
     Task decSrc = new Communication("decSrc");
     PropertyServiceData.setContent(decSrc, new JsonPrimitive(true));
     PropertyServiceDependency.addDataDependency(decSrc, dest, "key", graph);
+    PropertyServiceDependency.addDataDependency(src2, dest, "key", graph);
     PropertyServiceDependencyControlIf.addIfDependency(src1, dest, "key1", false, graph);
-    PropertyServiceDependencyControlIf.addIfDependency(src2, dest, "key2", false, graph);
     SchedulabilityCheckMuxer tested = new SchedulabilityCheckMuxer();
     tested.isTargetSchedulable(dest, graph);
   }
