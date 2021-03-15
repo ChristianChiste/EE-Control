@@ -6,9 +6,12 @@ import at.uibk.dps.ee.control.management.EnactmentQueues;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.EnactmentFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
+import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
 import at.uibk.dps.sc.core.ScheduleModel;
 import at.uibk.dps.sc.core.interpreter.ScheduleInterpreter;
 import at.uibk.dps.sc.core.scheduler.Scheduler;
+import at.uibk.dps.sc.core.scheduler.SchedulerAllOptions;
+import at.uibk.dps.sc.core.scheduler.SchedulerSingleOption;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -51,16 +54,23 @@ public class AgentScheduling extends AgentTask {
 
   @Override
   public boolean actualCall() throws Exception {
-    /*if (schedule.isScheduled(functionNode)) {
-      throw new IllegalStateException("Somehow, the task is already scheduled.");
-    } else {*/
-      final Set<Mapping<Task, Resource>> taskSchedule = scheduler.scheduleTask(functionNode);
-      schedule.setTaskSchedule(functionNode, taskSchedule);
-      final Enactable taskEnactable = PropertyServiceFunction.getEnactable(functionNode);
-      final EnactmentFunction enactmentFunction =
-          interpreter.interpretSchedule(functionNode, taskSchedule);
-      taskEnactable.schedule(enactmentFunction);
-    //}
+    if (schedule.isScheduled(functionNode)) {
+      if (scheduler instanceof SchedulerSingleOption || scheduler instanceof SchedulerAllOptions) {
+        throw new Exception("don't schedule again");
+      }
+      else {
+        final Set<Mapping<Task, Resource>> oldSchedule = schedule.getTaskSchedule(functionNode);
+        final Resource oldResource = oldSchedule.iterator().next().getTarget();
+        final int oldRank = PropertyServiceMapping.getRank(oldResource);
+        PropertyServiceMapping.setRank(oldResource, oldRank + 20);
+      }
+    }
+    final Set<Mapping<Task, Resource>> taskSchedule = scheduler.scheduleTask(functionNode);
+    schedule.setTaskSchedule(functionNode, taskSchedule);
+    final Enactable taskEnactable = PropertyServiceFunction.getEnactable(functionNode);
+    final EnactmentFunction enactmentFunction =
+        interpreter.interpretSchedule(functionNode, taskSchedule);
+    taskEnactable.schedule(enactmentFunction);
     enactmentState.putLaunchableTask(functionNode);
     return true;
   }
