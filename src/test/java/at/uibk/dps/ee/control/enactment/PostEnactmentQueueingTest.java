@@ -2,6 +2,8 @@ package at.uibk.dps.ee.control.enactment;
 
 import org.junit.Test;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.core.enactable.Enactable;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections.OperationType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
@@ -13,13 +15,13 @@ public class PostEnactmentQueueingTest {
 
   @Test
   public void testNormalTask() {
-	/* will be updated 
     EnactmentQueues queueMock = mock(EnactmentQueues.class);
     Task normalTask = PropertyServiceFunctionUser.createUserTask("task", "addition");
+    Enactable enactable = mock(Enactable.class);
+    PropertyServiceFunction.setEnactable(normalTask, enactable);
     PostEnactmentQueueing tested = new PostEnactmentQueueing(queueMock);
     tested.postEnactmentTreatment(normalTask);
     verify(queueMock).putFinishedTask(normalTask);
-    */
   }
 
   @Test

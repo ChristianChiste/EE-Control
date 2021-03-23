@@ -59,10 +59,10 @@ public class AgentScheduling extends AgentTask {
         throw new Exception("don't schedule again");
       }
       else {
-        final Set<Mapping<Task, Resource>> oldSchedule = schedule.getTaskSchedule(functionNode);
-        final Resource oldResource = oldSchedule.iterator().next().getTarget();
-        final int oldRank = PropertyServiceMapping.getRank(oldResource);
-        PropertyServiceMapping.setRank(oldResource, oldRank + 20);
+        final Set<Mapping<Task, Resource>> prevSchedule = schedule.getTaskSchedule(functionNode);
+        final Mapping<Task, Resource> prevMapping = prevSchedule.iterator().next();
+        final int prevRank = PropertyServiceMapping.getRank(prevMapping);
+        PropertyServiceMapping.setRank(prevMapping, prevRank + 20);
       }
     }
     final Set<Mapping<Task, Resource>> taskSchedule = scheduler.scheduleTask(functionNode);
