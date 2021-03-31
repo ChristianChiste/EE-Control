@@ -6,6 +6,7 @@ import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphTransformAggregation;
 import at.uibk.dps.ee.control.graph.GraphTransformDistribution;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.control.management.ExecutionMonitor;
 import at.uibk.dps.ee.core.ModelModificationListener;
 import at.uibk.dps.ee.enactables.wrapper.FactoryInterface;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
@@ -37,11 +38,12 @@ public class AgentFactoryTransform {
   @Inject
   public AgentFactoryTransform(final GraphAccess graphAccess,
       final FactoryInterface enactableFactory, final EnactmentQueues enactmentState,
-      final Set<ModelModificationListener> modificationListeners) {
+      final Set<ModelModificationListener> modificationListeners, final ExecutionMonitor executionMonitor) {
     this.graphAccess = graphAccess;
     this.enactableFactory = enactableFactory;
     this.enactmentState = enactmentState;
     this.modificationListeners = modificationListeners;
+    enactableFactory.addEnactableStateListener(executionMonitor);
   }
 
   /**

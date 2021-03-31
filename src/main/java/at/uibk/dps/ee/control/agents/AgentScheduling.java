@@ -61,8 +61,8 @@ public class AgentScheduling extends AgentTask {
       else {
         final Set<Mapping<Task, Resource>> prevSchedule = schedule.getTaskSchedule(functionNode);
         final Mapping<Task, Resource> prevMapping = prevSchedule.iterator().next();
-        final int prevRank = PropertyServiceMapping.getRank(prevMapping);
-        PropertyServiceMapping.setRank(prevMapping, prevRank + 20);
+        final int newRank = PropertyServiceMapping.getRank(prevMapping) + 20;
+        PropertyServiceMapping.setRank(prevMapping, newRank);
       }
     }
     final Set<Mapping<Task, Resource>> taskSchedule = scheduler.scheduleTask(functionNode);

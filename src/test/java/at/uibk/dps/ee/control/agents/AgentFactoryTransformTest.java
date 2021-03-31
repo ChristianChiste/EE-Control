@@ -6,6 +6,7 @@ import at.uibk.dps.ee.control.graph.GraphAccess;
 import at.uibk.dps.ee.control.graph.GraphTransformAggregation;
 import at.uibk.dps.ee.control.graph.GraphTransformDistribution;
 import at.uibk.dps.ee.control.management.EnactmentQueues;
+import at.uibk.dps.ee.control.management.ExecutionMonitor;
 import at.uibk.dps.ee.enactables.EnactableFactory;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlowCollections.OperationType;
@@ -20,8 +21,9 @@ public class AgentFactoryTransformTest {
     GraphAccess gMock = mock(GraphAccess.class);
     EnactableFactory factoryMock = mock(EnactableFactory.class);
     EnactmentQueues stateMock = mock(EnactmentQueues.class);
+    ExecutionMonitor executionMock = mock(ExecutionMonitor.class);
     AgentFactoryTransform tested =
-        new AgentFactoryTransform(gMock, factoryMock, stateMock, new HashSet<>());
+        new AgentFactoryTransform(gMock, factoryMock, stateMock, new HashSet<>(), executionMock);
     Task aggregationTask = PropertyServiceFunctionDataFlowCollections
         .createCollectionDataFlowTask("t1", OperationType.Aggregation, "scope");
     Task distributionTask = PropertyServiceFunctionDataFlowCollections
