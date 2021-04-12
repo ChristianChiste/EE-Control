@@ -42,21 +42,37 @@ public class ExecutionMonitor implements EnactableStateListener{
       final Task task = atomic.getFunctionNode();
       final EnactmentFunction enactmentFunction = atomic.getEnactmentFunction();
       if (currentState.equals(State.RUNNING) && !previousState.equals(State.RUNNING)) {
-        synchronized (this) {
-          ExecutionData.startTimes.put(task.getId(), System.nanoTime());
-        }
-        if (enactmentFunction instanceof LocalFunctionWrapper ||
-            enactmentFunction instanceof Composite) {
-          synchronized (this) {
-            ExecutionData.resourceType.put(task.getId(), ResourceType.Local);
+        if (enactmentFunction instanceof Composite) {
+          for(EnactmentFunction function:((Composite) enactmentFunction).getFunctions()) {
+            final ResourceType resourceType;
+            if (function instanceof ServerlessFunctionWrapper) {
+              ServerlessFunctionWrapper wrapper = (ServerlessFunctionWrapper)function;
+              resourceType = wrapper.getUrl().contains("functions.appdomain.cloud") ? ResourceType.IBM : ResourceType.Amazon;
+            }
+            else {
+              resourceType = ResourceType.Local;
+            }
+            synchronized (this) {
+              ExecutionData.startTimes.put(task.getId(), System.nanoTime());
+              ExecutionData.resourceType.put(task.getId(), resourceType);
+            }
           }
-        } else if (enactmentFunction instanceof ServerlessFunctionWrapper) {
-          ServerlessFunctionWrapper wrapper = (ServerlessFunctionWrapper)enactmentFunction;
+        }
+        else {
+          final ResourceType resourceType;
+          if (enactmentFunction instanceof ServerlessFunctionWrapper) {
+            ServerlessFunctionWrapper wrapper = (ServerlessFunctionWrapper)enactmentFunction;
+            resourceType = wrapper.getUrl().contains("functions.appdomain.cloud") ? ResourceType.IBM : ResourceType.Amazon;
+          }
+          else  {
+            resourceType = ResourceType.Local;
+          }
           synchronized (this) {
-            ExecutionData.resourceType.put(task.getId(), 
-                wrapper.getUrl().contains("functions.appdomain.cloud") ? ResourceType.IBM : ResourceType.Amazon);
+            ExecutionData.startTimes.put(task.getId(), System.nanoTime());
+            ExecutionData.resourceType.put(task.getId(), resourceType);
           }
         }
+
       } else if (!currentState.equals(State.RUNNING) && previousState.equals(State.RUNNING)) {
         final long endTime = currentState.equals(State.FINISHED) ? System.nanoTime() : -1;
         synchronized (this) {
