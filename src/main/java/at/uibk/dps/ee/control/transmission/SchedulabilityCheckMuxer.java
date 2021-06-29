@@ -62,6 +62,12 @@ public class SchedulabilityCheckMuxer implements SchedulabilityCheck {
       throw new IllegalArgumentException(
           "The muxer node " + muxer.getId() + " does not have 3 in edges.");
     }
+    long countIf = inEdges.stream()
+    .filter(dep -> PropertyServiceDependency.getType(dep).equals(TypeDependency.ControlIf))
+    .count();
+    long countData = inEdges.stream()
+        .filter(dep -> PropertyServiceDependency.getType(dep).equals(TypeDependency.Data))
+        .count();
     if (inEdges.stream()
         .filter(dep -> PropertyServiceDependency.getType(dep).equals(TypeDependency.ControlIf))
         .count() != expectedIfEdgeNumber) {

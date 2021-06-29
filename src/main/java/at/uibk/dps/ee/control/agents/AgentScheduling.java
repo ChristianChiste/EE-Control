@@ -10,8 +10,8 @@ import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
 import at.uibk.dps.sc.core.ScheduleModel;
 import at.uibk.dps.sc.core.interpreter.ScheduleInterpreter;
 import at.uibk.dps.sc.core.scheduler.Scheduler;
-import at.uibk.dps.sc.core.scheduler.SchedulerAllOptions;
-import at.uibk.dps.sc.core.scheduler.SchedulerSingleOption;
+import at.uibk.dps.sc.core.scheduler.Scheduling;
+import at.uibk.dps.sc.core.scheduler.Scheduling.SchedulingOption;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -55,7 +55,7 @@ public class AgentScheduling extends AgentTask {
   @Override
   public boolean actualCall() throws Exception {
     if (schedule.isScheduled(functionNode)) {
-      if (scheduler instanceof SchedulerSingleOption || scheduler instanceof SchedulerAllOptions) {
+      if (Scheduling.schedulingOption.equals(SchedulingOption.Static)) {
         throw new Exception("don't schedule again");
       }
       else {

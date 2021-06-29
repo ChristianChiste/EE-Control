@@ -14,7 +14,7 @@ jacoco {
 	}
 
 
-group 'ChristianChiste-EE-Control'
+group 'Apollo-Core-EE-Control'
 version '1.0-SNAPSHOT'
 
 

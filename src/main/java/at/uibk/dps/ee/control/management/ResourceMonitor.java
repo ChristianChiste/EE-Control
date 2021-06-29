@@ -1,32 +1,23 @@
 package at.uibk.dps.ee.control.management;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import at.uibk.dps.ee.core.ExecutionData;
-import at.uibk.dps.ee.core.ExecutionData.ResourceType;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.enactables.EnactableAtomic;
-import at.uibk.dps.ee.enactables.local.Composite;
-import at.uibk.dps.ee.enactables.local.LocalFunctionWrapper;
-import at.uibk.dps.ee.enactables.serverless.ServerlessFunctionWrapper;
 import at.uibk.dps.ee.model.constants.ConstantsEEModel;
 import at.uibk.dps.ee.model.graph.ResourceGraphProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
 import at.uibk.dps.ee.model.properties.PropertyServiceResource;
 import at.uibk.dps.sc.core.ScheduleModel;
-import at.uibk.dps.sc.core.modules.SchedulerModule;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 import at.uibk.dps.ee.core.enactable.EnactableStateListener;
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
 
 /**
  * The {@link ResourceMonitor} monitors the state of the resources during the
